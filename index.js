@@ -54,6 +54,7 @@ app.post('/transaction', (req, res) => {
     let amount = req.body.amount
     let credit_amount = amount * -1
     let datetime = new Date().toMysqlFormat()
+    console.log('in transaction')
     const connection = mysql.createConnection(database_pass);
     let debit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + username +"', 'debit', " + amount.toString() + ", '" + username +"', '" + datetime + "', 'deposit', 'deposit') ;"
     let credit_query = " INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + username + "', 'credit', " + credit_amount.toString() + ", 'admin', '" + datetime + "', 'deposit', 'deposit') ;"
