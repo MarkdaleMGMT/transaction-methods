@@ -1,0 +1,15 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "REST apis to connect to mysql database",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index"
+  },
+  "author": "Carlson Lau",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mysql": "^2.16.0"
+  }
+}
