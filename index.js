@@ -49,15 +49,37 @@ const database_pass = {
         multipleStatements: true
     }
 
-app.post('/transaction', (req, res) => {
+app.post('/deposit', (req, res) => {
     let username = req.body.username
     let amount = req.body.amount
     let credit_amount = amount * -1
     let datetime = new Date().toMysqlFormat()
     console.log('in transaction')
     const connection = mysql.createConnection(database_pass);
-    let debit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + username +"', 'debit', " + amount.toString() + ", '" + username +"', '" + datetime + "', 'deposit', 'deposit') ;"
-    let credit_query = " INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + username + "', 'credit', " + credit_amount.toString() + ", 'admin', '" + datetime + "', 'deposit', 'deposit') ;"
+    let debit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('clam_mine', 'debit', " + amount.toString() + ", 'admin', '" + datetime + "', 'deposit', 'deposit') ;"
+    let credit_query = " INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + username +"', 'credit', " + credit_amount.toString() + ", 'admin', '" + datetime + "', 'deposit', 'deposit') ;"
+    connection.query(debit_query + credit_query, function(err, rows, fields) {
+        if (err){
+        console.log(err)
+    	}
+        if (rows[0] != null && rows[0].solution != undefined) {
+            console.log('The solution is: ', rows[0].solution)
+        }
+    })
+    return res.send({ code: "success" })
+
+
+})
+
+app.post('/withdrawal', (req, res) => {
+    let username = req.body.username
+    let amount = req.body.amount
+    let credit_amount = amount * -1
+    let datetime = new Date().toMysqlFormat()
+    console.log('in transaction')
+    const connection = mysql.createConnection(database_pass);
+    let debit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + username +"', 'debit', " + amount.toString() + ", 'admin', '" + datetime + "', 'withdrawal', 'withdrawal') ;"
+    let credit_query = " INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('clam_mine', 'credit', " + credit_amount.toString() + ", 'admin', '" + datetime + "', 'withdrawal', 'withdrawal') ;"
     connection.query(debit_query + credit_query, function(err, rows, fields) {
         if (err){
         console.log(err)
