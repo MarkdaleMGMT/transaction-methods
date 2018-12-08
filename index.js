@@ -2,12 +2,13 @@ const mysql = require('mysql')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const port = 3000
+const port = 3000 
 
+// allow POST requests
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
-}));
+}))
 app.use(function(req, res, next) {
     let origins = ['localhost']
 
@@ -71,6 +72,13 @@ app.post('/deposit', (req, res) => {
 
 })
 
+/**
+ * API for withdrawal transaction
+ * @param  {string} username     Username 
+ * @param  {int} amount    [description]
+ * @param  {[type]} fields) {                   if (err){        console.log(err)    	}        if (rows[0] ! [description]
+ * @return {[type]}         [description]
+ */
 app.post('/withdrawal', (req, res) => {
     let username = req.body.username
     let amount = req.body.amount
@@ -90,6 +98,47 @@ app.post('/withdrawal', (req, res) => {
     })
     return res.send({ code: "success" })
 
+
+})
+
+app.post('/update', (req, res) => {
+	let amount = req.body.amount
+	let datetime = new Date().toMysqlFormat()
+	const connection = mysql.createConnection(database_pass);
+	connection.query("SELECT * FROM control;", function(err, rows, fields) {
+		let original = rows[0].clam_miner_balance
+		let change = amount - original
+		console.log('in control')
+		console.log('change', change)
+		let rake_share = rows[0].clam_miner_rake
+		let debit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('clam_miner', 'debit', " + change.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
+		connection.query(debit_query)
+		console.log('updated transaction table clam miner debit')
+		connection.query('UPDATE control SET clam_miner_balance = ?;', [amount])
+		console.log('updated control table clam miner balance')
+		connection.query("SELECT * FROM users", function(err, rows, fields){
+			console.log('update individual users')
+			for(let i =0; i<rows.length; i++){
+				let row = rows[i]
+				let id = row.id
+				let previous_balance = row.clam_balance
+				let previous_share = row.clam_balance/original
+				let new_balance = previous_balance + (change*previous_share) - (rake_share*change*previous_share)
+				let user_balance_change = (new_balance - previous_balance) * -1
+				console.log('new_balance', new_balance)
+				connection.query('UPDATE users SET clam_balance = ? WHERE id = ?;', [amount, id])
+				let credit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + row.username + "', 'credit', " + user_balance_change.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
+				connection.query(credit_query)
+
+			}
+		let rake_amount = (rake_share*change)*-1
+		let rake_user = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('rake_user', 'credit', " + rake_amount.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
+		connection.query(rake_user)
+		console.log('insert credit rake user')
+
+		})
+	})
+	return res.send({ code: "success" })
 
 })
 
