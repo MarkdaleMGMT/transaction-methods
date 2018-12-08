@@ -120,34 +120,37 @@ app.post('/update', (req, res) => {
 		connection.query("SELECT * FROM user WHERE username = 'rake_user';", function(err, rows, fields){
 			let prevous_rake_amount = rows[0].clam_balance
 			let current = prevous_rake_amount + (rake_amount*-1)
-			connection.query('UPDATE user SET clam_balance = ? WHERE username = ?;', [current, 'rake_user'])
+			connection.query('UPDATE user SET clam_balance = ? WHERE username = ?;', [current, 'rake_user']).then(()=>{
+				let rake_user = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('rake_user', 'credit', " + rake_amount.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
+				connection.query(rake_user)
+				console.log('insert credit rake user')
+				connection.query("SELECT * FROM user;", function(err, rows, fields){
+					console.log('update individual user')
+					console.log('rows', rows)
+					if(err){
+						console.log('errors', err)
+					}
+					for(let i =0; i<rows.length; i++){
+						let row = rows[i]
+						let id = row.id
+						let previous_balance = row.clam_balance
+						let previous_share = row.clam_balance/original
+						let new_balance = previous_balance + (change*previous_share) - (rake_share*change*previous_share)
+						let user_balance_change = (new_balance - previous_balance) * -1
+						console.log('new_balance', new_balance)
+						connection.query('UPDATE user SET clam_balance = ? WHERE id = ?;', [new_balance, id])
+						let credit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + row.username + "', 'credit', " + user_balance_change.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
+						connection.query(credit_query)
+
+					}
+				
+
+				})
+
+			})
+
 		})
 		
-		let rake_user = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('rake_user', 'credit', " + rake_amount.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
-		connection.query(rake_user)
-		console.log('insert credit rake user')
-		connection.query("SELECT * FROM user;", function(err, rows, fields){
-			console.log('update individual user')
-			console.log('rows', rows)
-			if(err){
-				console.log('errors', err)
-			}
-			for(let i =0; i<rows.length; i++){
-				let row = rows[i]
-				let id = row.id
-				let previous_balance = row.clam_balance
-				let previous_share = row.clam_balance/original
-				let new_balance = previous_balance + (change*previous_share) - (rake_share*change*previous_share)
-				let user_balance_change = (new_balance - previous_balance) * -1
-				console.log('new_balance', new_balance)
-				connection.query('UPDATE user SET clam_balance = ? WHERE id = ?;', [new_balance, id])
-				let credit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + row.username + "', 'credit', " + user_balance_change.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
-				connection.query(credit_query)
-
-			}
-		
-
-		})
 	})
 	return res.send({ code: "success" })
 
