@@ -116,7 +116,17 @@ app.post('/update', (req, res) => {
 		console.log('updated transaction table clam miner debit')
 		connection.query('UPDATE control SET clam_miner_balance = ?;', [amount])
 		console.log('updated control table clam miner balance')
-		connection.query("SELECT * FROM user WHERE username != 'rake_user';", function(err, rows, fields){
+		let rake_amount = (rake_share*change)*-1
+		connection.query("SELECT * FROM user WHERE username = 'rake_user';", function(err, rows, fields){
+			let prevous_rake_amount = rows[0].clam_balance
+			let current = prevous_rake_amount + (rake_amount*-1)
+			connection.query('UPDATE user SET clam_balance = ? WHERE username = ?;', [current, 'rake_user'])
+		})
+		
+		let rake_user = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('rake_user', 'credit', " + rake_amount.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
+		connection.query(rake_user)
+		console.log('insert credit rake user')
+		connection.query("SELECT * FROM user;", function(err, rows, fields){
 			console.log('update individual user')
 			console.log('rows', rows)
 			if(err){
@@ -135,17 +145,7 @@ app.post('/update', (req, res) => {
 				connection.query(credit_query)
 
 			}
-		let rake_amount = (rake_share*change)*-1
-		connection.query("SELECT * FROM user WHERE username = 'rake_user';", function(err, rows, fields){
-			let prevous_rake_amount = rows[0].clam_balance
-			let current = prevous_rake_amount + (rake_amount*-1)
-			connection.query('UPDATE user SET clam_balance = ? WHERE username = ?;', [current, 'rake_user'])
-		})
 		
-		
-		let rake_user = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('rake_user', 'credit', " + rake_amount.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
-		connection.query(rake_user)
-		console.log('insert credit rake user')
 
 		})
 	})
