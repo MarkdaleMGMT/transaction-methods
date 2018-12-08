@@ -119,6 +119,9 @@ app.post('/update', (req, res) => {
 		connection.query("SELECT * FROM users;", function(err, rows, fields){
 			console.log('update individual users')
 			console.log('rows', rows)
+			if(err){
+				console.log('errors', err)
+			}
 			for(let i =0; i<rows.length; i++){
 				let row = rows[i]
 				let id = row.id
