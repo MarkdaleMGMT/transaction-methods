@@ -120,7 +120,7 @@ app.post('/update', (req, res) => {
 		connection.query("SELECT * FROM user WHERE username = 'rake_user';", function(err, rows, fields){
 			let prevous_rake_amount = rows[0].clam_balance
 			let current = prevous_rake_amount + (rake_amount*-1)
-			connection.query('UPDATE user SET clam_balance = ? WHERE username = ?;', [current, 'rake_user']).then(()=>{
+			connection.query('UPDATE user SET clam_balance = ? WHERE username = ?;', [current, 'rake_user'], function(err, rows, fields){
 				let rake_user = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('rake_user', 'credit', " + rake_amount.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
 				connection.query(rake_user)
 				console.log('insert credit rake user')
