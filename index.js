@@ -118,6 +118,7 @@ app.post('/update', (req, res) => {
 		console.log('updated control table clam miner balance')
 		connection.query("SELECT * FROM users", function(err, rows, fields){
 			console.log('update individual users')
+			console.log('rows', rows)
 			for(let i =0; i<rows.length; i++){
 				let row = rows[i]
 				let id = row.id
