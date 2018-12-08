@@ -117,7 +117,7 @@ app.post('/update', (req, res) => {
 		connection.query('UPDATE control SET clam_miner_balance = ?;', [amount])
 		console.log('updated control table clam miner balance')
 		connection.query("SELECT * FROM user;", function(err, rows, fields){
-			console.log('update individual users')
+			console.log('update individual user')
 			console.log('rows', rows)
 			if(err){
 				console.log('errors', err)
@@ -130,7 +130,7 @@ app.post('/update', (req, res) => {
 				let new_balance = previous_balance + (change*previous_share) - (rake_share*change*previous_share)
 				let user_balance_change = (new_balance - previous_balance) * -1
 				console.log('new_balance', new_balance)
-				connection.query('UPDATE users SET clam_balance = ? WHERE id = ?;', [amount, id])
+				connection.query('UPDATE user SET clam_balance = ? WHERE id = ?;', [amount, id])
 				let credit_query = "INSERT INTO transaction(username, credit_debit, amount, created_by,time, transaction_type, memo) VALUES ('" + row.username + "', 'credit', " + user_balance_change.toString() + ", 'admin', '" + datetime + "', 'update_clam_miner', 'update_clam_miner') ;"
 				connection.query(credit_query)
 
