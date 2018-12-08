@@ -116,7 +116,7 @@ app.post('/update', (req, res) => {
 		console.log('updated transaction table clam miner debit')
 		connection.query('UPDATE control SET clam_miner_balance = ?;', [amount])
 		console.log('updated control table clam miner balance')
-		connection.query("SELECT * FROM users;", function(err, rows, fields){
+		connection.query("SELECT * FROM user;", function(err, rows, fields){
 			console.log('update individual users')
 			console.log('rows', rows)
 			if(err){
