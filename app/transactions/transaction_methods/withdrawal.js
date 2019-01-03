@@ -1,5 +1,5 @@
 var db = require('../../util/mysql_connection')
-const { build_insert_transaction } = require('../transaction_model')
+const { build_insert_transaction } = require('../../models').transaction_model
 
 /**
  * API for withdrawal transaction

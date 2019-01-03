@@ -10,3 +10,4 @@ Date.prototype.toMysqlFormat = function() {
 //define the endpoints
 app.post('/deposit', transaction_methods.deposit);
 app.post('/withdrawal', transaction_methods.withdrawal);
+app.post('/global_update', transaction_methods.global_update);

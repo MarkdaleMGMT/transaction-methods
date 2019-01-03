@@ -6,6 +6,10 @@ var pool = mysql.createPool(mysql_config);
 
 exports.connection = {
 
+    query: async function (query,queryValues){
+      return await pool.query(query,queryValues);
+    },
+
     begin_transaction: async function(queriesWithValues){
 
       try{
