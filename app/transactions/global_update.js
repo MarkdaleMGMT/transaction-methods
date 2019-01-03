@@ -1,6 +1,6 @@
-var db = require('../../util/mysql_connection')
+var db = require('../util/mysql_connection')
 
-var { control_model, user_model, transaction_model } = require('../../models')
+var { control_model, user_model, transaction_model } = require('../models')
 
 // var control_model = require('../mo/control_model')
 // var user_model = require('./user_model')

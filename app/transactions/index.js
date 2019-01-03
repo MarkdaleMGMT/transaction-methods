@@ -1,5 +1,5 @@
 const app = module.exports = require('express')();
-const transaction_methods = require('./transaction_methods')
+// const transaction_methods = require('./transaction_methods')
 const { twoDigits } = require('../util/common.js')
 
 Date.prototype.toMysqlFormat = function() {
@@ -8,6 +8,6 @@ Date.prototype.toMysqlFormat = function() {
 
 
 //define the endpoints
-app.post('/deposit', transaction_methods.deposit);
-app.post('/withdrawal', transaction_methods.withdrawal);
-app.post('/global_update', transaction_methods.global_update);
+app.post('/deposit', require('./deposit'));
+app.post('/withdrawal', require('./withdrawal'));
+app.post('/global_update', require('./global_update'));
