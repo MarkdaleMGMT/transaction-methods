@@ -9,7 +9,10 @@
   "author": "Carlson Lau",
   "license": "ISC",
   "dependencies": {
+    "@godaddy/terminus": "^4.1.0",
+    "bluebird": "^3.5.3",
     "express": "^4.16.4",
-    "mysql": "^2.16.0"
+    "mysql": "^2.16.0",
+    "mysql2": "^1.6.4"
   }
 }
