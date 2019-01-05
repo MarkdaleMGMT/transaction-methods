@@ -9,3 +9,4 @@ const app = module.exports = require('express')();
 
 //define the endpoints
 app.post('/transaction_history', require('./get_transaction_history'));
+app.post('/balance', require('./get_balance'));

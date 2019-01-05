@@ -40,6 +40,8 @@ async function get_user_by_username(username){
   return rows[0];
 }
 
+
+
 module.exports = {
   build_update_user_balance,
   calculate_new_user_balance,

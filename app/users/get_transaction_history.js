@@ -1,5 +1,6 @@
 var db = require('../util/mysql_connection')
 const { get_user_transactions } = require('../models').transaction_model
+const { get_user_by_username } = require('../models').user_model
 
 /**
  * API to fetch all transactions for a specific user
@@ -28,30 +29,47 @@ const { get_user_transactions } = require('../models').transaction_model
 
    try{
 
-      let transactions = await get_user_transactions(username);
-      let transaction_history = [];
-      let user_balance = 0;
+     let user = await get_user_by_username(username);
+     if(!user) throw new Error('User does not exist');
 
-      for(let i=0; i<transactions.length; i++){
-        let user_transaction = transactions[i];
+     let ledger_account = user.ledger_account;
 
+    let transactions = await get_user_transactions(username);
+    let transaction_history = [];
+    let user_balance = 0;
+
+    for(let i=0; i<transactions.length; i++){
+      let user_transaction = transactions[i];
+
+      if (ledger_account == 'asset' || ledger_account == 'expense'){
+        //debits mean increase in balance
+        //credits mean decrease in balance
         user_balance += parseFloat(user_transaction.amount);
-
-        let transaction_json = {
-          'time':user_transaction.time,
-          'transaction_type': user_transaction.memo,
-          'amount':user_transaction.amount,
-          'user_balance':user_balance
-
-        };
+      }
+      else if (ledger_account == 'liability' || ledger_account == 'equity' || ledger_account == 'income'){
+        //debits mean decrease in balance
+        //credits mean increase in balance
+        user_balance += parseFloat(user_transaction.amount)*-1.0;
+      }
 
 
-        transaction_history.push(transaction_json);
+
+      let transaction_json = {
+        'time':user_transaction.time,
+        'description': user_transaction.memo,
+        'amount':Math.abs(user_transaction.amount),
+        'type': user_transaction <0 ? 'credit':'debit',
+        'user_balance':user_balance
+
+      };
 
 
-      }//end for
+      transaction_history.push(transaction_json);
 
-      return transaction_history;
+
+    }//end for
+
+    return transaction_history;
    }
    catch(err){
      console.log("got err",err);
