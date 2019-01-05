@@ -5,7 +5,7 @@ Requires Node.JS and pm2 for handling the app.
 First clone the repo and enter the repo:
 
 ```
-$ git clone https://carl_lau@bitbucket.org/carl_lau/markdale_api.git
+$ git clone https://github.com/MarkdaleMGMT/transaction-methods.git
 $ cd markdale_api 
 ```
 Install pm2 with 
