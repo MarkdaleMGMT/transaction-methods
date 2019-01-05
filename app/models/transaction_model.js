@@ -1,4 +1,5 @@
 'use strict'
+var db = require('../util/mysql_connection')
 
 function build_insert_transaction(username, amount, created_by,time, transaction_type, memo){
 
@@ -9,10 +10,18 @@ function build_insert_transaction(username, amount, created_by,time, transaction
 
 }
 
+async function get_user_transactions(username){
+
+    const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE username = ? ORDER BY time ASC",[username]);
+    return rows;
+
+}
+
 
 
 
 
 module.exports ={
-  build_insert_transaction
+  build_insert_transaction,
+  get_user_transactions
 }

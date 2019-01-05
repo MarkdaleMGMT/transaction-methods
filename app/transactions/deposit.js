@@ -14,7 +14,7 @@ const { build_insert_transaction } = require('../models').transaction_model
    let datetime = new Date().toMysqlFormat()
 
    try{
-     isSuccesful = await deposit(username,amount,datetime);
+     let isSuccesful = await deposit(username,amount,datetime);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to deposit amount');}
      res.send({ code: "Deposit successful" })
