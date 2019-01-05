@@ -11,11 +11,14 @@ function build_update_user_balance(username,new_balance){
 
 function calculate_new_user_balance(original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share){
 
+  console.log("original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share");
+  console.log(original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share);
   // console.log("calculate_new_user_balance\n",typeof(original_clam_balance),typeof(prev_user_balance),typeof(change_in_clam_balance), typeof(rake_share));
-  let user_share = prev_user_balance/original_clam_balance;
+  let user_share = prev_user_balance*1.0/original_clam_balance;
   let new_balance = prev_user_balance + (1 - rake_share)*(change_in_clam_balance * user_share);
 
   console.log("prev_user_balance",prev_user_balance);
+  console.log("user_share",user_share);
   // console.log("change_in_clam_balance * user_share",change_in_clam_balance * user_share);
   console.log("(1 - rake_share)*(change_in_clam_balance * user_share)",(1 - rake_share)*(change_in_clam_balance * user_share));
   // console.log("user_share",user_share);

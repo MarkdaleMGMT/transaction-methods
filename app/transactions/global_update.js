@@ -53,13 +53,15 @@ var { control_model, user_model, transaction_model } = require('../models')
      //list of queries executed within a single transaction
      let transaction_queries = []
 
-     let debit_clam_miner = transaction_model.build_insert_transaction('clam_miner','debit', change, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
+     let debit_clam_miner = transaction_model.build_insert_transaction('clam_miner', change, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
      let update_clam_miner_balance = control_model.build_update_clam_miner_balance(amount);
 
      transaction_queries.push(debit_clam_miner);
      transaction_queries.push(update_clam_miner_balance);
 
      sum += change;
+
+     let rake_user_balance = 0;
 
 
      for (let i=0; i< users.length; i++){
@@ -75,10 +77,16 @@ var { control_model, user_model, transaction_model } = require('../models')
        console.log("new_user_balance",new_user_balance);
        console.log("user_balance_change",user_balance_change);
 
-       let update_user_balance = user_model.build_update_user_balance(username, new_user_balance);
-       transaction_queries.push(update_user_balance);
 
-       let credit_user = transaction_model.build_insert_transaction(username, 'credit', user_balance_change*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
+       if ( username != 'rake_user')
+       {
+         let update_user_balance = user_model.build_update_user_balance(username, new_user_balance);
+         transaction_queries.push(update_user_balance);}
+       else{
+         rake_user_balance=new_user_balance;
+       }
+
+       let credit_user = transaction_model.build_insert_transaction(username, user_balance_change*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
        transaction_queries.push(credit_user);
 
        sum -= user_balance_change;
@@ -92,20 +100,20 @@ var { control_model, user_model, transaction_model } = require('../models')
 
      let rake_amount = (rake_share * change);
      let rake_user = await user_model.get_user_by_username('rake_user');
-     let new_rake_user_balance =parseFloat(rake_user.clam_balance) + rake_amount;
+     let new_rake_user_balance =rake_user_balance + rake_amount;
 
      let update_rake_user_balance = user_model.build_update_user_balance('rake_user', new_rake_user_balance);
      transaction_queries.push(update_rake_user_balance);
 
 
-     let credit_rake_user = transaction_model.build_insert_transaction('rake_user','credit', rake_amount*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
+     let credit_rake_user = transaction_model.build_insert_transaction('rake_user', rake_amount*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
      transaction_queries.push(credit_rake_user);
 
      sum -= rake_amount;
      console.log("rake_amount ",rake_amount);
 
-
      let results = await db.connection.begin_transaction(transaction_queries);
+
 
      // console.log("got results",results[0]);
      let rows_affected = 0;
