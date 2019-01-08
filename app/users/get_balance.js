@@ -32,7 +32,7 @@ const { get_user_by_username } = require('../models').user_model
       let user = await get_user_by_username(username);
       if(!user) throw new Error('User does not exist');
 
-      let ledger_account = user.ledger_account;
+      let account_type = user.account_type;
 
 
       let transactions = await get_user_transactions(username);
@@ -53,10 +53,10 @@ const { get_user_by_username } = require('../models').user_model
       }//end for
 
       let user_balance = 0;
-      if (ledger_account == 'asset' || ledger_account == 'expense'){
+      if (account_type == 'debit'){
         user_balance = total_debits - total_credits;
       }
-      else if (ledger_account == 'liability' || ledger_account == 'equity' || ledger_account == 'income'){
+      else {
         user_balance = total_credits - total_debits;
       }
 

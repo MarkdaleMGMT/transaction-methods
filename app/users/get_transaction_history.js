@@ -32,7 +32,7 @@ const { get_user_by_username } = require('../models').user_model
      let user = await get_user_by_username(username);
      if(!user) throw new Error('User does not exist');
 
-     let ledger_account = user.ledger_account;
+     let account_type = user.account_type;
 
     let transactions = await get_user_transactions(username);
     let transaction_history = [];
@@ -41,12 +41,12 @@ const { get_user_by_username } = require('../models').user_model
     for(let i=0; i<transactions.length; i++){
       let user_transaction = transactions[i];
 
-      if (ledger_account == 'asset' || ledger_account == 'expense'){
+      if (account_type == 'debit'){
         //debits mean increase in balance
         //credits mean decrease in balance
         user_balance += parseFloat(user_transaction.amount);
       }
-      else if (ledger_account == 'liability' || ledger_account == 'equity' || ledger_account == 'income'){
+      else {
         //debits mean decrease in balance
         //credits mean increase in balance
         user_balance += parseFloat(user_transaction.amount)*-1.0;
@@ -58,7 +58,7 @@ const { get_user_by_username } = require('../models').user_model
         'time':user_transaction.time,
         'description': user_transaction.memo,
         'amount':Math.abs(user_transaction.amount),
-        'type': user_transaction <0 ? 'credit':'debit',
+        'type': user_transaction.amount <0 ? 'credit':'debit',
         'user_balance':user_balance
 
       };
