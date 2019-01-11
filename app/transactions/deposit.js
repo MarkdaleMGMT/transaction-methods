@@ -1,6 +1,6 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model
-
+const {build_update_user_balance, get_user_by_username} = require('../models').user_model
 /**
  * API for the deposit transaction
  * @param  {string} username     Username of the user doing the transaction
@@ -36,7 +36,7 @@ const { build_insert_transaction } = require('../models').transaction_model
     let queries_with_val = []
 
     console.log("deposit transaction  ",username," ",amount," ",datetime);
-
+    l
 
     let debit_query_with_vals = build_insert_transaction('clam_mine', amount, 'admin', datetime, 'deposit', 'deposit');
     let credit_query_with_vals = build_insert_transaction(username, amount*-1, 'admin', datetime, 'deposit', 'deposit');
@@ -54,7 +54,8 @@ const { build_insert_transaction } = require('../models').transaction_model
      }
 
      console.log("rows affected",rows_affected);
-
+     let previous_balance = await get_user_by_username(username)
+     let update_balance = await build_update_user_balance(previous_balance.clam_balance + amount)
      return rows_affected == queries_with_val.length;
    }
    catch(err){
