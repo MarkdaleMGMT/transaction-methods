@@ -1,5 +1,6 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model
+const {build_update_user_balance, get_user_by_username} = require('../models').user_model
 
 /**
  * API for withdrawal transaction
