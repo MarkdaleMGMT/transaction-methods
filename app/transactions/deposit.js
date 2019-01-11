@@ -38,7 +38,7 @@ const { build_insert_transaction } = require('../models').transaction_model
     console.log("deposit transaction  ",username," ",amount," ",datetime);
 
 
-    let debit_query_with_vals = build_insert_transaction('clam_mine', amount, 'admin', datetime, 'deposit', 'deposit');
+    let debit_query_with_vals = build_insert_transaction('clam_miner', amount, 'admin', datetime, 'deposit', 'deposit');
     let credit_query_with_vals = build_insert_transaction(username, amount*-1, 'admin', datetime, 'deposit', 'deposit');
 
     queries_with_val.push(debit_query_with_vals);

@@ -40,7 +40,7 @@ const { build_insert_transaction } = require('../models').transaction_model
        let queries_with_val = []
 
        let debit_query_with_vals = build_insert_transaction(username, amount, 'admin', datetime, 'withdrawal', 'withdrawal');
-       let credit_query_with_vals = build_insert_transaction('clam_mine', amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal');
+       let credit_query_with_vals = build_insert_transaction('clam_miner', amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal');
 
        queries_with_val.push(debit_query_with_vals);
        queries_with_val.push(credit_query_with_vals);
