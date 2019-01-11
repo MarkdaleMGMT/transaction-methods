@@ -11,3 +11,4 @@ Date.prototype.toMysqlFormat = function() {
 app.post('/deposit', require('./deposit'));
 app.post('/withdrawal', require('./withdrawal'));
 app.post('/global_update', require('./global_update'));
+app.post('/transfer', require('./transfer'));
