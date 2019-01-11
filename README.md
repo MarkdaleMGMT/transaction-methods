@@ -18,7 +18,7 @@ $ npm install
 ```
 Start the server:
 ```
-$ pm2 start index.js
+$ pm2 start server.js
 ```
 ### To view logs:
 ```
