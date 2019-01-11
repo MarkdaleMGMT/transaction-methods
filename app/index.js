@@ -7,14 +7,15 @@ app.get('/', (req, res) => {
 });
 
 app.use('/transactions', require('./transactions'));
+app.use('/frontend', require('./frontend'));
 // app.use('/accounts', require('./accounts'));
 // app.use('/accounts', require('./accounts'));
 
 
 // the catch all route
-app.all('*', (req, res) => {
-  res.status(404).send({msg: 'not found'});
-});
+// app.all('*', (req, res) => {
+//   res.status(404).send({msg: 'not found'});
+// });
 
 
 module.exports = {

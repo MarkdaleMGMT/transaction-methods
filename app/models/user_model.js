@@ -34,8 +34,18 @@ async function get_all_users(){
   return users;
 }
 
-async function get_user_by_username(username){
+async function create_user(body){
+  console.log("new user body", body)
+  let username = body.username
+  let password = body.password
+  let hashedPassword = password
+  let query = "INSERT INTO `user` (`id`, `username`, `password`, `level`, `clam_balance`, `last_login`, `email_verify_key`, `email_verify_flag`) VALUES (NULL, ?, ?, '1', '0', CURRENT_TIMESTAMP, '', '0');"
+  let result = db.connection.query(query, [username, hashedPassword])
+  console.log("signup", username)
+  return result
+}
 
+async function get_user_by_username(username){
   const [rows, fields] = await db.connection.query("SELECT * FROM user WHERE username = ?",[username]);
   return rows[0];
 }
@@ -44,5 +54,6 @@ module.exports = {
   build_update_user_balance,
   calculate_new_user_balance,
   get_user_by_username,
-  get_all_users
+  get_all_users,
+  create_user
 };

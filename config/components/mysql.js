@@ -1,8 +1,8 @@
 module.exports = mysql_config = {
-    host: '142.93.148.141',
-    user: 'app',
-    password: '3b391ec5',
-    database: 'live',
+    host: '165.227.35.11',
+    user: 'user',
+    password: 'Zh8gqQhSK9meM7uu',
+    database: 'dev',
     multipleStatements: true,
     connectionLimit : 10
 }
