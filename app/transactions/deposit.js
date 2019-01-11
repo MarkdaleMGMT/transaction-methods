@@ -36,7 +36,6 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
     let queries_with_val = []
 
     console.log("deposit transaction  ",username," ",amount," ",datetime);
-    l
 
     let debit_query_with_vals = build_insert_transaction('clam_mine', amount, 'admin', datetime, 'deposit', 'deposit');
     let credit_query_with_vals = build_insert_transaction(username, amount*-1, 'admin', datetime, 'deposit', 'deposit');
