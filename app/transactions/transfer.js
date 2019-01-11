@@ -28,7 +28,7 @@ const { get_balance, get_user_by_username } = require('../models').user_model;
       throw new Error('not authorized to initiate transfer');
      }
 
-     let isSuccesful = await transfer_amount(sender,recipient,amount,datetime);
+     let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to transfer amount');}
      res.send({ code: "transfer amount successful" })
@@ -44,7 +44,7 @@ const { get_balance, get_user_by_username } = require('../models').user_model;
 
  };
 
- async function transfer_amount(sender,recipient,amount,datetime){
+ async function transfer_amount(username,sender,recipient,amount,datetime){
 
 
 
@@ -71,9 +71,9 @@ const { get_balance, get_user_by_username } = require('../models').user_model;
 
 
     //debit the sender
-    let debit_query_with_vals = build_insert_transaction(sender, amount, 'admin', datetime, 'transfer', 'transfer to '+recipient);
+    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient);
     //credit the recipient
-    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, 'admin', datetime, 'transfer', 'transfer from '+sender);
+    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
