@@ -55,7 +55,9 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
      console.log("rows affected",rows_affected);
      let previous_balance = await get_user_by_username(username)
      console.log("previous balance", previous_balance)
-     let update_query =  build_update_user_balance(username, previous_balance.clam_balance + amount)
+     let new_amount = previous_balance.clam_balance + amount
+     console.log("new amount", new_amount)
+     let update_query =  build_update_user_balance(username, new_amount)
      let current_balance = await db.connection.query(update_query.query, update_query.queryValues)
      console.log("update query",update_query)
      console.log("curr balance", current_balance)
