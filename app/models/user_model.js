@@ -40,8 +40,8 @@ async function create_user(body){
   let password = body.password
   let email = body.email
   let hashedPassword = password
-  let query = "INSERT INTO `user` (`username`, `password`, `level`, `clam_balance`, `last_login`, `email`, `email_verify_key`, `email_verify_flag`) VALUES (?, ?, '1', '0', CURRENT_TIMESTAMP, ?, '', '0');"
-  let result = db.connection.query(query, [username, hashedPassword])
+  let query = "INSERT INTO `user` (`username`, `password`, `level`, `clam_balance`, `last_login`, `email`, `email_verify_key`, `email_verify_flag`, `account_type`, `ledger_account`, `sub_account1`, `sub_account2`) VALUES (?, ?, 1, 0, CURRENT_TIMESTAMP, ?, '', '0', '', '', NULL, NULL);"
+  let result = db.connection.query(query, [username, hashedPassword, email])
   console.log("signup", username)
   return result
 }
