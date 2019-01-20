@@ -1,5 +1,5 @@
 var db = require('../util/mysql_connection');
-
+var md5 = require('md5')
 function build_update_user_balance(username,new_balance){
 
   return {
@@ -40,21 +40,36 @@ async function create_user(body){
   let password = body.password
   let email = body.email
   let hashedPassword = password
-  let query = "INSERT INTO `user` (`username`, `password`, `level`, `clam_balance`, `last_login`, `email`, `email_verify_key`, `email_verify_flag`, `account_type`, `ledger_account`, `sub_account1`, `sub_account2`) VALUES (?, ?, 1, 0, CURRENT_TIMESTAMP, ?, '', '0', '', '', NULL, NULL);"
-  let result = db.connection.query(query, [username, hashedPassword, email])
+  let verify_key = md5(username).slice(-5)
+  let query = "INSERT INTO `user` (`username`, `password`, `level`, `clam_balance`, `last_login`, `email`, `email_verify_key`, `email_verify_flag`, `account_type`, `ledger_account`, `sub_account1`, `sub_account2`) VALUES (?, ?, 1, 0, CURRENT_TIMESTAMP, ?, ?, '0', '', '', NULL, NULL);"
+  let result = db.connection.query(query, [username, hashedPassword, email, verify_key])
   console.log("signup", username)
-  return result
+  return verify_key
 }
 
 async function get_user_by_username(username){
   const [rows, fields] = await db.connection.query("SELECT * FROM user WHERE username = ?",[username]);
   return rows[0];
 }
-
+async function add_referral(user, affiliate){
+  console.log("add reffff")
+  let query = "UPDATE user SET affiliate = ? WHERE username = ?;"
+  let result = db.connection.query(query, [affiliate, user])
+  console.log(result)
+  return result
+}
+async function confirm_email(key){
+  let query = "UPDATE user SET email_verify_flag = 1 WHERE email_verify_key = ?;"
+  let result = await db.connection.query(query, [key])
+  console.log(result)
+  return result
+}
 module.exports = {
   build_update_user_balance,
   calculate_new_user_balance,
   get_user_by_username,
   get_all_users,
-  create_user
+  create_user,
+  add_referral,
+  confirm_email
 };

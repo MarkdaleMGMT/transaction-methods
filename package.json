@@ -11,6 +11,8 @@
   "dependencies": {
     "@godaddy/terminus": "^4.1.0",
     "express": "^4.16.4",
-    "mysql2": "^1.6.4"
+    "md5": "^2.2.1",
+    "mysql2": "^1.6.4",
+    "nodemailer": "^5.1.1"
   }
 }
