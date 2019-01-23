@@ -6,8 +6,9 @@ sortUsers = async (users) => {
     let admins = []
     for(let i=0; i<users.length; i++){
         let user = users[i]
+        let balance = await user_model.get_balance(user.username)
         if(user.level != 0 || user.username == "rake_user"){
-            allUsers.push({username: user.username, clam_balance: user.clam_balance, email: user.email})    
+            allUsers.push({username: user.username, clam_balance: balance, email: user.email})    
         }
         if(user.level == 0){
             admins.push({username: user.username})

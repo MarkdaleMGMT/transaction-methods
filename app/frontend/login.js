@@ -7,7 +7,7 @@ login = async (username, hashedPassword) => {
 	let query = await user_model.get_user_by_username(username);
 	console.log('query', query)
 	let successfulLogin = query.password == hashedPassword && query.email_verify_flag.toString() == '1'  ? true : false
-	let result = successfulLogin ? {result: successfulLogin, level: query.level, clam_balance: query.clam_balance, ref_code: md5(query.username).slice(0,5)} : {result: successfulLogin}
+	let result = successfulLogin ? {result: successfulLogin, level: query.level, ref_code: md5(query.username).slice(0,5)} : {result: successfulLogin}
 	if(!result.result && query.email_verify_flag.toString() == '1'){
 		return {result: false, code: "Incorrect Password"}
 	}
@@ -32,7 +32,8 @@ module.exports = async function login_api(req, res) {
 	    if(!result.result){
 	    	throw Error (result.code)
 	    }
-    	res.send({ code: "Login successful", level: result.level, clam_balance: result.clam_balance, ref_code: result.ref_code})
+	    let balance = await user_model.get_balance(username)
+    	res.send({ code: "Login successful", level: result.level, clam_balance: balance, ref_code: result.ref_code})
 
 	}
 	catch(err){

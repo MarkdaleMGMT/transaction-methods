@@ -1,13 +1,17 @@
 var db = require('../util/mysql_connection');
+
 var md5 = require('md5')
-function build_update_user_balance(username,new_balance){
+const { get_user_transactions } = require('./transaction_model')
 
-  return {
-    query:"UPDATE user SET clam_balance = ? WHERE username = ?;",
-    queryValues:[new_balance, username]
-  }
+// function build_update_user_balance(username,new_balance){
+//
+//   return {
+//     query:"UPDATE user SET clam_balance = ? WHERE username = ?;",
+//     queryValues:[new_balance, username]
+//   }
+//
+// }
 
-}
 
 function calculate_new_user_balance(original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share){
 
@@ -30,7 +34,7 @@ function calculate_new_user_balance(original_clam_balance,prev_user_balance,chan
 
 async function get_all_users(){
 
-  const [users, fields] = await db.connection.query("SELECT * FROM user");
+  const [users, fields] = await db.connection.query("SELECT * FROM user WHERE username != 'clam_miner'");
   return users;
 }
 
@@ -51,6 +55,7 @@ async function get_user_by_username(username){
   const [rows, fields] = await db.connection.query("SELECT * FROM user WHERE username = ?",[username]);
   return rows[0];
 }
+
 async function add_referral(user, affiliate){
   console.log("add reffff")
   let query = "UPDATE user SET affiliate = ? WHERE username = ?;"
@@ -64,12 +69,57 @@ async function confirm_email(key){
   console.log(result)
   return result
 }
+
+
+async function get_balance(username){
+  let user = await get_user_by_username(username);
+  if(!user) throw new Error('User does not exist');
+
+  let account_type = user.account_type;
+
+
+  let transactions = await get_user_transactions(username);
+
+  let total_credits = 0;
+  let total_debits = 0;
+
+  for(let i=0; i<transactions.length; i++){
+
+
+    let user_transaction = transactions[i];
+    let amount = parseFloat(user_transaction.amount);
+
+    console.log("amount ",amount);
+
+    if(amount < 0){
+       total_credits += (amount * -1.0);
+    }else{
+      total_debits += amount;
+    }
+
+  }//end for
+
+  let user_balance = 0;
+  if (account_type == 'debit'){
+    user_balance = total_debits - total_credits;
+  }
+  else {
+    user_balance = total_credits - total_debits;
+  }
+  console.log("total_credits ",total_credits);
+  console.log("total_debits ",total_debits);
+
+  return user_balance;
+}
+
+
 module.exports = {
-  build_update_user_balance,
+  // build_update_user_balance,
   calculate_new_user_balance,
   get_user_by_username,
   get_all_users,
   create_user,
   add_referral,
-  confirm_email
+  confirm_email,
+  get_balance
 };

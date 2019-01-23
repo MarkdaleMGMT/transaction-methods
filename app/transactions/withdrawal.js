@@ -30,7 +30,7 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
  };
 
 
- async function withdraw(username,amount,datetime){
+  async function withdraw(username,amount,datetime){
 
 
 
@@ -41,7 +41,7 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
        let queries_with_val = []
 
        let debit_query_with_vals = build_insert_transaction(username, amount, 'admin', datetime, 'withdrawal', 'withdrawal');
-       let credit_query_with_vals = build_insert_transaction('clam_mine', amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal');
+       let credit_query_with_vals = build_insert_transaction('clam_miner', amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal');
 
        queries_with_val.push(debit_query_with_vals);
        queries_with_val.push(credit_query_with_vals);
@@ -55,14 +55,7 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
       }
 
       console.log("rows affected",rows_affected);
-      let previous_balance = await get_user_by_username(username)
-      console.log("previous balance", previous_balance)
-     let new_amount = parseFloat(previous_balance.clam_balance) - parseFloat(amount)
-     console.log("new amount", new_amount)
-     let update_query =  build_update_user_balance(username, new_amount)
-     let current_balance = await db.connection.query(update_query.query, update_query.queryValues)
-     console.log("update query",update_query)
-     console.log("curr balance", current_balance)
+
       return rows_affected == queries_with_val.length;
     }
     catch(err){

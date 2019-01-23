@@ -14,7 +14,7 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
    let datetime = new Date().toMysqlFormat()
 
    try{
-     isSuccesful = await deposit(username,amount,datetime);
+     let isSuccesful = await deposit(username,amount,datetime);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to deposit amount');}
      res.send({ code: "Deposit successful" })
@@ -28,7 +28,7 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
  };
 
 
- async function deposit(username,amount,datetime){
+  async function deposit(username,amount,datetime){
 
 
    try{
@@ -37,7 +37,8 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
 
     console.log("deposit transaction  ",username," ",amount," ",datetime);
 
-    let debit_query_with_vals = build_insert_transaction('clam_mine', amount, 'admin', datetime, 'deposit', 'deposit');
+
+    let debit_query_with_vals = build_insert_transaction('clam_miner', amount, 'admin', datetime, 'deposit', 'deposit');
     let credit_query_with_vals = build_insert_transaction(username, amount*-1, 'admin', datetime, 'deposit', 'deposit');
 
     queries_with_val.push(debit_query_with_vals);
@@ -53,14 +54,7 @@ const {build_update_user_balance, get_user_by_username} = require('../models').u
      }
 
      console.log("rows affected",rows_affected);
-     let previous_balance = await get_user_by_username(username)
-     console.log("previous balance", previous_balance)
-     let new_amount = parseFloat(previous_balance.clam_balance) + parseFloat(amount)
-     console.log("new amount", new_amount)
-     let update_query =  build_update_user_balance(username, new_amount)
-     let current_balance = await db.connection.query(update_query.query, update_query.queryValues)
-     console.log("update query",update_query)
-     console.log("curr balance", current_balance)
+
      return rows_affected == queries_with_val.length;
    }
    catch(err){
