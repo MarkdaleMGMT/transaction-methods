@@ -26,4 +26,8 @@ else
 fi
 
 
+
+
+echo "$cur$job1" | crontab -
+
 ### End of script ####
