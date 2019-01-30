@@ -1,8 +1,8 @@
 //change scripts
-ALTER TABLE `live`.`transaction`
+ALTER TABLE `transaction`
 DROP COLUMN `credit_debit`;
 
-ALTER TABLE `live`.`user`
+ALTER TABLE `user`
 DROP COLUMN `id`,
 ADD COLUMN `account_type` VARCHAR(6) NOT NULL AFTER `email_verify_flag`,
 ADD COLUMN `ledger_account` VARCHAR(10) NOT NULL AFTER `account_type`,
