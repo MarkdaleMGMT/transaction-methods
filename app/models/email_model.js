@@ -15,7 +15,7 @@ async function send_email(receiver, text){
 	let mailOptions = {
 		from: '"Carlson Lau" <testaccount125@zoho.com>', // sender address
 		to: receiver, // list of receivers
-		subject: "Confirm Email for Markdale Financial Management", // Subject line
+		subject: "Markdale Financial Management", // Subject line
 		text: text // plain text body
 		};
 

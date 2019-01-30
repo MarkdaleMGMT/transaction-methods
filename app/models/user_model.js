@@ -1,5 +1,5 @@
 var db = require('../util/mysql_connection');
-
+const bcrypt = require('bcrypt');
 var md5 = require('md5')
 const { get_user_transactions } = require('./transaction_model')
 
@@ -43,7 +43,8 @@ async function create_user(body){
   let username = body.username
   let password = body.password
   let email = body.email
-  let hashedPassword = password
+  const saltRounds = 10;
+  let hashedPassword = await bcrypt.hash(password, saltRounds)
   let verify_key = md5(username).slice(-5)
   let query = "INSERT INTO `user` (`username`, `password`, `level`, `clam_balance`, `last_login`, `email`, `email_verify_key`, `email_verify_flag`, `account_type`, `ledger_account`, `sub_account1`, `sub_account2`) VALUES (?, ?, 1, 0, CURRENT_TIMESTAMP, ?, ?, '0', '', '', NULL, NULL);"
   let result = db.connection.query(query, [username, hashedPassword, email, verify_key])
@@ -53,6 +54,13 @@ async function create_user(body){
 
 async function get_user_by_username(username){
   const [rows, fields] = await db.connection.query("SELECT * FROM user WHERE username = ?",[username]);
+  return rows[0];
+}
+
+async function reset_password(email, new_pass){
+  const saltRounds = 10;
+  let hashedPassword = await bcrypt.hash(new_pass, saltRounds)
+  const [rows, fields] = await db.connection.query("UPDATE user SET password = ? WHERE email = ?;", [hashedPassword, email])
   return rows[0];
 }
 
@@ -121,5 +129,6 @@ module.exports = {
   create_user,
   add_referral,
   confirm_email,
-  get_balance
+  get_balance,
+  reset_password
 };
