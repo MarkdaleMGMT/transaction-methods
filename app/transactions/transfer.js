@@ -1,6 +1,7 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model;
 const { get_balance, get_user_by_username } = require('../models').user_model;
+const uuidv1 = require('uuid/v1');//timestamp
 
 /**
  * API to transfer amount from one account to another
@@ -68,12 +69,13 @@ const { get_balance, get_user_by_username } = require('../models').user_model;
     }
 
     let queries_with_val = [];
+    let transaction_event_id = uuidv1();
 
 
     //debit the sender
-    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient);
+    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id);
     //credit the recipient
-    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender);
+    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);

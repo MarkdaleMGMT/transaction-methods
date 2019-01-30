@@ -1,5 +1,7 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model
+const uuidv1 = require('uuid/v1');//timestamp
+
 
 /**
  * API for the deposit transaction
@@ -34,12 +36,13 @@ const { build_insert_transaction } = require('../models').transaction_model
    try{
 
     let queries_with_val = []
+    let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
     console.log("deposit transaction  ",username," ",amount," ",datetime);
 
 
-    let debit_query_with_vals = build_insert_transaction('clam_miner', amount, 'admin', datetime, 'deposit', 'deposit');
-    let credit_query_with_vals = build_insert_transaction(username, amount*-1, 'admin', datetime, 'deposit', 'deposit');
+    let debit_query_with_vals = build_insert_transaction('clam_miner', amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id);
+    let credit_query_with_vals = build_insert_transaction(username, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);

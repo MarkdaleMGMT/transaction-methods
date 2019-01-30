@@ -1,6 +1,7 @@
 var db = require('../util/mysql_connection')
 
 var { control_model, user_model, transaction_model } = require('../models')
+const uuidv1 = require('uuid/v1');//timestamp
 
 // var control_model = require('../mo/control_model')
 // var user_model = require('./user_model')
@@ -35,6 +36,7 @@ var { control_model, user_model, transaction_model } = require('../models')
    try{
      //get the clam miner balance and clam miner rake from control table
      let sum = 0;
+     let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
 
      const control_data = await control_model.get_control_information();
@@ -53,7 +55,7 @@ var { control_model, user_model, transaction_model } = require('../models')
      //list of queries executed within a single transaction
      let transaction_queries = []
 
-     let debit_clam_miner = transaction_model.build_insert_transaction('clam_miner', change, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
+     let debit_clam_miner = transaction_model.build_insert_transaction('clam_miner', change, 'admin', datetime, 'update_clam_miner', 'update_clam_miner',transaction_event_id);
 
 
      transaction_queries.push(debit_clam_miner);
@@ -78,7 +80,7 @@ var { control_model, user_model, transaction_model } = require('../models')
        console.log("user_balance_change",user_balance_change);
 
 
-       let credit_user = transaction_model.build_insert_transaction(username, user_balance_change*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
+       let credit_user = transaction_model.build_insert_transaction(username, user_balance_change*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner',transaction_event_id);
        transaction_queries.push(credit_user);
 
        sum -= user_balance_change;
@@ -91,7 +93,7 @@ var { control_model, user_model, transaction_model } = require('../models')
 
 
      let rake_amount = (rake_share * change);
-     let credit_rake_user = transaction_model.build_insert_transaction('rake_user', rake_amount*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner');
+     let credit_rake_user = transaction_model.build_insert_transaction('rake_user', rake_amount*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner', transaction_event_id);
      transaction_queries.push(credit_rake_user);
 
      sum -= rake_amount;
