@@ -97,6 +97,7 @@ const uuidv1 = require('uuid/v1');//timestamp
      transaction_queries.push(credit_rake_user);
 
      sum -= rake_amount;
+     sum = sum.toFixed(8);
      console.log("rake_amount ",rake_amount);
 
      let results = await db.connection.begin_transaction(transaction_queries);

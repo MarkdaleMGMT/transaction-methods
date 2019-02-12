@@ -19,12 +19,29 @@ async function get_user_transactions(username){
 
 async function get_transactions_per_event(transaction_event_id){
 
-    console.log("31528960-1ed9-11e9-858a-c5c3491c85e0");
+
     const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE transaction_event_id = ? ORDER BY time ASC",[transaction_event_id]);
     console.log("rows",rows,"fields",fields);
     return rows;
 
 }
+
+async function get_trial_balance(){
+
+
+    const [rows, fields] = await db.connection.query("SELECT sum(amount) as 'trial_balance' FROM transaction");
+    let trial_balance = rows[0].trial_balance;
+    console.log("trial_balance",typeof( parseFloat(trial_balance).toFixed(8)));
+    return parseFloat(trial_balance).toFixed(8);
+
+}
+
+async function get_transactions_summary(){
+
+  const [rows, fields] = await db.connection.query("SELECT username, sum(amount) as 'net_amount' FROM transaction GROUP BY username");
+  return rows;
+}
+
 
 
 
@@ -34,5 +51,7 @@ async function get_transactions_per_event(transaction_event_id){
 module.exports ={
   build_insert_transaction,
   get_user_transactions,
-  get_transactions_per_event
+  get_transactions_per_event,
+  get_trial_balance,
+  get_transactions_summary
 }
