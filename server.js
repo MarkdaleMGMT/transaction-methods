@@ -13,6 +13,16 @@ const app = express()
 var { connection } = require('./app/util/mysql_connection')
 
 
+//loading the environment variables
+const result = require('dotenv').config()
+
+if (result.error) {
+  throw result.error
+}
+
+// console.log(result.parsed)
+
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
