@@ -4,7 +4,7 @@
   "description": "REST apis to connect to mysql database",
   "main": "index.js",
   "scripts": {
-    "prestart": "bash scripts/npm/prestart.sh",
+    "verify": "bash scripts/npm/prestart.sh",
     "test": "node index"
   },
   "author": "Carlson Lau",

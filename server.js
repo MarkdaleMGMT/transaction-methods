@@ -7,20 +7,17 @@ const { createTerminus } = require('@godaddy/terminus');
 const http = require('http');
 // var https = require('https');
 
+//const path = require('path'); 
+//require('dotenv').config('.env');
+//loading the environment variables
+//var dotenv = require('dotenv').config('./env')
+
 const port = 3000 // port
 const app = express()
 
+
 var { connection } = require('./app/util/mysql_connection')
 
-
-//loading the environment variables
-const result = require('dotenv').config()
-
-if (result.error) {
-  throw result.error
-}
-
-// console.log(result.parsed)
 
 
 
