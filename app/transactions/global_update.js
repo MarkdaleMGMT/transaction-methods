@@ -25,7 +25,7 @@ const uuidv1 = require('uuid/v1');//timestamp
      res.send({ code: "balance updated", "trial_balance":await transaction_model.get_trial_balance() })
    }
    catch(err){
-     res.status(400).send({msg: 'Unable to update balance', err});
+     res.status(400).send({msg:err.message});
    }
 
 
@@ -33,7 +33,7 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
  async function update_clam_balance(amount,datetime){
-   try{
+
      //get the clam miner balance and clam miner rake from control table
      let sum = 0;
      let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
@@ -44,7 +44,13 @@ const uuidv1 = require('uuid/v1');//timestamp
      let  rake_share = parseFloat(control_data.clam_miner_rake);
 
      let change = amount - original // change in clam_miner_balance
-     if( change == 0 ) return false;
+     if( change < 0 ){
+
+       throw new Error('Invalid amount')
+     }else if(change ==0){
+       console.log("No update required");
+       return true;
+     }
      console.log("original ",original,"amount ",amount,"\nchange ",change);
 
 
@@ -124,9 +130,5 @@ const uuidv1 = require('uuid/v1');//timestamp
 
      return rows_affected == transaction_queries.length;
 
-   }
-   catch (err){
-     console.log("got err",err);
-     return false;
-   }
+
  }
