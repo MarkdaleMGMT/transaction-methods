@@ -79,7 +79,7 @@ async function get_balance(username){
   console.log("total_credits ",total_credits);
   console.log("total_debits ",total_debits);
 
-  return user_balance.toFixed(8);
+  return parseFloat(user_balance.toFixed(8));
 }
 
 
