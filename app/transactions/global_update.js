@@ -22,7 +22,7 @@ const uuidv1 = require('uuid/v1');//timestamp
    try{
      let isSuccesful = await update_clam_balance(amount,datetime);
      if (!isSuccesful){ throw Error ('unable to update balance');}
-     res.send({ code: "balance updated" })
+     res.send({ code: "balance updated", "trial_balance":await transaction_model.get_trial_balance() })
    }
    catch(err){
      res.status(400).send({msg: 'Unable to update balance', err});
@@ -74,17 +74,18 @@ const uuidv1 = require('uuid/v1');//timestamp
 
        let prev_user_balance = await user_model.get_balance(username);
        let new_user_balance = user_model.calculate_new_user_balance(original, prev_user_balance, change, rake_share);
-       let user_balance_change = (new_user_balance - prev_user_balance);
+       let user_balance_change = parseFloat((new_user_balance - prev_user_balance).toFixed(8));
 
-       console.log("new_user_balance",new_user_balance);
-       console.log("user_balance_change",user_balance_change);
+
+       // console.log("new_user_balance",new_user_balance);
+       console.log(i,"-user_balance_change-",user_balance_change);
 
 
        let credit_user = transaction_model.build_insert_transaction(username, user_balance_change*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner',transaction_event_id);
        transaction_queries.push(credit_user);
 
        sum -= user_balance_change;
-       console.log("user_balance_change ",user_balance_change);
+
 
 
 
@@ -92,13 +93,21 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
 
-     let rake_amount = (rake_share * change);
-     let credit_rake_user = transaction_model.build_insert_transaction('rake_user', rake_amount*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner', transaction_event_id);
-     transaction_queries.push(credit_rake_user);
+     // let rake_amount = (rake_share * change);
+     let rake_amount = parseFloat((rake_share * change).toFixed(8));
 
      sum -= rake_amount;
-     sum = sum.toFixed(8);
+     console.log("sum ",sum);
+
      console.log("rake_amount ",rake_amount);
+
+     let remainder = sum;
+     let credit_rake_balance = parseFloat((rake_amount + remainder).toFixed(8));
+
+     let credit_rake_user = transaction_model.build_insert_transaction('rake_user',credit_rake_balance*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner', transaction_event_id);
+     transaction_queries.push(credit_rake_user);
+
+
 
      let results = await db.connection.begin_transaction(transaction_queries);
 
