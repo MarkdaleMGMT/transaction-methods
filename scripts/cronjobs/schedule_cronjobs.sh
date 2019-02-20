@@ -15,19 +15,20 @@ find $dir -type f -iname "*.sh" -exec chmod +x {} \;
 escapedEntry=$(printf '%s\n' "$entry" | sed 's:[][\/.^$*]:\\&:g')
 cur=$(crontab -l)
 job1="0 0 * * * $dir/db_backup.sh $mysql_username $mysql_password $db_name" #backup the live db
+job2="0 0 * * * $dir/scrape_address_balances.sh"
 
+for value in {$job1,$job2}
+do
+  if [[ $(crontab -l | egrep -v '^(#|$)' | grep -q "$escapedEntry"; echo $value) == 1 ]] # from: https://unix.stackexchange.com/a/297377/320236
+  then
+      printf "all clear; pattern was not already present; adding command to crontab hourly:\n$value\n\n"
+      (crontab -l ; printf "$value\n\n") | crontab -
+  else
+      printf "pattern already present; no action taken\n\n"
+  fi
 
-if [[ $(crontab -l | egrep -v '^(#|$)' | grep -q "$escapedEntry"; echo $?) == 1 ]] # from: https://unix.stackexchange.com/a/297377/320236
-then
-    printf "all clear; pattern was not already present; adding command to crontab hourly:\n$job1\n\n"
-    (crontab -l ; printf "$job1\n\n") | crontab -
-else
-    printf "pattern already present; no action taken\n\n"
-fi
+  echo "$cur$value" | crontab -
+done
 
-
-
-
-echo "$cur$job1" | crontab -
 
 ### End of script ####
