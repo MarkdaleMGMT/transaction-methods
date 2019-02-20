@@ -4,13 +4,16 @@
   "description": "REST apis to connect to mysql database",
   "main": "index.js",
   "scripts": {
+    "verify": "bash scripts/npm/prestart.sh",
     "test": "node index"
   },
   "author": "Carlson Lau",
   "license": "ISC",
   "dependencies": {
     "@godaddy/terminus": "^4.1.0",
+    "dotenv": "^6.2.0",
     "express": "^4.16.4",
-    "mysql2": "^1.6.4"
+    "mysql2": "^1.6.4",
+    "uuid": "^3.3.2"
   }
 }

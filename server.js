@@ -7,10 +7,13 @@ const { createTerminus } = require('@godaddy/terminus');
 const http = require('http');
 // var https = require('https');
 
+
 const port = 3000 // port
 const app = express()
 
+
 var { connection } = require('./app/util/mysql_connection')
+
 
 
 
