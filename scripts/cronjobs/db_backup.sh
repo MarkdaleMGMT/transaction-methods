@@ -36,7 +36,8 @@ mysqldump -h ${MYSQL_HOST} \
    -p${MYSQL_PASSWORD} \
    --single-transaction \
    --default-character-set=utf8 \
-   ${DATABASE_NAME} | gzip > ${DB_BACKUP_PATH}/${TODAY}/${DATABASE_NAME}-${TODAY}.sql.gz |  /usr/bin/mail -s "MySQL DB ${DATABASE_NAME} for ${TODAY}" ${BACKUPMAIL}
+   ${DATABASE_NAME} | gzip > ${DB_BACKUP_PATH}/${TODAY}/${DATABASE_NAME}-${TODAY}.sql.gz
+echo "Attached is the db backup" | mail -s "MySQL DB ${DATABASE_NAME} for ${TODAY}" ${BACKUPMAIL} -A ${DB_BACKUP_PATH}/${TODAY}/${DATABASE_NAME}-${TODAY}.sql.gz 
 
 if [ $? -eq 0 ]; then
   echo "Database backup successfully completed - ${TODAY}"
