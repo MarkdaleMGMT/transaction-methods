@@ -25,6 +25,7 @@ const uuidv1 = require('uuid/v1');//timestamp
      res.send({ code: "balance updated", "trial_balance":await transaction_model.get_trial_balance() })
    }
    catch(err){
+     console.error("got err",err);
      res.status(400).send({msg:err.message});
    }
 
@@ -35,13 +36,16 @@ const uuidv1 = require('uuid/v1');//timestamp
  async function update_clam_balance(amount,datetime){
 
      //get the clam miner balance and clam miner rake from control table
-     let sum = 0;
+     let remainder = 0;
      let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
 
+     let total_affiliate_commission = 0;
+
      const control_data = await control_model.get_control_information();
-     let  original = await user_model.get_balance('clam_miner');
-     let  rake_share = parseFloat(control_data.clam_miner_rake);
+     let original = await user_model.get_balance('clam_miner');
+     let rake_share = parseFloat(control_data.clam_miner_rake);
+     let affiliate_share_of_rake = parseFloat(control_data.affiliate_rake);
 
      let change = amount - original // change in clam_miner_balance
      if( change < 0 ){
@@ -62,12 +66,10 @@ const uuidv1 = require('uuid/v1');//timestamp
      let transaction_queries = []
 
      let debit_clam_miner = transaction_model.build_insert_transaction('clam_miner', change, 'admin', datetime, 'update_clam_miner', 'update_clam_miner',transaction_event_id);
-
-
      transaction_queries.push(debit_clam_miner);
 
 
-     sum += change;
+     remainder += change;
 
      let rake_user_balance = 0;
 
@@ -79,35 +81,52 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
        let prev_user_balance = await user_model.get_balance(username);
-       let new_user_balance = user_model.calculate_new_user_balance(original, prev_user_balance, change, rake_share);
+       let calculated_balances = user_model.calculate_balances(original, prev_user_balance, change, rake_share);
+       let new_user_balance = calculated_balances['new_user_balance'];
        let user_balance_change = parseFloat((new_user_balance - prev_user_balance).toFixed(8));
 
 
        // console.log("new_user_balance",new_user_balance);
-       console.log(i,"-user_balance_change-",user_balance_change);
+       console.log(username,"-user_balance_change-",user_balance_change);
 
 
        let credit_user = transaction_model.build_insert_transaction(username, user_balance_change*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner',transaction_event_id);
        transaction_queries.push(credit_user);
+       remainder -= user_balance_change;
 
-       sum -= user_balance_change;
+       //if the user has an affiliate
+       if (user.affiliate){
 
+         //TODO: calculate affiliate commision and credit the affiliate with that balance
+         let affiliate_commission = affiliate_share_of_rake*calculated_balances['rake_balance'];
+         affiliate_commission = parseFloat(affiliate_commission.toFixed(8));
 
+         let credit_affiliate = transaction_model.build_insert_transaction(user.affiliate, affiliate_commission*-1, 'admin', datetime, 'update_clam_miner', 'affiliate commission',transaction_event_id);
+         transaction_queries.push(credit_affiliate);
+         console.log("affiliate_commission",affiliate_commission);
+
+         //TODO: add commision to the sum of affiliate commissions
+         //TODO: subtract the affiliate balance from sum
+         total_affiliate_commission+=affiliate_commission;
+         remainder-=affiliate_commission;
+
+       }
 
 
      }
 
-
+     //TODO: remainder of sum is the rake balance OR rake_amount - affiliate_commission + remainder
 
      // let rake_amount = (rake_share * change);
-     let rake_amount = parseFloat((rake_share * change).toFixed(8));
+     console.log("total_affiliate_commission",total_affiliate_commission);
+     let rake_amount = parseFloat((rake_share * change - total_affiliate_commission).toFixed(8));
 
-     sum -= rake_amount;
-     console.log("sum ",sum);
+     remainder -= rake_amount;
+     console.log("remainder ",remainder);
 
      console.log("rake_amount ",rake_amount);
 
-     let remainder = sum;
+
      let credit_rake_balance = parseFloat((rake_amount + remainder).toFixed(8));
 
      let credit_rake_user = transaction_model.build_insert_transaction('rake_user',credit_rake_balance*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner', transaction_event_id);
@@ -126,7 +145,7 @@ const uuidv1 = require('uuid/v1');//timestamp
      }
 
      console.log("rows affected",rows_affected);
-     console.log("SUM",sum);
+     console.log("remainder",remainder);
 
      return rows_affected == transaction_queries.length;
 
