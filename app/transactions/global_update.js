@@ -129,7 +129,7 @@ const uuidv1 = require('uuid/v1');//timestamp
 
      let credit_rake_balance = parseFloat((rake_amount + remainder).toFixed(8));
 
-     let credit_rake_user = transaction_model.build_insert_transaction('rake_user',credit_rake_balance*-1, 'admin', datetime, 'update_clam_miner', 'update_clam_miner', transaction_event_id);
+     let credit_rake_user = transaction_model.build_insert_transaction('rake_user',credit_rake_balance*-1, 'admin', datetime, 'update_clam_miner', 'rake', transaction_event_id);
      transaction_queries.push(credit_rake_user);
 
 
