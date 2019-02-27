@@ -4,6 +4,7 @@
   "description": "REST apis to connect to mysql database",
   "main": "index.js",
   "scripts": {
+    "checkdb":"bash scripts/npm/db_check.sh",
     "verify": "bash scripts/npm/prestart.sh",
     "test": "node index"
   },
