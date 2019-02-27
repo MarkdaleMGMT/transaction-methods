@@ -25,7 +25,7 @@ mysqldump --no-data -h ${MYSQL_HOST} \
 
 
 #create a migration script
-php-mysql-diff diff tmp/from.sql target.sql -o tmp/migrate.sql
+php-mysql-diff migrate tmp/from.sql target.sql -o tmp/migrate.sql
 cat tmp/migrate.sql
 
 #prompt user that the migration script has been created
