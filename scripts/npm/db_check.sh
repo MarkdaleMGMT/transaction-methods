@@ -1,10 +1,14 @@
 #!/bin/bash
+read -p "Enter database username: " MYSQL_USER
+read -p "Enter database password: " MYSQL_PASSWORD
+read -p "Enter database name: " DATABASE_NAME
+
 
 MYSQL_HOST='localhost'
 MYSQL_PORT='3306'
-MYSQL_USER=$1
-MYSQL_PASSWORD=$2
-DATABASE_NAME=$3
+# MYSQL_USER=$1
+# MYSQL_PASSWORD=$2
+# DATABASE_NAME=$3
 
 
 #create an empty directory tmp
