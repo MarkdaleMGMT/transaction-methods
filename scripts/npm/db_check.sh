@@ -30,8 +30,13 @@ mysqldump --no-data -h ${MYSQL_HOST} \
 
 #create a migration script
 php-mysql-diff migrate tmp/from.sql target.sql -o tmp/migrate.sql
-cat tmp/migrate.sql
+#cat tmp/migrate.sql
 
 #prompt user that the migration script has been created
-echo "\n\nMigration script has been created: tmp/migrate.sql"
+if [ ! -f tmp/migrate.sql ]; then
+    echo "Database is up to date. No migration script created!"
+else
+    echo "Migration script has been created: tmp/migrate.sql"
+fi
+
 #run the script from the user (later)
