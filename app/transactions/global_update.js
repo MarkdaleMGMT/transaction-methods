@@ -97,25 +97,27 @@ const uuidv1 = require('uuid/v1');//timestamp
        //if the user has an affiliate
        if (user.affiliate){
 
-         //TODO: calculate affiliate commision and credit the affiliate with that balance
+         //calculate affiliate commision and credit the affiliate with that balance
          let affiliate_commission = affiliate_share_of_rake*calculated_balances['rake_balance'];
          affiliate_commission = parseFloat(affiliate_commission.toFixed(8));
 
-         let credit_affiliate = transaction_model.build_insert_transaction(user.affiliate, affiliate_commission*-1, 'admin', datetime, 'update_clam_miner', 'affiliate commission',transaction_event_id);
-         transaction_queries.push(credit_affiliate);
-         console.log("affiliate_commission",affiliate_commission);
+         //non-zero affiliate commisions are allowed (i.e. affiliate can incur both profits and losses)
+         if(affiliate_commission != 0){
+           let credit_affiliate = transaction_model.build_insert_transaction(user.affiliate, affiliate_commission*-1, 'admin', datetime, 'update_clam_miner', 'affiliate commission',transaction_event_id);
+           transaction_queries.push(credit_affiliate);
+           console.log("credited affiliate commission",affiliate_commission);
 
-         //TODO: add commision to the sum of affiliate commissions
-         //TODO: subtract the affiliate balance from sum
-         total_affiliate_commission+=affiliate_commission;
-         remainder-=affiliate_commission;
+           //add commision to the sum of affiliate commissions
+           // subtract the affiliate balance from sum
+           total_affiliate_commission+=affiliate_commission;
+           remainder-=affiliate_commission;
+         }
 
        }
 
-
      }
 
-     //TODO: remainder of sum is the rake balance OR rake_amount - affiliate_commission + remainder
+     // remainder of sum is the rake balance OR rake_amount - affiliate_commission + remainder
 
      // let rake_amount = (rake_share * change);
      console.log("total_affiliate_commission",total_affiliate_commission);
