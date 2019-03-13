@@ -48,12 +48,17 @@ const uuidv1 = require('uuid/v1');//timestamp
     //level 0 is admin
     //level 1 is a normal user
     let user = await get_user_by_username(username);
+
     if(!user || user.level!=0){
      throw new Error('Not authorized to initiate deposit');
     }
 
     //get user account
     let deposit_account = await get_account_by_id(account_id);
+    if(!deposit_account){
+     throw new Error('Invalid account number');
+    }
+
     let investment_id = deposit_account.investment_id;
 
     //get the corresponding investment account (i.e. similiar to clam miner) - level 1
@@ -82,7 +87,7 @@ const uuidv1 = require('uuid/v1');//timestamp
    //end try
     catch(err){
       console.error(err.message);
-      return false;
+      throw err;
    }
 
 
