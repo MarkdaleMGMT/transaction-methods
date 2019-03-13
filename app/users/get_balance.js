@@ -56,10 +56,10 @@ const { account_balance, get_accounts_per_user } = require('../models').account_
 
      let user_balance = []
 
-     let user_accounts = get_accounts_per_user(username)
+     let user_accounts = await get_accounts_per_user(username)
      for(let i=0; i < user_accounts.length; i++){
        var account = user_accounts[i];
-       var balance = account_balance(account.account_id)
+       var balance = await account_balance(account.account_id)
 
        user_balance.push({
          'account_id':account.account_id,
