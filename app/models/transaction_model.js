@@ -64,5 +64,6 @@ module.exports ={
   get_user_transactions,
   get_transactions_per_event,
   get_trial_balance,
+  get_trial_balance_per_investment,
   get_transactions_summary
 }
