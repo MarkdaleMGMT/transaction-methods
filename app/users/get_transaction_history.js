@@ -1,5 +1,5 @@
 var db = require('../util/mysql_connection')
-const { get_account_by_id, get_account_transactions } = require('../models').account_id
+const { get_account_by_id, get_account_transactions } = require('../models').account_model
 
 /**
  * API to fetch all transactions for a specific account
