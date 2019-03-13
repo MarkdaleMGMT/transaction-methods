@@ -2,8 +2,8 @@ var db = require('../util/mysql_connection')
 
 async function get_all_investments(){
 
-  const [rows,fields] = await db.connection.query("SELECT * FROM investment");
-  return rows[0];
+  const [investments,fields] = await db.connection.query("SELECT * FROM investment");
+  return investments;
 }
 
 module.exports ={

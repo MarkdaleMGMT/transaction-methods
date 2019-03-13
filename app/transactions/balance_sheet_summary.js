@@ -31,6 +31,7 @@ const { get_account_by_id } = require('../models').account_model
 
      let investment_tx_summary = [];
      let investments = await get_all_investments();
+     console.log("no . of investments",investments.length);
 
      //TODO: iterate over each investment
      for(let i=0; i<investments.length; i++){
