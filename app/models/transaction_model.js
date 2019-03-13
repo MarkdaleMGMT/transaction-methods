@@ -10,9 +10,9 @@ function build_insert_transaction(account_id, amount, created_by,time, transacti
 
 }
 
-async function get_user_transactions(username){
+async function get_account_transactions(account_id){
 
-    const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE username = ? ORDER BY time ASC",[username]);
+    const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? ORDER BY time ASC",[account_id]);
     return rows;
 
 }
@@ -65,7 +65,7 @@ async function get_transactions_summary(investment_id){
 
 module.exports ={
   build_insert_transaction,
-  get_user_transactions,
+  get_account_transactions,
   get_transactions_per_event,
   get_trial_balance,
   get_trial_balance_per_investment,

@@ -1,4 +1,5 @@
 var db = require('../util/mysql_connection');
+const { get_account_transactions } = require('./transaction_model')
 
 
 
@@ -12,6 +13,53 @@ async function get_investment_account(investment_id){
 
   const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE investment_id = ? and account_level = ?",[investment_id,1]);
   return rows[0];
+}
+
+async function get_accounts_per_user(username){
+  const [accounts, fields] = await db.connection.query("SELECT * FROM account WHERE username = ?",[username]);
+  return accounts;
+}
+
+async function account_balance(account_id){
+
+  let account = await get_account_by_id(account_id);
+  if(!account) throw new Error('Account does not exist');
+
+  let account_type = account.account_type;
+
+
+  let transactions = await get_account_transactions(account_id);
+
+  let total_credits = 0;
+  let total_debits = 0;
+
+  for(let i=0; i<transactions.length; i++){
+
+
+    let account_transaction = transactions[i];
+    let amount = parseFloat(account_transaction.amount);
+
+    // console.log("amount ",amount);
+
+    if(amount < 0){
+       total_credits += (amount * -1.0);
+    }else{
+      total_debits += amount;
+    }
+
+  }//end for
+
+  let account_balance = 0;
+  if (account_type == 'debit'){
+    account_balance = total_debits - total_credits;
+  }
+  else {
+    account_balance = total_credits - total_debits;
+  }
+  // console.log("total_credits ",total_credits);
+  // console.log("total_debits ",total_debits);
+
+  return parseFloat(account_balance.toFixed(8));
 }
 
 /*function calculate_balances(original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share){
@@ -83,5 +131,7 @@ async function get_balance(username){
 
 module.exports = {
   get_account_by_id,
-  get_investment_account
+  get_investment_account,
+  account_balance,
+  get_accounts_per_user
 };
