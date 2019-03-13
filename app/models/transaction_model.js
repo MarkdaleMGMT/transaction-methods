@@ -41,7 +41,7 @@ async function get_trial_balance_per_investment(investment_id){
 
   const [rows, fields] = await db.connection.query("SELECT sum(amount) as 'trial_balance' FROM transaction WHERE investment_id = ?",[investment_id]);
 
-  if (!rows || row.length == 0)
+  if (!rows || rows.length == 0)
     return 0;
 
   let trial_balance = rows[0].trial_balance;
