@@ -83,7 +83,7 @@ const { get_account_by_id } = require('../models').investment_model
 
   }//end try
    catch(err){
-     console.error("got err",err,message);
+     console.error("got err",err.message);
      return false;
    }
 

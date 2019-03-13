@@ -36,14 +36,14 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  async function withdraw(username,account_id,amount,datetime){
 
-
+      try{
       console.log("withdrawal transaction  ",username," ",account_id," ",amount," ",datetime);
 
       //check if the user is admin or not, throw error if unauthorized
       //level 0 is admin
       //level 1 is a normal user
       let user = await get_user_by_username(username);
-      if(user.level!=0){
+      if(!user || user.level!=0){
        throw new Error('Not authorized to initiate withdrawal');
       }
 
@@ -75,6 +75,12 @@ const uuidv1 = require('uuid/v1');//timestamp
       console.log("rows affected",rows_affected);
 
       return rows_affected == queries_with_val.length;
+      }//end try
+       catch(err){
+         console.error(err.message);
+         return false;
+      }
+
 
 
 

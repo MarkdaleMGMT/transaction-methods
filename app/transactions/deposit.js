@@ -38,7 +38,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  async function deposit(username,account_id,amount,datetime){
 
 
-
+   try{
     let queries_with_val = []
     let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
@@ -48,7 +48,7 @@ const uuidv1 = require('uuid/v1');//timestamp
     //level 0 is admin
     //level 1 is a normal user
     let user = await get_user_by_username(username);
-    if(user.level!=0){
+    if(!user || user.level!=0){
      throw new Error('Not authorized to initiate deposit');
     }
 
@@ -78,7 +78,12 @@ const uuidv1 = require('uuid/v1');//timestamp
      console.log("rows affected",rows_affected);
 
      return rows_affected == queries_with_val.length;
-
+   }
+   //end try
+    catch(err){
+      console.error(err.message);
+      return false;
+   }
 
 
  }
