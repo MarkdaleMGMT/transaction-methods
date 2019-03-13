@@ -1,11 +1,11 @@
 'use strict'
 var db = require('../util/mysql_connection')
 
-function build_insert_transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id){
+function build_insert_transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id){
 
   return  {
-    query:"INSERT INTO transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id) VALUES (?,?,?,?,?,?,?)",
-    queryValues:[account_id, amount, created_by, time, transaction_type, memo, transaction_event_id ]
+    query:"INSERT INTO transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id) VALUES (?,?,?,?,?,?,?,?)",
+    queryValues:[account_id, amount, created_by, time, transaction_type, memo, transaction_event_id, investment_id ]
   };
 
 }
@@ -36,10 +36,21 @@ async function get_trial_balance(){
 
 }
 
-async function get_transactions_summary(){
+async function get_trial_balance_per_investment(investment_id){
 
-  const [rows, fields] = await db.connection.query("SELECT username, sum(amount) as 'net_amount' FROM transaction GROUP BY username");
+
+  const [rows, fields] = await db.connection.query("SELECT sum(amount) as 'trial_balance' FROM transaction WHERE investment_id = ?",[investment_id]);
+  let trial_balance = rows[0].trial_balance;
+  console.log("trial_balance",typeof( parseFloat(trial_balance).toFixed(8)));
+  return parseFloat(trial_balance).toFixed(8);
+
+}
+
+async function get_transactions_summary(investment_id){
+
+  const [rows, fields] = await db.connection.query("SELECT account_id, sum(amount) as 'net_amount' FROM transaction  WHERE investment_id = ?  GROUP BY  account_id",[investment_id]);
   return rows;
+
 }
 
 

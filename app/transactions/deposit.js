@@ -54,13 +54,14 @@ const uuidv1 = require('uuid/v1');//timestamp
 
     //get user account
     let deposit_account = await get_account_by_id(account_id);
+    let investment_id = deposit_account.investment_id;
 
     //get the corresponding investment account (i.e. similiar to clam miner) - level 1
-    let investment_account = await get_investment_account(deposit_account.investment_id);
+    let investment_account = await get_investment_account(investment_id);
 
 
-    let debit_query_with_vals = build_insert_transaction(investment_account.account_id, amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id);
-    let credit_query_with_vals = build_insert_transaction(deposit_account.account_id, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id);
+    let debit_query_with_vals = build_insert_transaction(investment_account.account_id, amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id);
+    let credit_query_with_vals = build_insert_transaction(deposit_account.account_id, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
