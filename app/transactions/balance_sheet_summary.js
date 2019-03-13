@@ -70,7 +70,7 @@ const { get_account_by_id } = require('../models').account_model
      }
 
      investment_tx_summary.push({
-         investment_id:investment_id,
+         investment_id:investments[i].investment_id,
          debit:debit_entries,
          credit:credit_entries
      });
@@ -84,7 +84,7 @@ const { get_account_by_id } = require('../models').account_model
 
   }//end try
    catch(err){
-     console.error("got err",err.message);
+     console.error(err);
      return false;
    }
 
