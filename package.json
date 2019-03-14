@@ -12,10 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "@godaddy/terminus": "^4.1.0",
+    "dateformat": "^3.0.3",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
-    "moment": "^2.24.0",
     "mysql2": "^1.6.4",
+    "pm2": "^3.4.0",
     "uuid": "^3.3.2"
   }
 }

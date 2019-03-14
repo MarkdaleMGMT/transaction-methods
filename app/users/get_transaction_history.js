@@ -1,4 +1,4 @@
-const moment = require("moment");
+const dateFormat = require('dateformat');
 
 var db = require('../util/mysql_connection')
 const { get_user_transactions } = require('../models').transaction_model
@@ -57,7 +57,7 @@ const { get_user_by_username } = require('../models').user_model
 
 
       let transaction_json = {
-        'time':moment(user_transaction.time,'lll'),
+        'time':dateFormat(new Date(user_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
         'description': user_transaction.memo,
         'amount':Math.abs(user_transaction.amount),
         'type': user_transaction.amount <0 ? 'credit':'debit',
