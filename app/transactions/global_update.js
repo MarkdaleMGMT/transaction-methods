@@ -48,10 +48,12 @@ const uuidv1 = require('uuid/v1');//timestamp
      let affiliate_share_of_rake = parseFloat(control_data.affiliate_rake);
 
      let change = amount - original // change in clam_miner_balance
-     if( change < 0 ){
+     // if( change < 0 ){
+     //
+     //   throw new Error('Invalid amount')
+     // }else
 
-       throw new Error('Invalid amount')
-     }else if(change ==0){
+    if(change ==0){
        console.log("No update required");
        return true;
      }
