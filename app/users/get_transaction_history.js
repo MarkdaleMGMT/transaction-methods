@@ -1,4 +1,4 @@
-import moment
+const moment = require("moment");
 
 var db = require('../util/mysql_connection')
 const { get_user_transactions } = require('../models').transaction_model
