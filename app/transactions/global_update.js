@@ -1,6 +1,6 @@
 var db = require('../util/mysql_connection')
 
-var { control_model, user_model, accout_model, transaction_model, investment_model } = require('../models')
+var { control_model, user_model, account_model, transaction_model, investment_model } = require('../models')
 const uuidv1 = require('uuid/v1');//timestamp
 
 // var control_model = require('../mo/control_model')
@@ -20,7 +20,7 @@ const uuidv1 = require('uuid/v1');//timestamp
 
    let amount = req.body.amount
    let username = req.body.username
-   let investment_id = req.body.username
+   let investment_id = req.body.investment_id
 
    let datetime = new Date().toMysqlFormat()
 
@@ -41,16 +41,19 @@ const uuidv1 = require('uuid/v1');//timestamp
  async function update_investment_balance(username,investment_id,amount,datetime){
 
     //check if the user is admin, if not throw an error
-    let user = user_model.get_user_by_username(username)
+    let user = await user_model.get_user_by_username(username)
+
     if(!user || user.level!=0){
      throw new Error('Not authorized to initiate global update');
     }
 
     //check if the investment exists, if not throw an error
-    let investment = investment_model.get_investment_by_id(investment_id)
+    let investment = await investment_model.get_investment_by_id(investment_id)
+    console.log("investment ",investment);
     if(!investment){
       throw new Error('Invalid investment ID');
     }
+
 
 
 
@@ -84,8 +87,8 @@ const uuidv1 = require('uuid/v1');//timestamp
      console.log("original ",original,"amount ",amount,"\nchange ",change);
 
      //update to get all accounts per investment
-     const accounts = await account_model.get_all_accounts();
-
+     const accounts = await account_model.get_all_accounts(investment_id);
+     console.log("fetched accounts ",accounts.length);
 
 
      //list of queries executed within a single transaction
@@ -103,14 +106,17 @@ const uuidv1 = require('uuid/v1');//timestamp
      //iterate over accounts
      for (let i=0; i< accounts.length; i++){
 
+
+
        let account = accounts[i];
        let account_id = account.account_id;
 
+       console.log("account ",account_id);
 
        let prev_accnt_balance = await account_model.account_balance(account_id);
 
 
-       let calculated_balances = account_model.calculate_balances(original, prev_user_balance, change, rake_share);
+       let calculated_balances = account_model.calculate_balances(original, prev_accnt_balance, change, rake_share);
        let new_accnt_balance = calculated_balances['new_accnt_balance'];
        let accnt_balance_change = parseFloat((new_accnt_balance - prev_accnt_balance).toFixed(8));
 
@@ -118,34 +124,52 @@ const uuidv1 = require('uuid/v1');//timestamp
        // console.log("new_user_balance",new_user_balance);
        console.log(account_id,"-accnt_balance_change-",accnt_balance_change);
 
+       if(accnt_balance_change==0){
+         continue; //move on to the next account
+       }
+
 
        let credit_user_account = transaction_model.build_insert_transaction(investment_account.account_id, accnt_balance_change*-1, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id);
        transaction_queries.push(credit_user_account);
        remainder -= accnt_balance_change;
 
        //if the user has an affiliate
-       let user =  user_model.get_user_by_username(account.username);
-       if (user.affiliate){
+       let user =  await user_model.get_user_by_username(account.username);
+       if (user.affiliate && user.affiliate.length> 0){
 
-
-         let affiliate_accnt = user_model.get_account_by_investment(user.affiliate,investment_id);
-
-         //check if affiliate is valid
-         if(!affiliate_accnt){
-           continue; //process the next account
+         let affiliate_username = user.affiliate;
+         let affiliate_user = await user_model.get_user_by_username(affiliate_username);
+         if(!affiliate_user){
+           console.error("affiliate user ",affiliate_username, " does not exist");
+           continue;
          }
 
-         //TODO: calculate affiliate commision and credit the affiliate with that balance
+         let affiliate_accnt_id = await account_model.get_account_by_investment(affiliate_username,investment_id).account_id;
+
+         //check if affiliate has an account in the investment
+         if(!affiliate_accnt_id){
+           //if affiliate does not have an account
+           //create a new account for the affiliate in that investment
+            affiliate_accnt_id = await account_model.create_user_account(affiliate_username,investment_id);
+            // affiliate_accnt = user_model.create_user_account(affiliate_username,investment_id,'user_account','credit','liability',0);
+
+         }
+
+         //calculate affiliate commision and credit the affiliate with that balance
          let affiliate_commission = affiliate_share_of_rake*calculated_balances['rake_balance'];
          affiliate_commission = parseFloat(affiliate_commission.toFixed(8));
 
-         //TODO: update debit query
-         let credit_affiliate_accnt = transaction_model.build_insert_transaction(affiliate_accnt.account_id, affiliate_commission*-1, 'admin', datetime, 'global update', 'affiliate commission',transaction_event_id, investment_id);
+         if (affiliate_commission == 0){
+           continue; // move on to the next account
+         }
+
+         //update debit query
+         let credit_affiliate_accnt = transaction_model.build_insert_transaction(affiliate_accnt_id, affiliate_commission*-1, 'admin', datetime, 'global update', 'affiliate commission',transaction_event_id, investment_id);
          transaction_queries.push(credit_affiliate_accnt);
          console.log("affiliate_commission",affiliate_commission);
 
-         //TODO: add commision to the sum of affiliate commissions
-         //TODO: subtract the affiliate balance from sum
+         //add commision to the sum of affiliate commissions
+         //subtract the affiliate balance from sum
          total_affiliate_commission+=affiliate_commission;
          remainder-=affiliate_commission;
 

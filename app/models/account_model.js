@@ -9,6 +9,11 @@ async function get_account_by_id(account_id){
   return rows[0];
 }
 
+async function get_account_by_investment(username,investment_id){
+  const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE username = ? AND investment_id = ?",[username,investment_id]);
+  return rows[0];
+}
+
 async function get_investment_account(investment_id){
 
   const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE investment_id = ? and account_level = ?",[investment_id,1]);
@@ -132,6 +137,22 @@ async function get_balance(username){
 
   return parseFloat(user_balance.toFixed(8));
 }*/
+async function create_user_account(username,investment_id){
+
+
+  let new_accnt_id = await create_account(username,investment_id,'user_account','credit','liability',0);
+  console.log("newly created account ", new_accnt_id);
+  return new_accnt_id;
+
+
+}
+
+async function create_account(username,investment_id,description,account_type,ledger_account,account_level){
+
+  let [result,fields] = await db.connection.query("INSERT INTO account (username, investment_id, description, account_type, ledger_account, account_level) VALUES (?,?,?,?,?,?)",[username, investment_id, description, account_type, ledger_account, account_level])
+  return result.insertId;
+
+}
 
 async function get_all_accounts(investment_id){
 
@@ -165,10 +186,12 @@ function calculate_balances(original_balance,prev_accnt_balance,change_in_balanc
 
 module.exports = {
   get_account_by_id,
+  get_account_by_investment,
   get_investment_account,
   get_rake_account,
   account_balance,
   get_accounts_per_user,
   get_all_accounts,
-  calculate_balances
+  calculate_balances,
+  create_user_account
 };

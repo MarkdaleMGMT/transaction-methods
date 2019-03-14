@@ -34,7 +34,6 @@ const { get_user_transactions } = require('./transaction_model')
 }*/
 
 
-
 async function get_all_users(){
 
   const [users, fields] = await db.connection.query("SELECT * FROM user WHERE username != 'clam_miner'");
