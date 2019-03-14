@@ -58,7 +58,7 @@ const uuidv1 = require('uuid/v1');//timestamp
        //assign rollback to a new transaction event
 
        let tx = event_transactions[i];
-       let adjustment_query = build_insert_transaction(tx.username, tx.amount*-1, user.username,datetime, 'rollback', 'rollback of transaction' + transaction_event_id, rollback_tx_event_id);
+       let adjustment_query = build_insert_transaction(tx.account_id, tx.amount*-1, user.username,datetime, 'rollback', 'rollback of transaction' + transaction_event_id, rollback_tx_event_id, tx.investment_id);
        queries_with_val.push(adjustment_query);
      }
 
