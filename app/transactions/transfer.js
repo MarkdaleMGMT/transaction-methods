@@ -1,13 +1,14 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model;
-const { get_balance, get_user_by_username } = require('../models').user_model;
+const { get_user_by_username } = require('../models').user_model;
+const { get_account_by_id, account_balance } = require('../models').user_model;
 const uuidv1 = require('uuid/v1');//timestamp
 
 /**
  * API to transfer amount from one account to another
  * @param  {string} username     Username of the user who initiated the request
- * @param  {string} sender     Username of the sender
- * @param  {string} recipient     Username of the recipient
+ * @param  {string} sender     account id of the sender
+ * @param  {string} recipient     account id of the recipient
  * @param  {float} amount    Amount to be deposited
  * @return {JSON} Returns success
  */
@@ -47,20 +48,21 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  async function transfer_amount(username,sender,recipient,amount,datetime){
 
-
+   let recipient_accnt = await get_account_by_id(recipient);
+   let sender_accnt = await get_account_by_id(sender);
 
     //users should exist in the database
     if(sender == recipient){
       throw new Error("Invalid request");
     }
-    else if (await get_user_by_username(recipient)==null){
+    else if (!recipient_accnt){
       throw new Error("Recipient does not exist ");
-    }else if(await get_user_by_username(sender)==null){
+    }else if(!sender_accnt){
       throw new Error("Sender does not exist ");
     }
 
     //sender should have enough balance
-    let sender_balance = await get_balance(sender);
+    let sender_balance = await account_balance(sender);
     console.log("sender balance",sender_balance);
     console.log("Amount",amount);
 
@@ -73,9 +75,9 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
     //debit the sender
-    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id);
+    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,sender_accnt.investment_id);
     //credit the recipient
-    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id);
+    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,recipient_accnt.investment_id);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
