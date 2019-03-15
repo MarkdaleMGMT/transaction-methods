@@ -144,15 +144,17 @@ const uuidv1 = require('uuid/v1');//timestamp
            continue;
          }
 
-         let affiliate_accnt_id = await account_model.get_account_by_investment(affiliate_username,investment_id).account_id;
+         let affiliate_accnt = await account_model.get_account_by_investment(affiliate_username,investment_id);
+         let affiliate_accnt_id = null;
 
          //check if affiliate has an account in the investment
-         if(!affiliate_accnt_id){
+         if(!affiliate_accnt){
            //if affiliate does not have an account
            //create a new account for the affiliate in that investment
             affiliate_accnt_id = await account_model.create_user_account(affiliate_username,investment_id);
-            // affiliate_accnt = user_model.create_user_account(affiliate_username,investment_id,'user_account','credit','liability',0);
-
+         }
+         else{
+           affiliate_accnt_id=affiliate_accnt.account_id;
          }
 
          //calculate affiliate commision and credit the affiliate with that balance
