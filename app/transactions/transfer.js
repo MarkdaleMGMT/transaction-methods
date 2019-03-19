@@ -20,6 +20,7 @@ const uuidv1 = require('uuid/v1');//timestamp
    let username = req.body.username
    let amount = parseFloat(req.body.amount)
    let datetime = new Date().toMysqlFormat()
+   let investment_id = req.body.investment_id
 
    try{
 
@@ -31,7 +32,7 @@ const uuidv1 = require('uuid/v1');//timestamp
       throw new Error('not authorized to initiate transfer');
      }
 
-     let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime);
+     let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime, investment_id);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to transfer amount');}
      res.send({ code: "transfer amount successful" })
@@ -47,7 +48,7 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  };
 
- async function transfer_amount(username,sender,recipient,amount,datetime){
+ async function transfer_amount(username,sender,recipient,amount,datetime, investment_id){
 
    let recipient_accnt = await get_account_by_id(recipient);
    let sender_accnt = await get_account_by_id(sender);
