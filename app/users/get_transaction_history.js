@@ -1,6 +1,7 @@
 var db = require('../util/mysql_connection')
 const { get_account_by_id } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
+const { get_investment_by_id } = require('../models').investment_model
 
 /**
  * API to fetch all transactions for a specific account
@@ -30,6 +31,11 @@ const { get_account_transactions } = require('../models').transaction_model
    try{
 
     let account = await get_account_by_id(account_id);
+
+    //TODO: optimize it later to perform minimal db queries
+    let investment = await get_investment_by_id(account.investment_id);
+    let currency = investment.currency;
+
     if(!account) throw new Error('Account does not exist');
 
     let account_type = account.account_type;
@@ -59,7 +65,8 @@ const { get_account_transactions } = require('../models').transaction_model
         'description': account_transaction.memo,
         'amount':Math.abs(account_transaction.amount),
         'type': account_transaction.amount <0 ? 'credit':'debit',
-        'account_balance':account_balance
+        'account_balance':account_balance,
+        'currency':currency
 
       };
 

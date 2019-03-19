@@ -38,9 +38,11 @@ const { get_account_by_id } = require('../models').account_model
 
        let debit_entries = [];
        let credit_entries = [];
+       let investment = investments[i];
+       let currency = investment.currency;
 
        //TODO: for each investment extract a balance sheet summary
-       let transactions_summary = await get_transactions_summary(investments[i].investment_id);
+       let transactions_summary = await get_transactions_summary(investment.investment_id);
        console.log("transactions_summary",transactions_summary);
        for(let i=0; i<transactions_summary.length; i++){
 
@@ -53,7 +55,8 @@ const { get_account_by_id } = require('../models').account_model
            username: account['username'],
            amount : Math.abs(net_amount),
            account_type:account['account_type'],
-           ledger_account: account['ledger_account']
+           ledger_account: account['ledger_account'],
+           currency:currency
          };
 
          if(net_amount> 0){
@@ -70,7 +73,7 @@ const { get_account_by_id } = require('../models').account_model
      }
 
      investment_tx_summary.push({
-         investment_id:investments[i].investment_id,
+         investment_id:investment.investment_id,
          debit:debit_entries,
          credit:credit_entries
      });
