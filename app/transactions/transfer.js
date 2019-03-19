@@ -1,7 +1,7 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model;
 const { get_user_by_username } = require('../models').user_model;
-const { get_account_by_id, account_balance } = require('../models').user_model;
+const { get_account_by_id, account_balance } = require('../models').account_model;
 const uuidv1 = require('uuid/v1');//timestamp
 
 /**
