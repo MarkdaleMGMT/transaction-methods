@@ -10,6 +10,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @param  {string} sender     account id of the sender
  * @param  {string} recipient     account id of the recipient
  * @param  {float} amount    Amount to be deposited
+ * @param  {int} investment_id    investment id corresponding to the sender and recipient account
  * @return {JSON} Returns success
  */
  module.exports = async function transfer_api(req, res) {
@@ -55,10 +56,10 @@ const uuidv1 = require('uuid/v1');//timestamp
     if(sender == recipient){
       throw new Error("Invalid request");
     }
-    else if (!recipient_accnt){
-      throw new Error("Recipient does not exist ");
-    }else if(!sender_accnt){
-      throw new Error("Sender does not exist ");
+    else if (!recipient_accnt || recipient_accnt.investment_id != investment_id){
+      throw new Error("Invalid recipient account ");
+    }else if(!sender_accnt || sender_accnt.investment_id != investment_id){
+      throw new Error("Invalid sender account ");
     }
 
     //sender should have enough balance
@@ -75,9 +76,9 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
     //debit the sender
-    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,sender_accnt.investment_id);
+    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,investment_id);
     //credit the recipient
-    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,recipient_accnt.investment_id);
+    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,investment_id);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
