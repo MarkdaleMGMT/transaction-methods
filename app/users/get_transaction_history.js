@@ -1,4 +1,5 @@
 var db = require('../util/mysql_connection')
+const dateFormat = require('dateformat');
 const { get_account_by_id } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
@@ -61,7 +62,7 @@ const { get_investment_by_id } = require('../models').investment_model
 
 
       let transaction_json = {
-        'time':account_transaction.time,
+        'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
         'description': account_transaction.memo,
         'amount':Math.abs(account_transaction.amount),
         'type': account_transaction.amount <0 ? 'credit':'debit',
