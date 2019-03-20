@@ -9,6 +9,8 @@ app.get('/', (req, res) => {
 app.use('/transactions', require('./transactions'));
 app.use('/users', require('./users'));
 app.use('/accounts', require('./accounts'));
+app.use('/investments', require('./investments'));
+app.use('/currency', require('./currency'));
 
 
 // the catch all route

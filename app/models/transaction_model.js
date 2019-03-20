@@ -39,7 +39,7 @@ async function get_trial_balance(){
 async function get_trial_balance_per_investment(investment_id){
 
 
-  const [rows, fields] = await db.connection.query("SELECT sum(amount) as 'trial_balance' FROM transaction WHERE investment_id = ?",[investment_id]);
+  const [rows, fields] = await db.connection.query("SELECT * FROM investment_trial_balance WHERE investment_id = ?",[investment_id]);
 
   if (!rows || rows.length == 0)
     return 0;
@@ -48,6 +48,17 @@ async function get_trial_balance_per_investment(investment_id){
   console.log("trial_balance",typeof( parseFloat(trial_balance).toFixed(8)));
   return parseFloat(trial_balance).toFixed(8);
 
+}
+
+async function get_trial_balance_per_currency(currency){
+  const [rows, fields] = await db.connection.query("SELECT sum(trial_balance) as 'trial_balance' FROM investment_trial_balance WHERE currency = ?",[currency]);
+
+  if (!rows || rows.length == 0)
+    return 0;
+
+  let trial_balance = rows[0].trial_balance;
+  console.log("trial_balance",typeof( parseFloat(trial_balance).toFixed(8)));
+  return parseFloat(trial_balance).toFixed(8);
 }
 
 async function get_transactions_summary(investment_id){
@@ -69,5 +80,6 @@ module.exports ={
   get_transactions_per_event,
   get_trial_balance,
   get_trial_balance_per_investment,
+  get_trial_balance_per_currency,
   get_transactions_summary
 }
