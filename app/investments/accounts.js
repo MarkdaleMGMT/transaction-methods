@@ -44,7 +44,7 @@ const { get_investment_by_id  } = require('../models').investment_model
        account_type: account.account_type,
        ledger_account: account.ledger_account,
        account_level: account.level,
-       balance:account_balance,
+       balance:balance,
        currency:investment.currency
 
      });
