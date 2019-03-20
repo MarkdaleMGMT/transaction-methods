@@ -14,6 +14,11 @@ async function get_account_by_investment(username,investment_id){
   return rows[0];
 }
 
+async function get_accounts_by_investment(investment_id){
+  const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE investment_id = ?",[investment_id]);
+  return rows;
+}
+
 async function get_investment_account(investment_id){
 
   const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE investment_id = ? and account_level = ?",[investment_id,1]);
@@ -188,6 +193,7 @@ function calculate_balances(original_balance,prev_accnt_balance,change_in_balanc
 module.exports = {
   get_account_by_id,
   get_account_by_investment,
+  get_accounts_by_investment,
   get_investment_account,
   get_rake_account,
   account_balance,
