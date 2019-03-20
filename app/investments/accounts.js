@@ -36,6 +36,7 @@ const { get_investment_by_id  } = require('../models').investment_model
 
      let account = accounts[i];
      let balance = await account_balance(account.account_id)
+     console.log("balance for account id ",account.account_id, " : ",balance);
      // let level = account.account_level == '0' ? 'user': account.account_level == '1' ? 'investment':'rake'
      account_details.push({
        account_id : account.account_id,
