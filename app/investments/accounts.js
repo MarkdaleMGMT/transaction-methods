@@ -33,7 +33,7 @@ const { get_accounts_by_investment,account_balance  } = require('../models').acc
    for(i=0; i< accounts.length; i++){
 
      let account = accounts[i];
-     let balance = account_balance(account_id)
+     let balance = account_balance(account.account_id)
      // let level = account.account_level == '0' ? 'user': account.account_level == '1' ? 'investment':'rake'
      account_details.push({
        account_id : account.account_id,
