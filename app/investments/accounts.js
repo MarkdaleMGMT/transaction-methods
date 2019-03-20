@@ -1,5 +1,6 @@
 var db = require('../util/mysql_connection')
 const { get_accounts_by_investment,account_balance  } = require('../models').account_model
+const { get_investment_by_id  } = require('../models').investment_model
 
 
 
