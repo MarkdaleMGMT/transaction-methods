@@ -13,7 +13,7 @@ const { get_trial_balance_per_currency } = require('../models').transaction_mode
 
 
    try{
-     let trial_balance = await trial_balance_by_currency(currency_name);
+     let trial_balance = await trial_balance_by_currency(currency);
      res.send(trial_balance)
    }
    catch(err){
@@ -28,9 +28,11 @@ const { get_trial_balance_per_currency } = require('../models').transaction_mode
 
 
    try{
+     //TODO: check if valid currency
 
      let trial_balance = null;
      trial_balance = await get_trial_balance_per_currency(currency);
+
 
      let result = {
        trial_balance:trial_balance,
