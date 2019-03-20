@@ -33,7 +33,7 @@ const { get_trial_balance_per_currency } = require('../models').transaction_mode
      let trial_balance = null;
      trial_balance = await get_trial_balance_per_currency(currency);
 
-     if(trial_balance == undefined || trial_balance == null){
+     if(trial_balance == undefined || trial_balance == null || isNan(trial_balance)){
        throw new Error("Unable to fetch trial balance")
      }
 
