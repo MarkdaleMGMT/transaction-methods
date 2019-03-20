@@ -33,6 +33,7 @@ async function get_accounts_per_user(username){
 
 async function account_balance(account_id){
 
+  //TODO: Create a view that returns the account balance
   let account = await get_account_by_id(account_id);
   if(!account) throw new Error('Account does not exist');
 
