@@ -146,7 +146,27 @@ async function get_balance(username){
 async function create_user_account(username,investment_id){
 
 
-  let new_accnt_id = await create_account(username,investment_id,'user_account','credit','liability',0);
+  let new_accnt_id = await create_account(username,investment_id,'user account','credit','liability',0);
+  console.log("newly created account ", new_accnt_id);
+  return new_accnt_id;
+
+
+}
+
+async function create_investment_account(investment_id){
+
+
+  let new_accnt_id = await create_account(process.env.INVESTMENT_ACNT,investment_id,'investment account','debit','asset',1);
+  console.log("newly created account ", new_accnt_id);
+  return new_accnt_id;
+
+
+}
+
+async function create_rake_account(investment_id){
+
+
+  let new_accnt_id = await create_account(process.env.RAKE_ACNT,investment_id,'rake account','credit','liability',2);
   console.log("newly created account ", new_accnt_id);
   return new_accnt_id;
 
@@ -200,5 +220,7 @@ module.exports = {
   get_accounts_per_user,
   get_all_accounts,
   calculate_balances,
-  create_user_account
+  create_user_account,
+  create_investment_account,
+  create_rake_account
 };

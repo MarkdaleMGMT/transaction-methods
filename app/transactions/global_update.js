@@ -82,6 +82,8 @@ const uuidv1 = require('uuid/v1');//timestamp
        throw new Error('Invalid amount')
      }else if(change ==0){
        console.log("No update required");
+
+       //TODO: email 
        return true;
      }
      console.log("original ",original,"amount ",amount,"\nchange ",change);
