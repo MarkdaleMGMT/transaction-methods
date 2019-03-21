@@ -16,14 +16,18 @@ module.exports = {
       DB_USER:<db_username>,
       DB_HOST:<server_ip>,
       DB_PASS:<db_password>,
-      DB_DATABASE:<db_name>
+      DB_DATABASE:<db_name>,
+      INVESTMENT_ACNT:<investment_acnt_username>,
+      RAKE_ACNT:<rake_acnt_username>
     },
     env_production: {
       NODE_ENV: 'production',
       DB_USER:<db_username>,
       DB_HOST:<server_ip>,
       DB_PASS:<db_password>,
-      DB_DATABASE:<db_name>
+      DB_DATABASE:<db_name>,
+      INVESTMENT_ACNT:<investment_acnt_username>,
+      RAKE_ACNT:<rake_acnt_username>
     }
   }],
 

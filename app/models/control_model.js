@@ -7,7 +7,7 @@ async function get_control_information(investment_id){
   return rows[0];
 }
 
-async function add_control_info(investment_id, rake, affiliate_rake, fx_rake){
+async function add_control_info(investment_id, rake=0, affiliate_rake=0, fx_rake=0){
   let [result,fields] = await db.connection.query("INSERT INTO control (investment_id, rake, affiliate_rake, fx_rake) VALUES (?,?,?,?)",[investment_id, rake, affiliate_rake, fx_rake])
   return result.insertId;
 }
