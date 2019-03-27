@@ -128,7 +128,7 @@ const uuidv1 = require('uuid/v1');//timestamp
        }
 
 
-       let credit_user_account = transaction_model.build_insert_transaction(investment_account.account_id, accnt_balance_change*-1, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id);
+       let credit_user_account = transaction_model.build_insert_transaction(account_id, accnt_balance_change*-1, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id);
        transaction_queries.push(credit_user_account);
        remainder -= accnt_balance_change;
 
