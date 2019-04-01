@@ -70,7 +70,7 @@ const { get_account_by_id } = require('../models').account_model
          let entry = {
            account_id:account['account_id'],
            username: account['username'],
-           amount : Math.abs(net_amount),
+           amount : parseFloat(Math.abs(net_amount).toFixed(8)),
            account_type:account['account_type'],
            ledger_account: account['ledger_account'],
            currency:currency

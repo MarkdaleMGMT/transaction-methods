@@ -66,7 +66,7 @@ const { get_investment_by_id } = require('../models').investment_model
         'description': account_transaction.memo,
         'amount':Math.abs(account_transaction.amount),
         'type': account_transaction.amount <0 ? 'credit':'debit',
-        'account_balance':account_balance,
+        'account_balance':parseFloat(account_balance.toFixed(8)),
         'currency':currency
 
       };
