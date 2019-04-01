@@ -1,11 +1,11 @@
 'use strict'
 var db = require('../util/mysql_connection')
 
-function build_insert_transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id){
-
+function build_insert_transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, custom_memo=''){
+  console.log("build tx custom_memo: ",custom_memo);
   return  {
-    query:"INSERT INTO transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id) VALUES (?,?,?,?,?,?,?,?)",
-    queryValues:[account_id, amount, created_by, time, transaction_type, memo, transaction_event_id, investment_id ]
+    query:"INSERT INTO transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, custom_memo) VALUES (?,?,?,?,?,?,?,?,?)",
+    queryValues:[account_id, amount, created_by, time, transaction_type, memo, transaction_event_id, investment_id, custom_memo ]
   };
 
 }

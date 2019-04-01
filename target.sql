@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 01, 2019 at 02:14 PM
+-- Generation Time: Apr 01, 2019 at 02:32 PM
 -- Server version: 5.7.25-0ubuntu0.18.04.2
 -- PHP Version: 7.2.15-0ubuntu0.18.04.2
 
@@ -117,7 +117,7 @@ CREATE TABLE `transaction` (
   `amount` decimal(20,8) NOT NULL,
   `transaction_event_id` varchar(256) NOT NULL,
   `investment_id` int(11) NOT NULL DEFAULT '1',
-  `custom_memo` varchar(100) NOT NULL
+  `custom_memo` varchar(100) NOT NULL DEFAULT ' '
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -226,7 +226,7 @@ ALTER TABLE `investment`
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
+  MODIFY `transaction_id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
 --
 -- Constraints for dumped tables
 --

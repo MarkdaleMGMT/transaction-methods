@@ -10,6 +10,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @param  {string} sender     username of the sender
  * @param  {string} recipient    username of the recipient
  * @param  {float} amount    Amount to be deposited
+ * @param  {string} custom_memo     custom user memo for transaction
  * @param  {int} investment_id    investment id corresponding to the sender and recipient account
  * @return {JSON} Returns success
  */
@@ -20,6 +21,7 @@ const uuidv1 = require('uuid/v1');//timestamp
    let username = req.body.username
    let amount = parseFloat(req.body.amount)
    let datetime = new Date().toMysqlFormat()
+   let custom_memo = req.body.custom_memo
    let investment_id = req.body.investment_id
 
    try{
@@ -32,7 +34,7 @@ const uuidv1 = require('uuid/v1');//timestamp
       throw new Error('not authorized to initiate transfer');
      }
 
-     let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime, investment_id);
+     let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to transfer amount');}
      res.send({ code: "transfer amount successful" })
@@ -48,7 +50,7 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  };
 
- async function transfer_amount(username,sender,recipient,amount,datetime, investment_id){
+ async function transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo){
 
    let recipient_accnt = await get_account_by_investment(recipient,investment_id);
    let sender_accnt = await get_account_by_investment(sender, investment_id);
@@ -87,11 +89,11 @@ const uuidv1 = require('uuid/v1');//timestamp
     let queries_with_val = [];
     let transaction_event_id = uuidv1();
 
-
+    console.log("custom_memo: ",custom_memo);
     //debit the sender
-    let debit_query_with_vals = build_insert_transaction(sender_accnt.account_id, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,investment_id);
+    let debit_query_with_vals = build_insert_transaction(sender_accnt.account_id, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,investment_id,custom_memo);
     //credit the recipient
-    let credit_query_with_vals = build_insert_transaction(recipient_accnt_id, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,investment_id);
+    let credit_query_with_vals = build_insert_transaction(recipient_accnt_id, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,investment_id, custom_memo);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
