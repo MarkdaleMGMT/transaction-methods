@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 27, 2019 at 12:04 PM
+-- Generation Time: Apr 01, 2019 at 02:14 PM
 -- Server version: 5.7.25-0ubuntu0.18.04.2
 -- PHP Version: 7.2.15-0ubuntu0.18.04.2
 
@@ -26,7 +26,6 @@ SET time_zone = "+00:00";
 -- Table structure for table `account`
 --
 
-DROP TABLE IF EXISTS `account`;
 CREATE TABLE `account` (
   `account_id` int(11) NOT NULL,
   `username` varchar(30) NOT NULL,
@@ -43,7 +42,6 @@ CREATE TABLE `account` (
 -- Table structure for table `control`
 --
 
-DROP TABLE IF EXISTS `control`;
 CREATE TABLE `control` (
   `investment_id` int(11) NOT NULL,
   `rake` decimal(5,2) NOT NULL DEFAULT '0.00',
@@ -57,7 +55,6 @@ CREATE TABLE `control` (
 -- Table structure for table `exchange_rate`
 --
 
-DROP TABLE IF EXISTS `exchange_rate`;
 CREATE TABLE `exchange_rate` (
   `rate_id` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -72,7 +69,6 @@ CREATE TABLE `exchange_rate` (
 -- Table structure for table `investment`
 --
 
-DROP TABLE IF EXISTS `investment`;
 CREATE TABLE `investment` (
   `investment_id` int(11) NOT NULL,
   `investment_name` varchar(45) NOT NULL,
@@ -88,7 +84,6 @@ CREATE TABLE `investment` (
 -- Stand-in structure for view `investment_trial_balance`
 -- (See below for the actual view)
 --
-DROP VIEW IF EXISTS `investment_trial_balance`;
 CREATE TABLE `investment_trial_balance` (
 `investment_id` int(11)
 ,`currency` varchar(5)
@@ -101,7 +96,6 @@ CREATE TABLE `investment_trial_balance` (
 -- Table structure for table `mining_address`
 --
 
-DROP TABLE IF EXISTS `mining_address`;
 CREATE TABLE `mining_address` (
   `address` varchar(256) NOT NULL,
   `investment_id` int(11) NOT NULL
@@ -113,7 +107,6 @@ CREATE TABLE `mining_address` (
 -- Table structure for table `transaction`
 --
 
-DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
   `transaction_id` int(6) UNSIGNED NOT NULL,
   `account_id` int(11) NOT NULL,
@@ -123,7 +116,8 @@ CREATE TABLE `transaction` (
   `memo` varchar(500) DEFAULT NULL,
   `amount` decimal(20,8) NOT NULL,
   `transaction_event_id` varchar(256) NOT NULL,
-  `investment_id` int(11) NOT NULL DEFAULT '1'
+  `investment_id` int(11) NOT NULL DEFAULT '1',
+  `custom_memo` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -132,7 +126,6 @@ CREATE TABLE `transaction` (
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `username` varchar(30) NOT NULL,
   `password` varchar(256) NOT NULL,
@@ -218,7 +211,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 --
 -- AUTO_INCREMENT for table `exchange_rate`
 --
@@ -233,7 +226,7 @@ ALTER TABLE `investment`
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
+  MODIFY `transaction_id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 --
 -- Constraints for dumped tables
 --
