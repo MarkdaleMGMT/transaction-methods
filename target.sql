@@ -1,114 +1,137 @@
--- phpMyAdmin SQL Dump
--- version 4.6.6deb5
--- https://www.phpmyadmin.net/
+-- MySQL dump 10.13  Distrib 5.7.26, for Linux (x86_64)
 --
--- Host: localhost:3306
--- Generation Time: Apr 01, 2019 at 02:32 PM
--- Server version: 5.7.25-0ubuntu0.18.04.2
--- PHP Version: 7.2.15-0ubuntu0.18.04.2
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: development
+-- ------------------------------------------------------
+-- Server version	5.7.26-0ubuntu0.18.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `development`
---
-
--- --------------------------------------------------------
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `account`
 --
 
+DROP TABLE IF EXISTS `account`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account` (
-  `account_id` int(11) NOT NULL,
+  `account_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(30) NOT NULL,
   `description` varchar(100) NOT NULL,
   `account_type` varchar(45) NOT NULL,
   `ledger_account` varchar(45) NOT NULL,
   `investment_id` int(11) NOT NULL,
-  `account_level` smallint(2) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+  `account_level` smallint(2) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`account_id`),
+  KEY `fk_account_user_idx` (`username`),
+  KEY `fk_account_investment_idx` (`investment_id`),
+  CONSTRAINT `fk_account_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_account_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `control`
 --
 
+DROP TABLE IF EXISTS `control`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `control` (
   `investment_id` int(11) NOT NULL,
   `rake` decimal(5,2) NOT NULL DEFAULT '0.00',
   `affiliate_rake` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `fx_rake` decimal(5,2) NOT NULL DEFAULT '0.00'
+  `fx_rake` decimal(5,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`investment_id`),
+  KEY `fk_control_investment_idx` (`investment_id`),
+  CONSTRAINT `fk_control_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `exchange_rate`
 --
 
+DROP TABLE IF EXISTS `exchange_rate`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `exchange_rate` (
-  `rate_id` int(11) NOT NULL,
+  `rate_id` int(11) NOT NULL AUTO_INCREMENT,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `from_currency` varchar(5) NOT NULL,
   `to_currency` varchar(5) NOT NULL,
-  `rate` decimal(20,8) NOT NULL
+  `rate` decimal(20,8) NOT NULL,
+  PRIMARY KEY (`rate_id`),
+  UNIQUE KEY `currency_code_UNIQUE` (`rate_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `investment`
 --
 
+DROP TABLE IF EXISTS `investment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `investment` (
-  `investment_id` int(11) NOT NULL,
+  `investment_id` int(11) NOT NULL AUTO_INCREMENT,
   `investment_name` varchar(45) NOT NULL,
   `description` varchar(100) NOT NULL,
   `created_by` varchar(30) NOT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `currency` varchar(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+  `currency` varchar(5) NOT NULL,
+  PRIMARY KEY (`investment_id`),
+  UNIQUE KEY `investment_name_UNIQUE` (`investment_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Stand-in structure for view `investment_trial_balance`
--- (See below for the actual view)
+-- Temporary table structure for view `investment_trial_balance`
 --
-CREATE TABLE `investment_trial_balance` (
-`investment_id` int(11)
-,`currency` varchar(5)
-,`trial_balance` decimal(42,8)
-);
 
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `investment_trial_balance`;
+/*!50001 DROP VIEW IF EXISTS `investment_trial_balance`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT 
+ 1 AS `investment_id`,
+ 1 AS `currency`,
+ 1 AS `trial_balance`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `mining_address`
 --
 
+DROP TABLE IF EXISTS `mining_address`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mining_address` (
   `address` varchar(256) NOT NULL,
-  `investment_id` int(11) NOT NULL
+  `investment_id` int(11) NOT NULL,
+  PRIMARY KEY (`address`),
+  KEY `fk_address_investment_idx` (`investment_id`),
+  CONSTRAINT `fk_address_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `transaction`
 --
 
+DROP TABLE IF EXISTS `transaction`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transaction` (
-  `transaction_id` int(6) UNSIGNED NOT NULL,
+  `transaction_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL,
   `created_by` varchar(30) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -117,15 +140,23 @@ CREATE TABLE `transaction` (
   `amount` decimal(20,8) NOT NULL,
   `transaction_event_id` varchar(256) NOT NULL,
   `investment_id` int(11) NOT NULL DEFAULT '1',
-  `custom_memo` varchar(100) NOT NULL DEFAULT ' '
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+  `custom_memo` varchar(100) NOT NULL DEFAULT ' ',
+  PRIMARY KEY (`transaction_id`),
+  KEY `transaction_event` (`transaction_event_id`),
+  KEY `fk_transaction_account_idx` (`account_id`),
+  KEY `fk_transaction_investment_idx` (`investment_id`),
+  CONSTRAINT `fk_transaction_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_transaction_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `user`
 --
 
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `username` varchar(30) NOT NULL,
   `password` varchar(256) NOT NULL,
@@ -136,127 +167,36 @@ CREATE TABLE `user` (
   `email_verify_flag` tinyint(1) NOT NULL DEFAULT '0',
   `email_token` varchar(30) DEFAULT NULL,
   `email_expire` timestamp NULL DEFAULT NULL,
-  `affiliate` varchar(30) DEFAULT NULL
+  `affiliate` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Structure for view `investment_trial_balance`
---
-DROP TABLE IF EXISTS `investment_trial_balance`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`ayesha`@`%` SQL SECURITY DEFINER VIEW `investment_trial_balance`  AS  select `investment`.`investment_id` AS `investment_id`,`investment`.`currency` AS `currency`,sum(`transaction`.`amount`) AS `trial_balance` from (`transaction` join `investment` on((`investment`.`investment_id` = `transaction`.`investment_id`))) group by `investment`.`investment_id`,`investment`.`currency` ;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Indexes for dumped tables
+-- Final view structure for view `investment_trial_balance`
 --
 
---
--- Indexes for table `account`
---
-ALTER TABLE `account`
-  ADD PRIMARY KEY (`account_id`),
-  ADD KEY `fk_account_user_idx` (`username`),
-  ADD KEY `fk_account_investment_idx` (`investment_id`);
+/*!50001 DROP VIEW IF EXISTS `investment_trial_balance`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`ayesha`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `investment_trial_balance` AS select `investment`.`investment_id` AS `investment_id`,`investment`.`currency` AS `currency`,sum(`transaction`.`amount`) AS `trial_balance` from (`transaction` join `investment` on((`investment`.`investment_id` = `transaction`.`investment_id`))) group by `investment`.`investment_id`,`investment`.`currency` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
---
--- Indexes for table `control`
---
-ALTER TABLE `control`
-  ADD PRIMARY KEY (`investment_id`),
-  ADD KEY `fk_control_investment_idx` (`investment_id`);
-
---
--- Indexes for table `exchange_rate`
---
-ALTER TABLE `exchange_rate`
-  ADD PRIMARY KEY (`rate_id`),
-  ADD UNIQUE KEY `currency_code_UNIQUE` (`rate_id`);
-
---
--- Indexes for table `investment`
---
-ALTER TABLE `investment`
-  ADD PRIMARY KEY (`investment_id`),
-  ADD UNIQUE KEY `investment_name_UNIQUE` (`investment_name`);
-
---
--- Indexes for table `mining_address`
---
-ALTER TABLE `mining_address`
-  ADD PRIMARY KEY (`address`),
-  ADD KEY `fk_address_investment_idx` (`investment_id`);
-
---
--- Indexes for table `transaction`
---
-ALTER TABLE `transaction`
-  ADD PRIMARY KEY (`transaction_id`),
-  ADD KEY `transaction_event` (`transaction_event_id`),
-  ADD KEY `fk_transaction_account_idx` (`account_id`),
-  ADD KEY `fk_transaction_investment_idx` (`investment_id`);
-
---
--- Indexes for table `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`username`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `account`
---
-ALTER TABLE `account`
-  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
---
--- AUTO_INCREMENT for table `exchange_rate`
---
-ALTER TABLE `exchange_rate`
-  MODIFY `rate_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `investment`
---
-ALTER TABLE `investment`
-  MODIFY `investment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
---
--- AUTO_INCREMENT for table `transaction`
---
-ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `account`
---
-ALTER TABLE `account`
-  ADD CONSTRAINT `fk_account_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_account_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `control`
---
-ALTER TABLE `control`
-  ADD CONSTRAINT `fk_control_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `mining_address`
---
-ALTER TABLE `mining_address`
-  ADD CONSTRAINT `fk_address_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `transaction`
---
-ALTER TABLE `transaction`
-  ADD CONSTRAINT `fk_transaction_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_transaction_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2019-04-30 14:43:21
