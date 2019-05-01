@@ -77,6 +77,15 @@ const uuidv1 = require('uuid/v1');//timestamp
      let affiliate_share_of_rake = parseFloat(control_data.affiliate_rake);
 
      let change = amount - original // change in clam_miner_balance
+
+     if(amount ==0){
+       console.log("Global update tried to set a zero amount!!!!");
+
+       //TODO: email
+
+       throw new Error('Global update tried to set a zero amount!');
+     }
+
      if(change ==0){
        console.log("No update required");
 

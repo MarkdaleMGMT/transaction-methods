@@ -1,27 +1,29 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model
 const { get_user_by_username } = require('../models').user_model
-const  { get_account_by_id, get_investment_account } = require('../models').account_model
+const  {  get_investment_account, get_account_by_investment, create_user_account, get_account_by_id } = require('../models').account_model
 const uuidv1 = require('uuid/v1');//timestamp
 
 
 /**
  * API for the deposit transaction
- * @param  {string} account_id     Account where the deposit is made to
+ * @param  {string} investment_id     investment for which deposit is made
+ * @param  {string} deposit_to     username to whom the deposit is made
  * @param  {float} username   username of the initiator of the deposit
  * @param  {float} amount    Amount to be deposited
  * @return {JSON}         Returns success
  */
  module.exports = async function deposit_api(req, res) {
 
-   let account_id = req.body.account_id
+   let investment_id = req.body.investment_id
+   let deposit_to = req.body.deposit_to
    let username = req.body.username
    let amount = req.body.amount
 
    let datetime = new Date().toMysqlFormat()
 
    try{
-     let isSuccesful = await deposit(username,account_id,amount,datetime);
+     let isSuccesful = await deposit(username,investment_id,deposit_to,amount, datetime);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to deposit amount');}
      res.send({ code: "Deposit successful" })
@@ -35,14 +37,14 @@ const uuidv1 = require('uuid/v1');//timestamp
  };
 
 
- async function deposit(username,account_id,amount,datetime){
+ async function deposit(username,investment_id,deposit_to,amount, datetime){
 
 
    try{
     let queries_with_val = []
     let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
-    console.log("deposit transaction  ",username," ",account_id," ",amount," ",datetime);
+    console.log("deposit transaction  ",username," ",investment_id," ",deposit_to," ",amount," ",datetime);
 
     //check if the user is admin or not, throw error if unauthorized
     //level 0 is admin
@@ -54,12 +56,14 @@ const uuidv1 = require('uuid/v1');//timestamp
     }
 
     //get user account
-    let deposit_account = await get_account_by_id(account_id);
+    let deposit_account = await get_account_by_investment(deposit_to,investment_id);
     if(!deposit_account){
-     throw new Error('Invalid account number');
+     //create a new user account
+     let deposit_account_id = await create_user_account(deposit_to, investment_id);
+     deposit_account = await get_account_by_id(deposit_account_id);
     }
 
-    let investment_id = deposit_account.investment_id;
+
 
     //get the corresponding investment account (i.e. similiar to clam miner) - level 1
     let investment_account = await get_investment_account(investment_id);
