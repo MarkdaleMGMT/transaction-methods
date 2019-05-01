@@ -35,7 +35,7 @@ CREATE TABLE `account` (
   KEY `fk_account_investment_idx` (`investment_id`),
   CONSTRAINT `fk_account_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_account_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,7 +90,7 @@ CREATE TABLE `investment` (
   `currency` varchar(5) NOT NULL,
   PRIMARY KEY (`investment_id`),
   UNIQUE KEY `investment_name_UNIQUE` (`investment_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -101,7 +101,7 @@ DROP TABLE IF EXISTS `investment_trial_balance`;
 /*!50001 DROP VIEW IF EXISTS `investment_trial_balance`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT 
+/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT
  1 AS `investment_id`,
  1 AS `currency`,
  1 AS `trial_balance`*/;
@@ -147,7 +147,7 @@ CREATE TABLE `transaction` (
   KEY `fk_transaction_investment_idx` (`investment_id`),
   CONSTRAINT `fk_transaction_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_transaction_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,7 +184,7 @@ CREATE TABLE `user` (
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`ayesha`@`%` SQL SECURITY DEFINER */
+/*!50013 DEFINER=`admin`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `investment_trial_balance` AS select `investment`.`investment_id` AS `investment_id`,`investment`.`currency` AS `currency`,sum(`transaction`.`amount`) AS `trial_balance` from (`transaction` join `investment` on((`investment`.`investment_id` = `transaction`.`investment_id`))) group by `investment`.`investment_id`,`investment`.`currency` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
