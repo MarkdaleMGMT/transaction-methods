@@ -4,6 +4,8 @@
 mysql_username="app"
 mysql_password="3b391ec5"
 db_name="live"
+admin_username="admin"
+admin_password="admin"
 
 #end config
 
@@ -15,9 +17,10 @@ find $dir -type f -iname "*.sh" -exec chmod +x {} \;
 escapedEntry=$(printf '%s\n' "$entry" | sed 's:[][\/.^$*]:\\&:g')
 cur=$(crontab -l)
 job1="0 0 * * * $dir/db_backup.sh $mysql_username $mysql_password $db_name" #backup the live db
-job2="0 0 * * * $dir/scrape_address_balances.sh"
+job2="0 0 * * * $dir/global_update.sh" $admin_username $admin_password
+job3="0 0 * * * $dir/populate_exchange_rates.sh"
 
-jobs=("$job1" "$job2")
+jobs=("$job1" "$job2" "$job3")
 
 #removing all crontabs
 crontab -r

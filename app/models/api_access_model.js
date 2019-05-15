@@ -18,6 +18,14 @@ async function get_investments_with_api_info(){
 
 }
 
+
+async function get_exchange_api(source){
+
+  const [exchange_apis, fields] = await db.connection.query("SELECT * FROM api_access_info WHERE type = 'exchange' and description = ?",[source]);
+  return exchange_apis[0];
+
+}
+
 async function get_balance(investment_id){
 
   // console.log("get balance: investment_id ", investment_id);
@@ -29,7 +37,7 @@ async function get_balance(investment_id){
   let balance = 0;
 
 
-  
+
   for(let i=0; i<apis.length; i++){
     let api = apis[i];
 
@@ -84,5 +92,6 @@ async function get_lending_bot_balance(exchange_name,url, api_key, secret, curre
 
 module.exports ={
   get_investments_with_api_info,
-  get_balance
+  get_balance,
+  get_exchange_api
 }

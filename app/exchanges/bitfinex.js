@@ -8,6 +8,33 @@ function nonce(){
   return new Date().getTime().toString();
 }
 
+async function get_exchange_rate(base_url, param){
+
+  let mod_param = param.toLowerCase().replace("_","");
+  console.log("mod_param", mod_param);
+
+  let response = await axios.get(base_url + mod_param);
+  let fx_rate = response.data;
+
+
+
+  console.log("data ",fx_rate);
+
+
+  if (!fx_rate || fx_rate.length == 0){
+    return null;
+  }
+
+
+  return {
+    timestamp: new Date().toMysqlFormat(),
+    from_to: param,
+    source: 'bitfinex',
+    bid: parseFloat(fx_rate['bid']),
+    ask: parseFloat(fx_rate['ask'])
+  };
+}
+
 async function get_wallet_balance(base_url, api_key, secret, wallet_type, currency){
 
   // let url = '/v1/history'
@@ -55,5 +82,6 @@ async function get_wallet_balance(base_url, api_key, secret, wallet_type, curren
 }
 
 module.exports = {
-  get_wallet_balance
+  get_wallet_balance,
+  get_exchange_rate
 }
