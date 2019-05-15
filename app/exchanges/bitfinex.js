@@ -10,7 +10,8 @@ function nonce(){
 
 async function get_wallet_balance(base_url, api_key, secret, wallet_type, currency){
 
-  let url = '/v1/history'
+  // let url = '/v1/history'
+  let url = '/v1/balances'
   let req_body = {
     request: url,
     nonce: nonce(),
@@ -30,10 +31,22 @@ async function get_wallet_balance(base_url, api_key, secret, wallet_type, curren
   console.log("options ",options);
 
   const response = await axios(options)
+  const data = response.data;
+  console.log("\nreturned response ",data);
 
-  const data = response.data[0];
-  console.log("returned data ",data);
-  let balance = parseFloat(data['balance']);
+
+  // console.log("returned data ",data);
+  let balance = 0;
+
+  var filteredData = data.filter(el=> {
+      return el.currency == currency.toLowerCase() && el.type == 'deposit'
+  });
+
+  for(let i=0; i<filteredData.length; i++){
+    balance += parseFloat(filteredData[i]['amount']);
+  }
+
+
 
   console.log(util.format('balance - %s - %s: %d', wallet_type, currency, balance));
 

@@ -11,7 +11,7 @@ function nonce(){
 async function get_wallet_balance(url,api_key,secret, wallet_type, currency){
 
   let req_data = {
-  command: 'returnCompleteBalances',
+  command: 'returnCompleteBalances',//returnCompleteBalancesreturnBalances
   account:'all',
   nonce: nonce()
   };
@@ -33,7 +33,7 @@ async function get_wallet_balance(url,api_key,secret, wallet_type, currency){
   const data = response.data;
   console.log("returned data ",data[currency]);
   let balance = parseFloat(data[currency]['available'])+ parseFloat(data[currency]['onOrders']);
-
+  // let balance = parseFloat(data[currency]);
   console.log(util.format('balance - %s - %s: %d', wallet_type, currency, balance));
 
   return parseFloat(balance);
