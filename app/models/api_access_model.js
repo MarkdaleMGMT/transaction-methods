@@ -1,16 +1,35 @@
 var db = require('../util/mysql_connection');
 const axios = require("axios");
+const util = require("util");
 const { poloniex, bitfinex } = require('../exchanges');
 const { get_investment_by_id } = require('./investment_model')
 
+
+async function get_investments_with_api_info(){
+
+  const [investments, fields] = await db.connection.query("SELECT distinct(investment_id) as 'investment_id' FROM api_access_info");
+
+
+  let investment_ids = [];
+  for(let i=0; i<investments.length; i++){
+    investment_ids.push(investments[i].investment_id);
+  }
+  return investment_ids;
+
+}
+
 async function get_balance(investment_id){
 
+  // console.log("get balance: investment_id ", investment_id);
 
   let investment = await get_investment_by_id(investment_id);
+  console.log(util.format("investment: %s, currency: %s", investment.investment_name, investment.currency));
   const [apis, fields] = await db.connection.query("SELECT * FROM api_access_info WHERE investment_id = ?",[investment_id]);
 
   let balance = 0;
 
+
+  
   for(let i=0; i<apis.length; i++){
     let api = apis[i];
 
@@ -64,6 +83,6 @@ async function get_lending_bot_balance(exchange_name,url, api_key, secret, curre
 
 
 module.exports ={
-  
+  get_investments_with_api_info,
   get_balance
 }

@@ -13,6 +13,7 @@
   "dependencies": {
     "@godaddy/terminus": "^4.1.0",
     "axios": "^0.18.0",
+    "bcrypt": "^3.0.6",
     "crypto": "^1.0.1",
     "dateformat": "^3.0.3",
     "dotenv": "^6.2.0",
