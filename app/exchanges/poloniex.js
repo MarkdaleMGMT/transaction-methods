@@ -13,7 +13,7 @@ async function get_exchange_rate(base_url, param){
   let response = await axios.get(base_url);
   let param_parts = param.split("_");
   let mod_param = param_parts[1] + "_" + param_parts[0];
-  let fx_rate = response.data[param];
+  let fx_rate = response.data[mod_param];
 
   console.log("data ",fx_rate);
 
@@ -24,7 +24,7 @@ async function get_exchange_rate(base_url, param){
 
   return {
     timestamp: new Date().toMysqlFormat(),
-    from_to: mod_param,
+    from_to: param,
     source: 'poloniex',
     bid: parseFloat(fx_rate['highestBid']),
     ask: parseFloat(fx_rate['lowestAsk'])
