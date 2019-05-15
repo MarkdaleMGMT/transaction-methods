@@ -7,7 +7,7 @@ const { get_investment_by_id } = require('./investment_model')
 
 async function get_investments_with_api_info(){
 
-  const [investments, fields] = await db.connection.query("SELECT distinct(investment_id) as 'investment_id' FROM api_access_info");
+  const [investments, fields] = await db.connection.query("SELECT distinct(investment_id) as 'investment_id' FROM api_access_info WHERE investment_id IS NOT NULL");
 
 
   let investment_ids = [];
