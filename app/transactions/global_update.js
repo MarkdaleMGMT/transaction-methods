@@ -9,14 +9,14 @@ const uuidv1 = require('uuid/v1');//timestamp
 // const { build_insert_transaction } = require('../transaction_model')
 
 /**
- * API for updating global clam_balance
+ * API for updating global balance of an investment
  * @param  {int}   investment_id     Investment for which global update is executed
  * @param  {float} amount     New amount of the investment
  * @param  {str} username     Initiator of the global update
  * @return {JSON}         Returns success
  */
 
- module.exports = async function update_balance_api(req, res) {
+ async function update_balance_api(req, res) {
 
    let amount = req.body.amount
    let username = req.body.username
@@ -225,3 +225,9 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
  }
+
+
+module.exports = {
+  update_balance_api,
+  update_investment_balance
+}
