@@ -59,6 +59,7 @@ async function update_order_book(source, rates){
 
     }else{
       console.log("Invalid rate "+ rate +" for exchange " + source);
+      throw new Error("Invalid rate "+ rate +" for exchange " + source);
     }
 
   }
