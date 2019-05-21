@@ -18,7 +18,8 @@ module.exports = {
       DB_PASS:<db_password>,
       DB_DATABASE:<db_name>,
       INVESTMENT_ACNT:<investment_acnt_username>,
-      RAKE_ACNT:<rake_acnt_username>
+      RAKE_ACNT:<rake_acnt_username>,
+      FX_ACNT:<fx_acnt_username>
     },
     env_production: {
       NODE_ENV: 'production',
@@ -27,7 +28,8 @@ module.exports = {
       DB_PASS:<db_password>,
       DB_DATABASE:<db_name>,
       INVESTMENT_ACNT:<investment_acnt_username>,
-      RAKE_ACNT:<rake_acnt_username>
+      RAKE_ACNT:<rake_acnt_username>,
+      FX_ACNT:<fx_acnt_username>
     }
   }],
 
@@ -42,4 +44,3 @@ module.exports = {
     }
   }
 };
-

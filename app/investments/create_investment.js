@@ -1,6 +1,6 @@
 var db = require('../util/mysql_connection');
 var { get_user_by_username } = require('../models/user_model');
-var { create_investment_account, create_rake_account } = require('../models/account_model');
+var { create_investment_account, create_rake_account, create_fx_account } = require('../models/account_model');
 var { get_investment_by_name, create_investment } = require('../models/investment_model');
 var { add_control_info } = require('../models/control_model');
 
@@ -61,9 +61,10 @@ var { add_control_info } = require('../models/control_model');
    //create a record in the control table
    await add_control_info(investment_id, rake, affiliate_rake, fx_rake);
 
-   //create investment and rake accounts
+   //create investment, rake and fxaccounts
    let investment_acnt_id = await create_investment_account(investment_id)
    let rake_acnt_id = await create_rake_account(investment_id)
+   let fx_acnt_id = await create_fx_account(investment_id)
 
 
 
