@@ -1,7 +1,8 @@
-const { calculate_rate } = require('./get_rate');
+const { get_quoted_rate } = require('./get_rate');
 const { get_investment_by_id } = require('../models/investment_model');
-const { get_account_by_investment, get_fx_account } = require('../models/account_model');
+const { get_account_by_investment, get_fx_account , account_balance } = require('../models/account_model');
 const { build_insert_transaction } = require('../models/transaction_model');
+var db = require('../util/mysql_connection');
 
 const util = require('util');
 const uuidv1 = require('uuid/v1');//timestamp
@@ -16,7 +17,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @param  {str} custom_memo (optional)   user defined memo
  * @return {JSON}         Returns success
  */
-async function exchange(req,res){
+module.exports = async function exchange(req,res){
 
   try{
     let username = req.body.username;
@@ -24,6 +25,7 @@ async function exchange(req,res){
     let target_investment_id = req.body.target_investment;
     let amount = req.body.amount;
     let memo = req.body.custom_memo;
+    // let rate = req.body.rate;
 
 
     let isSuccesful = await exchange_investment(username, source_investment_id, target_investment_id, amount, memo);
@@ -59,8 +61,28 @@ async function exchange_investment(username, source_investment_id, target_invest
   let target_fx_account = await get_fx_account(target_investment_id);
 
 
-  let rate = await calculate_rate(source_currency, target_currency);
+
+  let quoted_rate = await get_quoted_rate(source_currency, target_currency);
+  let rate = 1;
+
+  if (source_currency+'_'+target_currency == quoted_rate.from_to){
+    rate = quoted_rate.bid
+  }else{
+    rate = 1/quoted_rate.ask
+  }
+
+  console.log("src-target ",source_currency+'_'+target_currency);
+  console.log("quoted rate ",quoted_rate.from_to);
+  console.log("rate ", rate);
+
   let target_amount = parseFloat((rate * amount).toFixed(8));
+
+  //Check if target fx has enough balance
+  let fx_balance = await account_balance(target_fx_account.account_id);
+  if (fx_balance < target_amount){
+    throw new Error("Insufficient balance in fx");
+  }
+
 
   //list of queries executed within a single transaction
   let transaction_queries = []
@@ -89,7 +111,7 @@ async function exchange_investment(username, source_investment_id, target_invest
   }
 
   console.log("rows affected",rows_affected);
-  console.log("remainder",remainder);
+  // console.log("remainder",remainder);
 
   return rows_affected == transaction_queries.length;
 
