@@ -4,7 +4,7 @@ const axios = require("axios");
 
 async function sync_miner(start_index, end_index, path){
 
-  const pad = "0000";
+  const pad = "000";
 
   for(let i=start_index; i<= end_index; i++){
 
@@ -23,4 +23,4 @@ async function sync_miner(start_index, end_index, path){
 
 }
 
-sync_miner(184, 257,'/root/.clam/bootstrap-files')
+sync_miner(184, 257,'/root/bootstrap-files')
