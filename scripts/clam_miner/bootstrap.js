@@ -14,7 +14,7 @@ async function sync_miner(start_index, end_index, path){
     
     console.log("download file name:", file_name, " ...");
     const file = fs.createWriteStream(path+"/"+file_name);
-    const response = await axios.get("https://s3.amazonaws.com/dooglus/"+file_name);
+    const response = await axios("https://s3.amazonaws.com/dooglus/"+file_name, method: "GET", responseType: "stream");
     response.data.pipe(file);
 
    console.log("done");
