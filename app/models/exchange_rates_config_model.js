@@ -13,22 +13,26 @@ async function rates_target_currency(to_currency){
   return rows;
 }
 
-async function rates(to_currency){
+async function rates_by_source(from_currency, to_currency, source){
 
-  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source  FROM exchange_rates_config WHERE from_to like ? ",['%_' + to_currency]);
-  return rows;
+  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight, reference_rate_gap  FROM exchange_rates_config WHERE from_to = ? AND  source = ?",[from_currency + '_' + to_currency, source]);
+  return rows[0];
 }
 
-async function get_rates_currency_pair(from_currency, to_currency){
+
+  async function get_rates_currency_pair(from_currency, to_currency){
 
   let pairA = from_currency+'_'+to_currency;
+  let pairB = to_currency+'_'+from_currency;
 
 
-  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM exchange_rates_config WHERE from_to = ? ",[pairA]);
+  let [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM exchange_rates_config WHERE from_to = ? OR from_to = ?",[pairA, pairB]);
 
-  // let pairB = to_currency+'_'+from_currency;
+  // if (rows.length == 0){
+  //   let pairB = to_currency+'_'+from_currency;
+  //   [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM exchange_rates_config WHERE from_to = ? or from_to = ? ",[pairA, pairB]);
   //
-  // const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM exchange_rates_config WHERE from_to = ? or from_to = ? ",[pairA, pairB]);
+  // }
 
   let rates_signal = []
   let total_weight = 0;
@@ -83,6 +87,7 @@ async function get_currency_pair_info(from_currency, to_currency){
 module.exports = {
   rates_source_currency,
   rates_target_currency,
+  rates_by_source,
   get_rates_currency_pair,
   get_currency_pair_info
 };

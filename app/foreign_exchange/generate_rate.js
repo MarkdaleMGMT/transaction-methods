@@ -62,21 +62,40 @@ async function calculate_rate(src_currency, target_currency){
         let final_pairwise_bid = 1, final_pairwise_ask = 1;
 
         console.log("before normalization for", from_currency, "/", to_currency);
+
+        //get normalized weights (could be in either direction )
         let normalized_rates = await get_rates_currency_pair(from_currency, to_currency);
         // console.log("after normalization ", normalized_rates);
 
         for(let j=0; j < normalized_rates.length; j++){
 
           //TODO: find the inverse rates
-          let individual_rate = await find_valid_rate(from_currency, to_currency, normalized_rates[j]['source']);
+          let [individual_from, individual_to] = [normalized_rates[j].from, normalized_rates[j].to];
+          let individual_rate = await find_valid_rate(individual_from, individual_to, normalized_rates[j]['source']);
+
           if (j==0)
           {
-            final_pairwise_bid = normalized_rates[j]['weight'] * individual_rate['bid'];
-            final_pairwise_ask = normalized_rates[j]['weight'] * individual_rate['ask'];
+            if(individual_from == from_currency){
+              final_pairwise_bid = normalized_rates[j]['weight'] * individual_rate['bid'];
+              final_pairwise_ask = normalized_rates[j]['weight'] * individual_rate['ask'];
+            }else{
+              //rate present in reverse direction
+              final_pairwise_bid = normalized_rates[j]['weight'] * 1/individual_rate['ask'];
+              final_pairwise_ask = normalized_rates[j]['weight'] * 1/individual_rate['bid'];
+            }
+
           }
           else{
-            final_pairwise_bid += normalized_rates[j]['weight'] * individual_rate['bid'];
-            final_pairwise_ask += normalized_rates[j]['weight'] * individual_rate['ask'];
+            if(individual_from == from_currency){
+              final_pairwise_bid += normalized_rates[j]['weight'] * individual_rate['bid'];
+              final_pairwise_ask += normalized_rates[j]['weight'] * individual_rate['ask'];
+            }else{
+
+              //rate present in reverse direction
+              final_pairwise_bid += normalized_rates[j]['weight'] * 1/individual_rate['ask'];
+              final_pairwise_ask += normalized_rates[j]['weight'] * 1/individual_rate['bid'];
+
+            }
           }
 
 
