@@ -186,6 +186,12 @@ async function get_all_accounts(investment_id){
   return accounts;
 }
 
+async function update_deposit_address(account_id, deposit_address){
+  const [result, fields] = await db.connection.query("UPDATE account SET deposit_address = ? WHERE account_id = ?",[deposit_address, account_id]);
+  return result.affectedRows;
+}
+
+
 function calculate_balances(original_balance,prev_accnt_balance,change_in_balance, rake_share){
 
   // console.log("original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share");
@@ -210,6 +216,10 @@ function calculate_balances(original_balance,prev_accnt_balance,change_in_balanc
 }
 
 
+
+
+
+
 module.exports = {
   get_account_by_id,
   get_account_by_investment,
@@ -222,5 +232,6 @@ module.exports = {
   calculate_balances,
   create_user_account,
   create_investment_account,
-  create_rake_account
+  create_rake_account,
+  update_deposit_address
 };

@@ -1,6 +1,10 @@
 const crypto = require("crypto");
+const fs = require('fs');
+const { promisify } = require('util');
 
 
+
+const writeFileAsync = promisify(fs.writeFile);
 
 
 function encrypt_sha512(secret, str) {
@@ -9,6 +13,7 @@ function encrypt_sha512(secret, str) {
     return signed
 
 }
+
 
 
 
@@ -27,6 +32,13 @@ function encrypt_sha384(secret, str){
   // return signature;
 }
 
+function toCamelCase(str) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+    if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+    return index == 0 ? match.toLowerCase() : match.toUpperCase();
+  });
+}
+
 /**
  * Format number to two digits
  **/
@@ -36,9 +48,19 @@ function twoDigits(d) {
    return d.toString();
 }
 
+function toCamelCase(str) {
+    return str.replace(/^([A-Z])|[\s-_](\w)/g, function(match, p1, p2, offset) {
+        if (p2) return p2.toUpperCase();
+        return p1.toLowerCase();
+    });
+};
+
+
 
 module.exports = {
   twoDigits,
   encrypt_sha512,
-  encrypt_sha384
+  encrypt_sha384,
+  toCamelCase,
+  writeFileAsync
 }

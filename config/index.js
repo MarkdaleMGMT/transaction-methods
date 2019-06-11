@@ -1,6 +1,5 @@
 'use strict'
 
-console.log(process.env)
 
 module.exports = {
   mysql_config :{

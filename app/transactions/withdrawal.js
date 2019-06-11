@@ -12,7 +12,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @return {JSON}         Returns success
  */
 
- module.exports = async function withdrawal_api(req, res) {
+ async function withdrawal_api(req, res) {
 
    let account_id = req.body.account_id
    let username = req.body.username
@@ -90,4 +90,10 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
 
+ }
+
+
+ module.exports = {
+   withdrawal_api,
+   withdraw
  }
