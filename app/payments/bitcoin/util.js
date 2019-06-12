@@ -1,6 +1,8 @@
 const { rpc_call } = require('../../util/bitcoin_rpc_client');
+const { bitcoinChangeAddress } = require('../../../global_config');
 
 
+//TODO: optimize to send in one tx
 async function transfer_btc(input_tx_id, vout, amount, from_address, to_address){
 
 
@@ -78,12 +80,12 @@ async function get_min_relay_fee(){
   return parseFloat(fee);
 }
 
-async function get_balance(address){
+async function get_balance(){
 
   //TODO: or we can get the balance of the wallet
 
   let balance = 0;
-  let response = await rpc_call('listunspent',[0, 9999999, [address]]);
+  let response = await rpc_call('listunspent',[6, 9999999]);
 
   // console.log("response", response);
 
@@ -112,19 +114,123 @@ async function get_wallet_balance(){
   return parseFloat(result);
 }
 
-async function send_btc(rx_address, amount, memo){
-  let response = await rpc_call('sendtoaddress', [rx_address, amount, memo]);
-  let tx_id = response.result;
+// async function send_btc(rx_address, amount, memo, subtractFeeFromAmount){
+//   let response = await rpc_call('sendtoaddress', [rx_address, amount, memo, "" ,subtractFeeFromAmount]);
+//   let tx_id = response.result;
+//
+//   return tx_id;
+// }
 
-  return tx_id;
+async function send_btc(amount, tx_fee, rx_address){
+
+  // console.log("bitcoinTxFee", bitcoinTxFee);
+  let total_amount = 0;
+  let utxos = await list_unspent();
+
+  amount = parseFloat(amount.toFixed(8));
+
+  let tx_inputs = [];
+
+  //TODO: optimization of UTXOs
+  // utxos.sort(function(a, b) {
+  //   return parseFloat(b.amount) - parseFloat(a.amount);
+  // });
+
+
+
+  for(let i=0; i<utxos.length; i++){
+
+    if(total_amount >= (amount + tx_fee))
+      break;
+    else{
+      total_amount+=utxos[i].amount;
+      tx_inputs.push({
+        txid:utxos[i].txid,
+        vout:utxos[i].vout
+      });
+
+    }
+  }
+
+  //we have sufficient inputs
+  let change = parseFloat((total_amount - amount - tx_fee).toFixed(8));
+
+  console.log("total amount ", total_amount);
+  console.log("calculated total amount ", change + tx_fee + amount);
+
+
+
+  let tx_outputs = {};
+  tx_outputs[rx_address]= amount;
+  //send change to change address, leaving out tx fee
+  tx_outputs[bitcoinChangeAddress] = change;
+
+  let raw_tx_obj = [tx_inputs, tx_outputs];
+  console.log("raw_tx_obj", raw_tx_obj);
+
+  //create a raw transaction
+  let raw_tx_response = await rpc_call('createrawtransaction', raw_tx_obj);
+  let raw_tx_hash = raw_tx_response.result;
+  console.log("raw_tx_hash ",raw_tx_hash);
+
+  if(!raw_tx_hash) throw new Error("Unable to process transaction")
+
+
+  //sign raw transaction
+  let sign_tx_response = await rpc_call('signrawtransactionwithwallet', [raw_tx_hash]);
+  let signed_tx_hash = sign_tx_response.result.hex;
+  console.log("signed_tx_hash ",signed_tx_hash);
+  //
+  //test mempool acceptance
+  let mempool_acceptance = await rpc_call('testmempoolaccept',[[signed_tx_hash]]);
+  let acceptance_result = mempool_acceptance.result[0];
+  console.log("acceptance result", acceptance_result);
+
+  if(!acceptance_result.allowed) throw new Error("Transaction not accepted");
+
+  //send raw transaction
+
+  let send_tx_response = await rpc_call('sendrawtransaction', [signed_tx_hash]);
+  let txid = send_tx_response.result;
+  console.log("txid ",send_tx_response);
+
+  return txid;
+
+
+
+
+
+
 }
+
+
+async function get_raw_tx_fee(hexstring){
+  let response = await rpc_call('fundrawtransaction', [hexstring]);
+  console.log("response ",response);
+  let fee = response.result.fee;
+
+  return fee;
+}
+
+async function list_unspent(){
+  let response = await rpc_call('listunspent', [6, 9999999]);
+  let utxos = response.result;
+
+
+  return utxos;
+}
+
+
 
 
 module.exports = {
   transfer_btc,
   send_btc,
   get_wallet_balance,
-  get_min_relay_fee
+  get_min_relay_fee,
+  list_unspent,
+  get_raw_tx_fee,
+  get_balance
 }
 
 // get_wallet_balance();
