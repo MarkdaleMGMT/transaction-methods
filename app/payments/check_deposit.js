@@ -1,5 +1,6 @@
 const { get_investment_by_id } = require('../models').investment_model;
 const check_bitcoin_deposit = require('./bitcoin/check_deposit');
+const check_clamcoin_deposit = require('./clamcoin/check_deposit');
 // const check_clamcoin_deposit = require('./clamcoin/check_deposit');
 
 module.exports = async function check_deposit_api(req, res){
@@ -31,7 +32,7 @@ async function redirect_check_deposit(username, investment_id){
       result = await check_bitcoin_deposit(username, investment_id)
       break;
     case 'CLAM':
-      console.log("call clam coin check deposit");
+      result = await check_clamcoin_deposit(username, investment_id)
       break;
     default:
       throw new Error("currency does not support this method");

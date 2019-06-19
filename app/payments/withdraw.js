@@ -1,5 +1,6 @@
 const { get_investment_by_id } = require('../models').investment_model;
 const withdraw_bitcoin = require('./bitcoin/withdraw');
+const withdraw_clamcoin = require('./clamcoin/withdraw');
 
 module.exports = async function withdraw_currency(req, res){
 
@@ -29,7 +30,7 @@ async function redirect_withdraw_currency(username, investment_id, amount, addre
       result = await withdraw_bitcoin(username, investment_id, amount, address)
       break;
     case 'CLAM':
-      console.log("call clam coin withdrawal");
+      result = await withdraw_clamcoin(username, investment_id, amount, address)
       break;
     default:
       throw new Error("currency does not support this method");
