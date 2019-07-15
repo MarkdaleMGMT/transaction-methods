@@ -39,6 +39,12 @@ async function get_withdrawal_fees_account(investment_id){
   return rows[0];
 }
 
+async function get_fx_account(investment_id){
+
+  const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE investment_id = ? and account_level = ?",[investment_id,3]);
+  return rows[0];
+}
+
 
 async function get_accounts_per_user(username){
   const [accounts, fields] = await db.connection.query("SELECT * FROM account WHERE username = ?",[username]);
@@ -166,7 +172,7 @@ async function create_investment_account(investment_id){
 
 
   let new_accnt_id = await create_account(process.env.INVESTMENT_ACNT,investment_id,'investment account','debit','asset',1);
-  console.log("newly created account ", new_accnt_id);
+  console.log("newly created investment account ", new_accnt_id);
   return new_accnt_id;
 
 
@@ -176,7 +182,7 @@ async function create_rake_account(investment_id){
 
 
   let new_accnt_id = await create_account(process.env.RAKE_ACNT,investment_id,'rake account','credit','liability',2);
-  console.log("newly created account ", new_accnt_id);
+  console.log("newly created rake account ", new_accnt_id);
   return new_accnt_id;
 
 
@@ -191,6 +197,13 @@ async function create_withdrawal_fees_account(investment_id){
   return new_accnt_id;
 
 
+}
+
+async function create_fx_account(investment_id){
+
+  let new_accnt_id = await create_account(process.env.FX_ACNT,investment_id,'fx account','credit','liability',3);
+  console.log("newly created fx account ", new_accnt_id);
+  return new_accnt_id;
 }
 
 
@@ -248,6 +261,7 @@ module.exports = {
   get_investment_account,
   get_withdrawal_fees_account,
   get_rake_account,
+  get_fx_account,
   account_balance,
   get_accounts_per_user,
   get_all_accounts,
@@ -255,6 +269,7 @@ module.exports = {
   create_user_account,
   create_investment_account,
   create_rake_account,
+  create_fx_account,
   create_withdrawal_fees_account,
   update_deposit_address
 };

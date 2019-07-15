@@ -25,8 +25,8 @@ async function get_exchange_rate(base_url, param){
     timestamp: new Date().toMysqlFormat(),
     from_to: param,
     source: 'scotiabank',
-    bid: parseFloat(fx_rate['CLIENT_BUY']),
-    ask: parseFloat(fx_rate['CLIENT_SELL'])
+    bid: parseFloat(fx_rate['CLIENT_SELL']),
+    ask: parseFloat(fx_rate['CLIENT_BUY'])
   };
 }
 

@@ -3,4 +3,5 @@ INSERT INTO user
 VALUES
 ('admin', '$2b$10$IuWpARdQuMBJHu2cnDIfdede0bZy428ViuvbK5MME4v4OOAWocNCW', 0, NULL, '', 1, NULL),
 ('investment_user', '$2b$10$IuWpARdQuMBJHu2cnDIfdede0bZy428ViuvbK5MME4v4OOAWocNCW', 0, NULL, '', 1, NULL),
-('rake_user', '$2b$10$IuWpARdQuMBJHu2cnDIfdede0bZy428ViuvbK5MME4v4OOAWocNCW', 0, NULL, '', 1, NULL)
+('rake_user', '$2b$10$IuWpARdQuMBJHu2cnDIfdede0bZy428ViuvbK5MME4v4OOAWocNCW', 0, NULL, '', 1, NULL),
+('fx_user', '$2b$10$IuWpARdQuMBJHu2cnDIfdede0bZy428ViuvbK5MME4v4OOAWocNCW', 0, NULL, '', 1, NULL)

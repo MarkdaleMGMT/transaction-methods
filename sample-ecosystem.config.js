@@ -30,7 +30,8 @@ module.exports = {
       DB_DATABASE:<db_name>,
       INVESTMENT_ACNT:<investment_acnt_username>,
       RAKE_ACNT:<rake_acnt_username>,
-      WITHDRAWAL_FEES_ACNT:<withdrawal_anct_username>
+      FX_ACNT:<fx_acnt_username>,
+      WITHDRAWAL_FEES_ACNT:<withdrawal_anct_username>,
       BTC_PAY_HOST:<bitcoin_payment_ip>,
       BTC_PAY_PORT:<bitcoin_payment_port>,
       BTC_PAY_RPC_USER:<bitcoin_payment_rpc_user>,
@@ -49,6 +50,7 @@ module.exports = {
       DB_DATABASE:<db_name>,
       INVESTMENT_ACNT:<investment_acnt_username>,
       RAKE_ACNT:<rake_acnt_username>,
+      FX_ACNT:<fx_acnt_username>,
       WITHDRAWAL_FEES_ACNT:<withdrawal_anct_username>,
       BTC_PAY_HOST:<bitcoin_payment_ip>,
       BTC_PAY_PORT:<bitcoin_payment_port>,
