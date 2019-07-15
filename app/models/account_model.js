@@ -269,7 +269,7 @@ module.exports = {
   create_user_account,
   create_investment_account,
   create_rake_account,
-  create_fx_account
+  create_fx_account,
   create_withdrawal_fees_account,
   update_deposit_address
 };
