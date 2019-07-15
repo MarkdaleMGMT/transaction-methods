@@ -1,6 +1,5 @@
 'use strict'
 
-console.log(process.env)
 
 module.exports = {
   mysql_config :{
@@ -10,6 +9,18 @@ module.exports = {
       database: process.env.DB_DATABASE,
       multipleStatements: true,
       connectionLimit : 10
+  },
+  bitcoin_payment_config:{
+    host:process.env.BTC_PAY_HOST,
+    port:process.env.BTC_PAY_PORT,
+    rpc_user:process.env.BTC_PAY_RPC_USER,
+    rpc_pass:process.env.BTC_PAY_RPC_PASS
+  },
+  clamcoin_payment_config:{
+    host:process.env.CLAM_PAY_HOST,
+    port:process.env.CLAM_PAY_PORT,
+    rpc_user:process.env.CLAM_PAY_RPC_USER,
+    rpc_pass:process.env.CLAM_PAY_RPC_PASS
   }
 
 }

@@ -15,6 +15,12 @@ const app = express()
 var { connection } = require('./app/util/mysql_connection')
 
 
+//load configuration
+var { load_config } = require('./app/models/global_config_model');
+load_config();
+
+
+
 
 
 app.use(bodyParser.json());
