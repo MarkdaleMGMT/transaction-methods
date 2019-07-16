@@ -249,6 +249,13 @@ function calculate_balances(original_balance,prev_accnt_balance,change_in_balanc
 
 }
 
+async function get_autoconvert_accounts(){
+
+  //gets all user accounts who have opted for autoconvert
+  const [accounts, fields] = await db.connection.query("SELECT * FROM account WHERE autoconvert = ? AND account_level= ? AND autoconvert_investment_id is NOT NULL",[true,0]);
+  return accounts;
+}
+
 
 
 
@@ -271,5 +278,6 @@ module.exports = {
   create_rake_account,
   create_fx_account,
   create_withdrawal_fees_account,
-  update_deposit_address
+  update_deposit_address,
+  get_autoconvert_accounts
 };

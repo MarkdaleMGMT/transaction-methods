@@ -17,7 +17,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @param  {str} custom_memo (optional)   user defined memo
  * @return {JSON}         Returns success
  */
-module.exports = async function exchange(req,res){
+async function exchange_api(req,res){
 
   try{
     let username = req.body.username;
@@ -116,4 +116,9 @@ async function exchange_investment(username, source_investment_id, target_invest
   return rows_affected == transaction_queries.length;
 
 
+}
+
+module.exports = {
+  exchange_api,
+  exchange_investment
 }
