@@ -2,5 +2,6 @@ module.exports = {
   poloniex : require('./poloniex'),
   bitfinex : require('./bitfinex'),
   scotiabank : require('./scotiabank'),
-  cme : require('./cme')
+  cme : require('./cme'),
+  binance: require('./binance')
 }

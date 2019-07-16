@@ -6,6 +6,12 @@ const { promisify } = require('util');
 
 const writeFileAsync = promisify(fs.writeFile);
 
+function encrypt_sha256(secret, str) {
+    var hmac = crypto.createHmac("sha256", secret);
+    var signed = hmac.update(str).digest("hex");
+    return signed
+
+}
 
 function encrypt_sha512(secret, str) {
     var hmac = crypto.createHmac("sha512", secret);
@@ -13,9 +19,6 @@ function encrypt_sha512(secret, str) {
     return signed
 
 }
-
-
-
 
 function encrypt_sha384(secret, str){
 
@@ -59,6 +62,7 @@ function toCamelCase(str) {
 
 module.exports = {
   twoDigits,
+  encrypt_sha256,
   encrypt_sha512,
   encrypt_sha384,
   toCamelCase,
