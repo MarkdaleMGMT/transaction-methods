@@ -68,7 +68,21 @@ async function get_transactions_summary(investment_id){
 
 }
 
+async function get_daily_gain(account_id){
 
+  let datetime = new Date().toMysqlFormat();
+  const [rows, fields] = await db.connection.query("SELECT sum(amount) as 'total_gains' FROM transaction  WHERE account_id = ? AND date(time) = date(?) AND transaction_type = ?  ",[account_id,datetime,'global update']);
+  if (!rows || rows.length == 0)
+    return 0;
+
+  console.log(rows[0], account_id);
+
+  let daily_gain = parseFloat(rows[0].total_gains).toFixed(8);
+  daily_gain = Math.abs(parseFloat(daily_gain));
+  console.log("account_id: ",account_id, " total_gains: ", typeof(daily_gain) );
+  return daily_gain;
+
+}
 
 
 
@@ -81,5 +95,6 @@ module.exports ={
   get_trial_balance,
   get_trial_balance_per_investment,
   get_trial_balance_per_currency,
-  get_transactions_summary
+  get_transactions_summary,
+  get_daily_gain
 }

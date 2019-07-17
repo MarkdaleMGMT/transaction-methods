@@ -7,5 +7,6 @@ module.exports = {
   api_access_model : require('./api_access_model'),
   order_book : require('./order_book_model'),
   exchange_rates_config : require('./exchange_rates_config_model'),
-  quoted_fx_rate: require('./quoted_fx_rates_model')
+  quoted_fx_rate: require('./quoted_fx_rates_model'),
+  process_log: require('./process_log_model')
 }
