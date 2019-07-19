@@ -5,7 +5,9 @@ const { rates_by_source } = require('../models').exchange_rates_config;
 const axios = require("axios");
 const { poloniex, bitfinex, scotiabank, cme, binance } = require('../exchanges');
 
-
+/*
+Queries exernal data sources and updates order book accordingly
+*/
 module.exports = async function update_exchange_rates(req, res){
 
   try{
