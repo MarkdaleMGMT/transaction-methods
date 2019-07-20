@@ -13,7 +13,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @param  {float} amount    Amount to be deposited
  * @return {JSON}         Returns success
  */
- module.exports = async function deposit_api(req, res) {
+ async function deposit_api(req, res) {
 
    let investment_id = req.body.investment_id
    let deposit_to = req.body.deposit_to
@@ -95,4 +95,9 @@ const uuidv1 = require('uuid/v1');//timestamp
    }
 
 
+ }
+
+ module.exports = {
+   deposit_api,
+   deposit
  }

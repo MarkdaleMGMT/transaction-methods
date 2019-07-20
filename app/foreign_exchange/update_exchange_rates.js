@@ -1,9 +1,13 @@
 const { log_new_rate } = require('../models/order_book_model');
 const { get_exchange_api } = require('../models/api_access_model');
+const { rates_by_source } = require('../models').exchange_rates_config;
 
 const axios = require("axios");
-const { poloniex, bitfinex, scotiabank } = require('../exchanges');
+const { poloniex, bitfinex, scotiabank, cme, binance } = require('../exchanges');
 
+/*
+Queries exernal data sources and updates order book accordingly
+*/
 module.exports = async function update_exchange_rates(req, res){
 
   try{
@@ -49,6 +53,16 @@ async function update_order_book(source, rates){
     }
     else if(exchange_api.description == 'bitfinex'){
       exchange_rate = await bitfinex.get_exchange_rate(base_url, rate);
+    }
+    else if(exchange_api.description == 'cme'){
+      let cme_config = await rates_by_source(rate.split('_')[0], rate.split('_')[1],  source);
+      console.log("cme config", cme_config);
+      exchange_rate = await cme.get_exchange_rate(base_url, rate, cme_config['reference_rate_gap']);
+    }
+    else if(exchange_api.description == 'binance'){
+      let binance_config = await rates_by_source(rate.split('_')[0], rate.split('_')[1],  source);
+      console.log("binance config", binance_config);
+      exchange_rate = await binance.get_exchange_rate(base_url, rate, binance_config['reference_rate_gap']);
     }
     console.log("exchange_rate ", exchange_rate);
     if(exchange_rate){

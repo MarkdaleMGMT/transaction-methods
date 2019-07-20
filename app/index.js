@@ -12,6 +12,7 @@ app.use('/accounts', require('./accounts'));
 app.use('/investments', require('./investments'));
 app.use('/currency', require('./currency'));
 app.use('/fx', require('./foreign_exchange'));
+app.use('/payments', require('./payments'));
 
 
 // the catch all route

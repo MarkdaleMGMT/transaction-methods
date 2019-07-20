@@ -2,6 +2,7 @@ var db = require('../util/mysql_connection')
 // const { get_user_by_username } = require('../models').user_model
 const { account_balance, get_accounts_per_user } = require('../models').account_model
 const {  get_investment_by_id } = require('../models').investment_model
+const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
 
 /**
@@ -65,12 +66,18 @@ const {  get_investment_by_id } = require('../models').investment_model
        var investment = await get_investment_by_id(account.investment_id);
        var currency = investment.currency;
 
-       var balance = await account_balance(account.account_id)
+       //get the latest exchange rate from the db src:investment currency, target: CAD
+       let quoted_rate = await get_quoted_rate(currency, 'CAD');
+       let exchange_rate = parseFloat(quoted_rate.bid);
+
+       var balance = await account_balance(account.account_id);
+       let balance_cad = parseFloat((exchange_rate * balance).toFixed(8));
 
        user_balance.push({
          'account_id':account.account_id,
          'investment_id':account.investment_id,
          'balance':balance,
+         'balance_cad':balance_cad,
          'currency':currency
 
        })
