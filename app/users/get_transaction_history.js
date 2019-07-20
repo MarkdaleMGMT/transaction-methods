@@ -3,6 +3,7 @@ const dateFormat = require('dateformat');
 const { get_account_by_id } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
+const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
 /**
  * API to fetch all transactions for a specific account
@@ -37,6 +38,10 @@ const { get_investment_by_id } = require('../models').investment_model
     let investment = await get_investment_by_id(account.investment_id);
     let currency = investment.currency;
 
+    //get the latest exchange rate from the db src:investment currency, target: CAD
+    let quoted_rate = await get_quoted_rate(currency, 'CAD');
+    let exchange_rate = parseFloat(quoted_rate.bid);
+
     if(!account) throw new Error('Account does not exist');
 
     let account_type = account.account_type;
@@ -59,6 +64,9 @@ const { get_investment_by_id } = require('../models').investment_model
         account_balance += parseFloat(account_transaction.amount)*-1.0;
       }
 
+      account_balance = parseFloat(account_balance.toFixed(8));
+      let account_balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
+
 
 
       let transaction_json = {
@@ -66,7 +74,8 @@ const { get_investment_by_id } = require('../models').investment_model
         'description': account_transaction.memo,
         'amount':Math.abs(account_transaction.amount),
         'type': account_transaction.amount <0 ? 'credit':'debit',
-        'account_balance':parseFloat(account_balance.toFixed(8)),
+        'account_balance':account_balance,
+        'account_balance_cad':account_balance_cad,
         'custom_memo':account_transaction.custom_memo,
         'currency':currency
 

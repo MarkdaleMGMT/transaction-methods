@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const fs = require('fs');
 const { promisify } = require('util');
+const moment = require("moment");
 
 
 
@@ -58,9 +59,21 @@ function toCamelCase(str) {
     });
 };
 
+function getDates(startDate, stopDate) {
+    var dateArray = [];
+    var currentDate = moment(startDate);
+    var stopDate = moment(stopDate);
+    while (currentDate <= stopDate) {
+        dateArray.push( moment(currentDate).format('DD MM YYYY') )
+        currentDate = moment(currentDate).add(1, 'days');
+    }
+    return dateArray;
+}
+
 
 
 module.exports = {
+  getDates,
   twoDigits,
   encrypt_sha256,
   encrypt_sha512,
