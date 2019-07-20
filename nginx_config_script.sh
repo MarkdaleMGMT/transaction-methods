@@ -21,6 +21,14 @@ server_code='server {
         }
         location /phpmyadmin {
         }
+        location /frontend {
+               proxy_pass http://localhost:3001;
+               proxy_http_version 1.1;
+               proxy_set_header Upgrade $http_upgrade;
+               proxy_set_header Connection ’upgrade’;
+               proxy_set_header Host $host;
+               proxy_cache_bypass $http_upgrade;
+        }
         location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         root /usr/share/;
@@ -41,4 +49,3 @@ echo "$server_code" >> /etc/nginx/sites-available/default
 echo -n "Enter ip address: "
 read ip_address
 sed -i "/server_name/c\        server_name $ip_address;" /etc/nginx/sites-available/default
-
