@@ -17,7 +17,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @param  {str} custom_memo (optional)   user defined memo
  * @return {JSON}         Returns success
  */
-module.exports = async function exchange(req,res){
+async function exchange_api(req,res){
 
   try{
     let username = req.body.username;
@@ -60,6 +60,13 @@ async function exchange_investment(username, source_investment_id, target_invest
   let src_fx_account = await get_fx_account(source_investment_id);
   let target_fx_account = await get_fx_account(target_investment_id);
 
+  if(!src_fx_account)
+    throw new Error("Investment id: "+source_investment_id+" does not have an fx account");
+  if(!target_fx_account)
+    throw new Error("Investment id: "+target_investment_id+" does not have an fx account");
+
+  console.log("src_user_account", src_user_account);
+  console.log("target_user_account", target_user_account);
 
 
   let quoted_rate = await get_quoted_rate(source_currency, target_currency);
@@ -78,6 +85,7 @@ async function exchange_investment(username, source_investment_id, target_invest
   let target_amount = parseFloat((rate * amount).toFixed(8));
 
   //Check if target fx has enough balance
+
   let fx_balance = await account_balance(target_fx_account.account_id);
   if (fx_balance < target_amount){
     throw new Error("Insufficient balance in fx");
@@ -116,4 +124,9 @@ async function exchange_investment(username, source_investment_id, target_invest
   return rows_affected == transaction_queries.length;
 
 
+}
+
+module.exports = {
+  exchange_api,
+  exchange_investment
 }
