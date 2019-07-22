@@ -24,7 +24,7 @@ module.exports = async function check_deposit(username, investment_id){
   let response = await rpc_call('listunspent',[0, 9999999, [deposit_address]]);
   console.log("response", response);
 
-  let result = response;
+  let result = response.result;
 
   if(result.length == 0 ){
     status.push({status:'no deposit received', amount:0});

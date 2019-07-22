@@ -25,15 +25,15 @@ async function transfer_clams(input_tx_id, vout, amount, from_address, to_addres
 
     //create a raw transaction
     let raw_tx_response = await rpc_call('createrawtransaction', raw_tx_obj);
-    let raw_tx_hash = raw_tx_response;
+    let raw_tx_hash = raw_tx_response.result;
     console.log("raw_tx_hash ",raw_tx_hash);
 
     //sign raw transaction
     let sign_tx_response = await rpc_call('signrawtransaction', [raw_tx_hash]);
-    let signed_tx_hash = sign_tx_response.hex;
+    let signed_tx_hash = sign_tx_response.result.hex;
     console.log("signed_tx_hash ",signed_tx_hash);
 
-    let complete_signatures = sign_tx_response.complete
+    let complete_signatures = sign_tx_response.result.complete
     if (!complete_signatures) throw new Error("Transaction does not have complete signatures")
 
     //test mempool acceptance
@@ -46,7 +46,7 @@ async function transfer_clams(input_tx_id, vout, amount, from_address, to_addres
     //send raw transaction
 
     let send_tx_response = await rpc_call('sendrawtransaction', [signed_tx_hash]);
-    let txid = send_tx_response;
+    let txid = send_tx_response.result;
     console.log("txid ",txid);
 
     if(!txid) throw new Error("Can not create a transaction")
@@ -71,7 +71,7 @@ async function get_balance(){
 
   // console.log("response", response);
 
-  let result = response;
+  let result = response.result;
 
   for(let i=0; i< result.length; i++){
 
@@ -90,7 +90,7 @@ async function get_balance(){
 
 async function list_unspent(){
   let response = await rpc_call('listunspent', [6, 9999999]);
-  let utxos = response;
+  let utxos = response.result;
   return utxos;
 }
 
@@ -145,7 +145,7 @@ async function send_clams(amount, tx_fee, rx_address){
 
   //create a raw transaction
   let raw_tx_response = await rpc_call('createrawtransaction', raw_tx_obj);
-  let raw_tx_hash = raw_tx_response;
+  let raw_tx_hash = raw_tx_response.result;
   console.log("raw_tx_hash ",raw_tx_hash);
 
   if(!raw_tx_hash) throw new Error("Unable to process transaction")
@@ -153,11 +153,11 @@ async function send_clams(amount, tx_fee, rx_address){
 
   //sign raw transaction
   let sign_tx_response = await rpc_call('signrawtransaction', [raw_tx_hash]);
-  let signed_tx_hash = sign_tx_response.hex;
+  let signed_tx_hash = sign_tx_response.result.hex;
   console.log("signed_tx_hash ",signed_tx_hash);
   //
 
-  let complete_signatures = sign_tx_response.complete
+  let complete_signatures = sign_tx_response.result.complete
   if (!complete_signatures) throw new Error("Transaction does not have complete signatures")
 
 
@@ -172,7 +172,7 @@ async function send_clams(amount, tx_fee, rx_address){
   //send raw transaction
 
   let send_tx_response = await rpc_call('sendrawtransaction', [signed_tx_hash]);
-  let txid = send_tx_response;
+  let txid = send_tx_response.result;
   console.log("txid ",send_tx_response);
 
   return txid;

@@ -21,7 +21,7 @@ module.exports = async function get_deposit_address(username, investment_id){
     //TODO: might need to change the mempool
 
     let response = await rpc_call('getnewaddress', []);
-    deposit_address = response
+    deposit_address = response.result;
     console.log("deposit_address", deposit_address);
 
 
