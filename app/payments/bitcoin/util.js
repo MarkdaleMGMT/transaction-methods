@@ -12,7 +12,7 @@ async function transfer_btc(input_tx_id, vout, amount, from_address, to_address)
     let min_tx_fee = await get_min_relay_fee();
 
     let amount_obj = {};
-    amount_obj[to_address] = amount-min_tx_fee;
+    amount_obj[to_address] = parseFloat((amount-min_tx_fee).toFixed(8));
 
     let raw_tx_obj = [[  {
         txid:input_tx_id,
@@ -26,6 +26,7 @@ async function transfer_btc(input_tx_id, vout, amount, from_address, to_address)
     let raw_tx_response = await rpc_call('createrawtransaction', raw_tx_obj);
     let raw_tx_hash = raw_tx_response.result;
     console.log("raw_tx_hash ",raw_tx_hash);
+    console.log("raw_tx_response ",raw_tx_response);
 
     //sign raw transaction
     let sign_tx_response = await rpc_call('signrawtransactionwithwallet', [raw_tx_hash]);
