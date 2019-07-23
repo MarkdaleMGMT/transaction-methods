@@ -31,6 +31,8 @@ CREATE TABLE `account` (
   `investment_id` int(11) NOT NULL,
   `account_level` smallint(2) NOT NULL DEFAULT '0',
   `deposit_address` varchar(35) DEFAULT NULL,
+  `autoconvert` tinyint(1) NOT NULL DEFAULT '0',
+  `autoconvert_investment_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`account_id`),
   KEY `fk_account_user_idx` (`username`),
   KEY `fk_account_investment_idx` (`investment_id`),
@@ -74,6 +76,7 @@ CREATE TABLE `control` (
   `rake` decimal(5,2) NOT NULL DEFAULT '0.00',
   `affiliate_rake` decimal(5,2) NOT NULL DEFAULT '0.00',
   `fx_rake` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `fixed_rate_investment` decimal(5,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`investment_id`),
   KEY `fk_control_investment_idx` (`investment_id`),
   CONSTRAINT `fk_control_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -182,6 +185,39 @@ CREATE TABLE `order_book` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `pending_deposits`
+--
+
+DROP TABLE IF EXISTS `pending_deposits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pending_deposits` (
+  `pending_deposit_id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `account_id` int(11) NOT NULL,
+  `amount` decimal(20,8) NOT NULL,
+  `transaction_id` varchar(45) NOT NULL,
+  PRIMARY KEY (`pending_deposit_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `process_log`
+--
+
+DROP TABLE IF EXISTS `process_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `process_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `process_type` varchar(45) NOT NULL,
+  `status` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `quoted_fx_rates`
 --
 
@@ -275,4 +311,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-07-15 18:10:27
+-- Dump completed on 2019-07-23 17:32:12
