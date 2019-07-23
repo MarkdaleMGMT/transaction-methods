@@ -1,8 +1,10 @@
+const dateFormat = require('dateformat');
+
 const { get_autoconvert_accounts, get_account_by_id } = require('../models').account_model;
 const { get_daily_gain } = require('../models').transaction_model;
 const { log_process_execution,  get_last_execution } = require('../models').process_log;
 const { exchange_investment } = require('../foreign_exchange/exchange');
-const dateFormat = require('dateformat');
+
 /**
  * API to convert gains of a user from global update to an investment of their choice
  */

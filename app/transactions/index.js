@@ -18,3 +18,4 @@ app.post('/balance_sheet_summary', require('./balance_sheet_summary'));
 
 app.post('/auto_global_update', require('./global_update_all_investments'));
 app.post('/convert_gains', require('./convert_gains'));
+app.post('/update_fixedrate_investments', require('./update_fixedrate_investments'));
