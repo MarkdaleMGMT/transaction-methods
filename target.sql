@@ -157,7 +157,7 @@ DROP TABLE IF EXISTS `investment_trial_balance`;
 /*!50001 DROP VIEW IF EXISTS `investment_trial_balance`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT 
+/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT
  1 AS `investment_id`,
  1 AS `currency`,
  1 AS `trial_balance`*/;
@@ -296,7 +296,7 @@ CREATE TABLE `user` (
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`ayesha`@`%` SQL SECURITY DEFINER */
+/*!50013 DEFINER=`app`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `investment_trial_balance` AS select `investment`.`investment_id` AS `investment_id`,`investment`.`currency` AS `currency`,sum(`transaction`.`amount`) AS `trial_balance` from (`transaction` join `investment` on((`investment`.`investment_id` = `transaction`.`investment_id`))) group by `investment`.`investment_id`,`investment`.`currency` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
