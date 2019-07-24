@@ -45,7 +45,7 @@ app.use(function(req, res, next) {
 });
 
 // mount the routes
-app.use(routes);
+app.use('/backend',routes);
 
 
 const server = http.createServer(app);
