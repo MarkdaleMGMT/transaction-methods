@@ -11,9 +11,10 @@ Date.prototype.toMysqlFormat = function() {
 app.post('/deposit', require('./deposit').deposit_api);
 app.post('/withdrawal', require('./withdrawal').withdrawal_api);
 app.post('/global_update', require('./global_update').update_balance_api);
-app.post('/transfer', require('./transfer'));
+app.post('/transfer', require('./transfer').transfer_api);
 app.post('/rollback', require('./rollback'));
 app.post('/trial_balance', require('./trial_balance'));
 app.post('/balance_sheet_summary', require('./balance_sheet_summary'));
 
 app.post('/auto_global_update', require('./global_update_all_investments'));
+app.post('/withdraw_from_faucet', require('./withdraw_from_faucet'));

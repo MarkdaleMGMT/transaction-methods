@@ -45,6 +45,12 @@ async function get_fx_account(investment_id){
   return rows[0];
 }
 
+async function get_faucet_account(investment_id){
+
+  const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE investment_id = ? and account_level = ?",[investment_id,5]);
+  return rows[0];
+}
+
 
 async function get_accounts_per_user(username){
   const [accounts, fields] = await db.connection.query("SELECT * FROM account WHERE username = ?",[username]);
@@ -206,6 +212,14 @@ async function create_fx_account(investment_id){
   return new_accnt_id;
 }
 
+async function create_faucet_account(investment_id){
+
+  let new_accnt_id = await create_account(process.env.FAUCET_ACNT,investment_id,'faucet account','credit','liability',5);
+  console.log("newly created faucet account ", new_accnt_id);
+  return new_accnt_id;
+}
+
+
 
 async function create_account(username,investment_id,description,account_type,ledger_account,account_level){
 
@@ -224,6 +238,8 @@ async function update_deposit_address(account_id, deposit_address){
   const [result, fields] = await db.connection.query("UPDATE account SET deposit_address = ? WHERE account_id = ?",[deposit_address, account_id]);
   return result.affectedRows;
 }
+
+
 
 
 function calculate_balances(original_balance,prev_accnt_balance,change_in_balance, rake_share){
@@ -262,6 +278,7 @@ module.exports = {
   get_withdrawal_fees_account,
   get_rake_account,
   get_fx_account,
+  get_faucet_account,
   account_balance,
   get_accounts_per_user,
   get_all_accounts,
@@ -270,6 +287,7 @@ module.exports = {
   create_investment_account,
   create_rake_account,
   create_fx_account,
+  create_faucet_account,
   create_withdrawal_fees_account,
   update_deposit_address
 };

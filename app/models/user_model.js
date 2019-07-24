@@ -87,6 +87,10 @@ async function get_balance(username){
   return parseFloat(user_balance.toFixed(8));
 }
 
+async function log_faucet_transfer(username, datetime){
+  const [result, fields] = await db.connection.query("UPDATE user SET last_faucet_transfer = ? WHERE username = ?",[datetime, username]);
+  return result.affectedRows;
+}
 
 
 module.exports = {
@@ -94,5 +98,6 @@ module.exports = {
   // calculate_balances,
   get_user_by_username,
   get_all_users,
-  get_balance
+  get_balance,
+  log_faucet_transfer
 };

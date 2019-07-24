@@ -14,7 +14,7 @@ const uuidv1 = require('uuid/v1');//timestamp
  * @param  {int} investment_id    investment id corresponding to the sender and recipient account
  * @return {JSON} Returns success
  */
- module.exports = async function transfer_api(req, res) {
+ async function transfer_api(req, res) {
 
    let sender = req.body.sender
    let recipient = req.body.recipient
@@ -114,4 +114,9 @@ const uuidv1 = require('uuid/v1');//timestamp
 
 
 
+ }
+
+ module.exports = {
+   transfer_api,
+   transfer_amount
  }
