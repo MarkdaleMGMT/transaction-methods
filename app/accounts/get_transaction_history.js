@@ -127,7 +127,7 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
     }
 
     let sorted_tx_history = transaction_history.sort(SortByDate);
-    return sorted_tx_history;
+    return sorted_tx_history.reverse();
 
 
   }
