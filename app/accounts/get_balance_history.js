@@ -70,7 +70,8 @@ async function get_balance_history(account_id, time_period_days){
    let transactions = await get_account_transactions_by_date(account_id, start_date, end_date);
 
    let transaction_history = [];
-   let balance = await account_balance(account_id);
+   let last_balance = 0, balance = 0;
+   balance = last_balance = await account_balance(account_id);
 
    for(let i=0; i<transactions.length; i++){
      let account_transaction = transactions[i];
@@ -118,19 +119,31 @@ async function get_balance_history(account_id, time_period_days){
 
    let balance_history = [];
    let dates = getDates(start_date,end_date).reverse();
-   let last_balance = transaction_history[0].account_balance;
+
+
+   let last_balance = 0;
+   //if there were no transactions in that period
+   if(transaction_history && transaction_history.length > 0){
+
+     last_balance = transaction_history[0].account_balance;
+   }
+
 
    for(let i=0; i<dates.length; i++){
 
      //entries of current date
-     let relevant_entries = transaction_history.filter(function (el) {
-       // console.log(el.date,dates[i]);
-       return el.date == dates[i];
-     });
+     if(transaction_history && transaction_history.length){
+       
+       let relevant_entries = transaction_history.filter(function (el) {
+         // console.log(el.date,dates[i]);
+         return el.date == dates[i];
+       });
 
-     if(relevant_entries.length > 0){
-       last_balance = relevant_entries[0].account_balance
+       if(relevant_entries.length > 0){
+         last_balance = relevant_entries[0].account_balance
+       }
      }
+
 
      let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
      balance_history.push({
