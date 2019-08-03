@@ -34,13 +34,14 @@ async function get_quoted_rate(from_currency, to_currency){
    }
 
    console.log("get_quoted_rate rate ",rate);
-  if(rate)
+  if(rate){
     return {
       from_to:rate.from_to,
       bid: rate.bid,
       ask: rate.ask,
       mid: rate.mid
     };
+  }
   else {
     return {
       from_to:null,
