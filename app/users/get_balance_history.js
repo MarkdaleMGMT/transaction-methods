@@ -40,6 +40,7 @@ async function get_user_balance_history(username, time_period_days){
     let account_id = user_account.account_id;
     let investment = await get_investment_by_id(user_account.investment_id)
 
+    console.log("fetching balance history for account ", account_id);
     let account_balance_history = await get_balance_history(account_id, time_period_days);
     user_balance_history.push(
     {

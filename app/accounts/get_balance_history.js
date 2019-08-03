@@ -109,6 +109,7 @@ async function get_balance_history(account_id, time_period_days){
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
 
+   //TODO: multiply it by the exchange rate at that time period
    //get the latest exchange rate from the db src:investment currency, target: CAD
    let quoted_rate = await get_quoted_rate(currency, 'CAD');
    let exchange_rate = parseFloat(quoted_rate.bid);
