@@ -1,6 +1,6 @@
 var db = require('../util/mysql_connection')
 const dateFormat = require('dateformat');
-const { get_account_by_id, get_all_accounts } = require('../models').account_model
+const { get_account_by_id, get_accounts } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
 const { get_quoted_rate } = require('../foreign_exchange/get_rate')
@@ -109,9 +109,9 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
  }
 
-  async function get_transaction_for_all_accounts(){}{
+  async function get_transaction_for_all_accounts(){
 
-    let accounts = await get_all_accounts();
+    let accounts = await get_accounts();
     let transaction_history = [];
     for(let i=0; i<accounts.length; i++){
 

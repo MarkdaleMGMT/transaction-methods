@@ -1,7 +1,7 @@
 var db = require('../util/mysql_connection');
 const { get_account_transactions, get_account_transactions_end_date } = require('./transaction_model')
 
-async function get_all_accounts(){
+async function get_accounts(){
   const [rows, fields] = await db.connection.query("SELECT * FROM account ");
   return rows;
 }
@@ -301,7 +301,7 @@ function calculate_balances(original_balance,prev_accnt_balance,change_in_balanc
 
 
 module.exports = {
-  get_all_accounts,
+  get_accounts,
   get_account_by_id,
   get_account_by_investment,
   get_accounts_by_investment,
