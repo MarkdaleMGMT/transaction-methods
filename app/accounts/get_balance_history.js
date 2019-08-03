@@ -142,6 +142,9 @@ async function get_balance_history(account_id, time_period_days){
        if(relevant_entries.length > 0){
          last_balance = relevant_entries[0].account_balance
        }
+
+       //remove the found entries, assuming transaction is sorted in descending order
+       transaction_history = transaction_history.splice(relevant_entries.length)
      }
 
 
@@ -154,8 +157,7 @@ async function get_balance_history(account_id, time_period_days){
 
      });
 
-     //remove the found entries, assuming transaction is sorted in descending order
-     transaction_history = transaction_history.splice(relevant_entries.length)
+
 
    }
 
