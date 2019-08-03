@@ -22,6 +22,7 @@ async function balance_history_api(req, res) {
     res.send({ code: "Success", balance_history })
   }
   catch(err){
+    console.error(err);
     res.status(400).send({msg: err.message});
   }
 
