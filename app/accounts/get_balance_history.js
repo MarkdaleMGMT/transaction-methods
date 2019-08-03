@@ -37,7 +37,7 @@ async function get_balance_history(account_id, time_period_days){
     //parse time period
     //find start date and end date
 
-    let dateOffset = (24*60*60*1000) * time_period_days;
+    let dateOffset = (24*60*60*1000) * (time_period_days -1);
 
     // let end_date = new Date(new Date().setHours(0,0,0,0));
     // let start_date = new Date(new Date().setHours(0,0,0,0));
