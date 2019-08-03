@@ -121,7 +121,7 @@ async function get_balance_history(account_id, time_period_days){
    let dates = getDates(start_date,end_date).reverse();
 
 
-   let last_balance = 0;
+   // let last_balance = 0;
    //if there were no transactions in that period
    if(transaction_history && transaction_history.length > 0){
 
@@ -133,7 +133,7 @@ async function get_balance_history(account_id, time_period_days){
 
      //entries of current date
      if(transaction_history && transaction_history.length){
-       
+
        let relevant_entries = transaction_history.filter(function (el) {
          // console.log(el.date,dates[i]);
          return el.date == dates[i];
