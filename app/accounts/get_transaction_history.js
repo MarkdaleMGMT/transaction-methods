@@ -88,7 +88,8 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
         'account_balance':account_balance,
         'account_balance_cad':account_balance_cad,
         'custom_memo':account_transaction.custom_memo,
-        'currency':currency
+        'currency':currency,
+        'username':account.username
 
       };
 
