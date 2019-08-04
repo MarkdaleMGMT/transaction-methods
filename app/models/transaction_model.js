@@ -22,6 +22,11 @@ async function get_account_transactions_by_date(account_id, start_date, end_date
   return rows;
 }
 
+async function get_account_transactions_end_date(account_id, end_date){
+  const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? AND time <= ? ",[account_id, end_date]);
+  return rows;
+}
+
 async function get_transactions_per_event(transaction_event_id){
 
 
@@ -87,5 +92,6 @@ module.exports ={
   get_trial_balance,
   get_trial_balance_per_investment,
   get_trial_balance_per_currency,
-  get_transactions_summary
+  get_transactions_summary,
+  get_account_transactions_end_date
 }

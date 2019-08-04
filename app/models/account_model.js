@@ -1,5 +1,5 @@
 var db = require('../util/mysql_connection');
-const { get_account_transactions } = require('./transaction_model')
+const { get_account_transactions, get_account_transactions_end_date } = require('./transaction_model')
 
 
 
@@ -61,6 +61,49 @@ async function account_balance(account_id){
 
 
   let transactions = await get_account_transactions(account_id);
+
+  let total_credits = 0;
+  let total_debits = 0;
+
+  for(let i=0; i<transactions.length; i++){
+
+
+    let account_transaction = transactions[i];
+    let amount = parseFloat(account_transaction.amount);
+
+    // console.log("amount ",amount);
+
+    if(amount < 0){
+       total_credits += (amount * -1.0);
+    }else{
+      total_debits += amount;
+    }
+
+  }//end for
+
+  let account_balance = 0;
+  if (account_type == 'debit'){
+    account_balance = total_debits - total_credits;
+  }
+  else {
+    account_balance = total_credits - total_debits;
+  }
+  // console.log("total_credits ",total_credits);
+  // console.log("total_debits ",total_debits);
+
+  return parseFloat(account_balance.toFixed(8));
+}
+
+async function account_balance_by_date(account_id, date){
+
+  //TODO: Create a view that returns the account balance
+  let account = await get_account_by_id(account_id);
+  if(!account) throw new Error('Account does not exist');
+
+  let account_type = account.account_type;
+
+
+  let transactions = await get_account_transactions_end_date(account_id,date);
 
   let total_credits = 0;
   let total_debits = 0;
@@ -271,5 +314,6 @@ module.exports = {
   create_rake_account,
   create_fx_account,
   create_withdrawal_fees_account,
-  update_deposit_address
+  update_deposit_address,
+  account_balance_by_date
 };
