@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.26, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.27, for Linux (x86_64)
 --
 -- Host: localhost    Database: development
 -- ------------------------------------------------------
--- Server version	5.7.26-0ubuntu0.18.04.1
+-- Server version	5.7.27-0ubuntu0.18.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -38,7 +38,7 @@ CREATE TABLE `account` (
   KEY `fk_account_investment_idx` (`investment_id`),
   CONSTRAINT `fk_account_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_account_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -61,7 +61,7 @@ CREATE TABLE `api_access_info` (
   UNIQUE KEY `access_id_UNIQUE` (`access_id`),
   KEY `fk_address_investment_idx` (`investment_id`),
   CONSTRAINT `fk_address_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,6 +77,7 @@ CREATE TABLE `control` (
   `affiliate_rake` decimal(5,2) NOT NULL DEFAULT '0.00',
   `fx_rake` decimal(5,2) NOT NULL DEFAULT '0.00',
   `fixed_rate_investment` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `faucet_amount` decimal(20,8) NOT NULL DEFAULT '0.00000000',
   PRIMARY KEY (`investment_id`),
   KEY `fk_control_investment_idx` (`investment_id`),
   CONSTRAINT `fk_control_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -99,6 +100,19 @@ CREATE TABLE `currency_pair` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Temporary table structure for view `daily_registered_users`
+--
+
+DROP TABLE IF EXISTS `daily_registered_users`;
+/*!50001 DROP VIEW IF EXISTS `daily_registered_users`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `daily_registered_users` AS SELECT 
+ 1 AS `registered_on`,
+ 1 AS `count`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `exchange_rates_config`
 --
 
@@ -113,7 +127,7 @@ CREATE TABLE `exchange_rates_config` (
   `weight` int(11) NOT NULL,
   `reference_rate_gap` decimal(20,8) DEFAULT NULL,
   PRIMARY KEY (`config_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,7 +160,7 @@ CREATE TABLE `investment` (
   `currency` varchar(5) NOT NULL,
   PRIMARY KEY (`investment_id`),
   UNIQUE KEY `investment_name_UNIQUE` (`investment_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +171,7 @@ DROP TABLE IF EXISTS `investment_trial_balance`;
 /*!50001 DROP VIEW IF EXISTS `investment_trial_balance`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT
+/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT 
  1 AS `investment_id`,
  1 AS `currency`,
  1 AS `trial_balance`*/;
@@ -181,7 +195,7 @@ CREATE TABLE `order_book` (
   `quoted_ask` decimal(20,8) NOT NULL,
   PRIMARY KEY (`rate_id`),
   UNIQUE KEY `currency_code_UNIQUE` (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,7 +228,7 @@ CREATE TABLE `process_log` (
   `process_type` varchar(45) NOT NULL,
   `status` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,7 +246,7 @@ CREATE TABLE `quoted_fx_rates` (
   `ask` decimal(20,8) NOT NULL,
   `mid` decimal(20,8) NOT NULL,
   PRIMARY KEY (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -259,7 +273,7 @@ CREATE TABLE `transaction` (
   KEY `fk_transaction_investment_idx` (`investment_id`),
   CONSTRAINT `fk_transaction_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_transaction_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=397 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,16 +287,35 @@ CREATE TABLE `user` (
   `username` varchar(30) NOT NULL,
   `password` varchar(256) NOT NULL,
   `level` smallint(2) NOT NULL,
-  `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `registered_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `email` varchar(100) DEFAULT NULL,
   `email_verify_key` varchar(100) NOT NULL,
   `email_verify_flag` tinyint(1) NOT NULL DEFAULT '0',
   `email_token` varchar(30) DEFAULT NULL,
   `email_expire` timestamp NULL DEFAULT NULL,
   `affiliate` varchar(30) DEFAULT NULL,
+  `last_faucet_transfer` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Final view structure for view `daily_registered_users`
+--
+
+/*!50001 DROP VIEW IF EXISTS `daily_registered_users`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`app`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `daily_registered_users` AS select cast(`user`.`registered_on` as date) AS `registered_on`,count(0) AS `count` from `user` where (`user`.`level` = 1) group by cast(`user`.`registered_on` as date) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
 -- Final view structure for view `investment_trial_balance`
@@ -311,4 +344,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-07-23 17:32:12
+-- Dump completed on 2019-08-04 15:03:39
