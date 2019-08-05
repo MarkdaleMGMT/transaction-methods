@@ -1,6 +1,6 @@
 var db = require('../util/mysql_connection')
 const dateFormat = require('dateformat');
-const { get_account_by_id } = require('../models').account_model
+const { get_account_by_id, get_accounts, get_accounts_per_user } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
 const { get_quoted_rate } = require('../foreign_exchange/get_rate')
@@ -12,14 +12,34 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
  */
  module.exports = async function transaction_history_api(req, res) {
 
-   let account_id = req.body.account_id
+   let account_id = null;
+   let username = null;
+   if(req.body.hasOwnProperty('account_id')){
+     account_id = req.body.account_id;
+   }
+
+   if(req.body.hasOwnProperty('username')){
+     username = req.body.username;
+   }
+
 
    try{
-     let transaction_history = await get_transaction_history(account_id);
+
+     let transaction_history = [];
+     if(account_id)
+        transaction_history = await get_transaction_history(account_id);
+
+     else if(username){
+       transaction_history = await get_transaction_for_user(username);
+     }
+     else{
+
+        transaction_history = await get_transaction_for_all_accounts();
+     }
      res.send({ code: "Success", transaction_history })
    }
    catch(err){
-     res.status(400).send({msg: 'Unable to fetch transaction history', err});
+     res.status(400).send({msg: 'Unable to fetch transaction history', error:err.message});
    }
 
 
@@ -77,7 +97,8 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
         'account_balance':account_balance,
         'account_balance_cad':account_balance_cad,
         'custom_memo':account_transaction.custom_memo,
-        'currency':currency
+        'currency':currency,
+        'username':account.username
 
       };
 
@@ -97,3 +118,41 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
 
  }
+
+ function SortByDate(a, b){
+     var aD = new Date(a.time).getTime(), bD = new Date(b.time).getTime();
+     return ((aD < bD) ? -1 : ((aD > bD) ? 1 : 0));
+ }
+
+  async function get_transaction_for_all_accounts(){
+
+    let accounts = await get_accounts();
+    let transaction_history = [];
+    for(let i=0; i<accounts.length; i++){
+
+       let account_tx_history = await get_transaction_history(accounts[i].account_id);
+       transaction_history = transaction_history.concat(account_tx_history);
+
+    }
+
+    let sorted_tx_history = transaction_history.sort(SortByDate);
+    return sorted_tx_history;
+
+
+  }
+
+  async function get_transaction_for_user(username){
+    let accounts = await get_accounts_per_user(username);
+    let transaction_history = [];
+    for(let i=0; i<accounts.length; i++){
+
+       let account_tx_history = await get_transaction_history(accounts[i].account_id);
+       transaction_history = transaction_history.concat(account_tx_history);
+
+    }
+
+
+
+    let sorted_tx_history = transaction_history.sort(SortByDate);
+    return sorted_tx_history;
+  }
