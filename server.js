@@ -20,7 +20,8 @@ var { load_config } = require('./app/models/global_config_model');
 load_config();
 
 
-
+//load the crontasks
+const crontask = require('./app/crontasks')
 
 
 app.use(bodyParser.json());
