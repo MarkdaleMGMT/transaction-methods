@@ -58,12 +58,17 @@ async function account_rate_of_return(account_id, period_start_date , period_end
 
   }
 
-  //if ending period is 0 adjust the end date & value to first cash flow
+  //if ending period is 0 adjust the end date & value to last cash flow
   if (end_value == 0){
 
     let index = account_transactions.length - 1;
     end_date = moment(account_transactions[index].time).format('YYYY-MM-DD')
-    end_value = await account_balance_by_date(account_id, end_date);
+    // end_value = await account_balance_by_date(account_id, end_date);
+
+    //end value should be the amount of transaction that resulted in a zero-balance
+    //reverse the sign to get the balance before the transaction 
+    end_value = account_type == 'debit' ? -1* account_transactions[index].amount : account_transactions[index].amount;
+    end_value = parseFloat(end_value.toFixed(8));
 
 
   }

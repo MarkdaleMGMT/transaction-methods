@@ -19,6 +19,10 @@ async function get_latest_quoted_rate(from_currency, to_currency){
   return rows[0];
 }
 
+async function get_equivalent_cad_value(){
+  
+}
+
 module.exports = {
   log_quoted_rate,
   get_latest_quoted_rate

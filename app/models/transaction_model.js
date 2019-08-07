@@ -17,6 +17,8 @@ async function get_account_transactions(account_id){
 
 }
 
+
+//TODO: modify this function to get the transaction history with amount equivalent in CAD of each transaction
 async function get_account_transactions_by_date(account_id, start_date, end_date){
   const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? AND time between ? AND ? ORDER BY time DESC ",[account_id, start_date, end_date]);
   return rows;
