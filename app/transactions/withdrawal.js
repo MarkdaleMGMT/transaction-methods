@@ -1,12 +1,13 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model
 const { get_user_by_username } = require('../models').user_model
-const  { get_account_by_id, get_investment_account, get_withdrawal_fees_account} = require('../models').account_model
+const  { get_account_by_id, get_investment_account, get_withdrawal_fees_account, get_account_by_investment} = require('../models').account_model
 const uuidv1 = require('uuid/v1');//timestamp
 
 /**
  * API for withdrawal transaction
- * @param  {string} account_id     Account where the withdrawal is made from
+ * @param  {string} withdraw_from     username from whose account the amount will be withdrawn from
+ * @param  {integer} investment_id investment for the withdrawal transaction
  * @param  {float} username    username of the initiator of the withdrawal
  * @param  {float} amount    Amount to be withdrawed
  * @return {JSON}         Returns success
@@ -14,13 +15,14 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  async function withdrawal_api(req, res) {
 
-   let account_id = req.body.account_id
+   let withdraw_from = req.body.withdraw_from
+   let investment_id = req.body.investment_id
    let username = req.body.username
    let amount = req.body.amount
    let datetime = new Date().toMysqlFormat()
 
    try{
-     let isSuccesful = await withdraw(username,account_id,amount,datetime);
+     let isSuccesful = await withdraw(username, withdraw_from, investment_id ,amount,datetime);
      if (!isSuccesful){ throw Error ('unable to withdraw amount');}
      res.send({ code: "Withdrawal successful" })
    }
@@ -34,10 +36,10 @@ const uuidv1 = require('uuid/v1');//timestamp
  };
 
 
- async function withdraw(username,account_id,amount,datetime){
+ async function withdraw(username,withdraw_from, investment_id ,amount,datetime){
 
       try{
-      console.log("withdrawal transaction  ",username," ",account_id," ",amount," ",datetime);
+      console.log("withdrawal transaction  ",username," ",withdraw_from," ",investment_id," ",amount," ",datetime);
 
       //check if the user is admin or not, throw error if unauthorized
       //level 0 is admin
@@ -49,12 +51,13 @@ const uuidv1 = require('uuid/v1');//timestamp
       }
 
       //get user account
-      let withdrawal_account = await get_account_by_id(account_id);
+
+      let withdrawal_account = await get_account_by_investment(withdraw_from, investment_id);
       if(!withdrawal_account){
-       throw new Error('Invalid account number');
+       throw new Error('User does not own an account in this investment');
       }
 
-      let investment_id = withdrawal_account.investment_id;
+      // let investment_id = withdrawal_account.investment_id;
 
       //get the corresponding investment account (i.e. similiar to clam miner) - level 1
       let investment_account = await get_investment_account(investment_id);
