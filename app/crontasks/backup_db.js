@@ -22,7 +22,7 @@ module.exports = async function backup_database(){
 
   let db_backup_command =
   `mysqldump -h localhost -P 3306 --single-transaction --default-character-set=utf8 ${mysql_config.database} `
-  +`| gzip > ${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql`
+  +`| gzip > ${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql.gz`
 
   console.log("command: \n",db_backup_command);
 
