@@ -1,6 +1,8 @@
 const shell = require('shelljs');
 const dateFormat = require('dateformat')
-const { mysql_config } = require('../../config')
+const { send_email } = require('../util/mail')
+const { mysql_config , db_backup} = require('../../config')
+
 
 DB_BACKUP_PATH='/backup/db_backup'
 
@@ -33,8 +35,18 @@ module.exports = function backup_database(){
       shell.exit(1);
   }
   else{
-      console.log(status);
+
       status = "Database backup complete";
+      console.log(status);
+
+      //mail the file to the configured email address
+      let text = "Attached is the database backup";
+      let attachments = [{
+        path: `${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql`
+      }];
+      let result = await send_email(db_backup.email, `Database Backup ${today}`, text, attachments);
+
+
 
   }
 

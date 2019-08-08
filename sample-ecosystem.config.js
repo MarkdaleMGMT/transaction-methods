@@ -39,7 +39,9 @@ module.exports = {
       CLAM_PAY_HOST:<clamcoin_payment_ip>,
       CLAM_PAY_PORT:<clamcoin_payment_port>,
       CLAM_PAY_RPC_USER:<clamcoin_payment_rpc_user>,
-      CLAM_PAY_RPC_PASS:<clamcoin_payment_rpc_pass>
+      CLAM_PAY_RPC_PASS:<clamcoin_payment_rpc_pass>,
+      EMAIL_SENDER:'',
+      DB_BACKUP_EMAIL : ''
 
     },
     env_production: {
@@ -59,7 +61,9 @@ module.exports = {
       CLAM_PAY_HOST:<clamcoin_payment_ip>,
       CLAM_PAY_PORT:<clamcoin_payment_port>,
       CLAM_PAY_RPC_USER:<clamcoin_payment_rpc_user>,
-      CLAM_PAY_RPC_PASS:<clamcoin_payment_rpc_pass>
+      CLAM_PAY_RPC_PASS:<clamcoin_payment_rpc_pass>,
+      EMAIL_SENDER:'',
+      DB_BACKUP_EMAIL : ''
     }
   }]
 };

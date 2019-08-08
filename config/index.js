@@ -21,6 +21,14 @@ module.exports = {
     port:process.env.CLAM_PAY_PORT,
     rpc_user:process.env.CLAM_PAY_RPC_USER,
     rpc_pass:process.env.CLAM_PAY_RPC_PASS
+  },
+  mail_config:{
+    sender:process.env.EMAIL_SENDER,
+
+  },
+  db_backup:{
+    email:process.env.DB_BACKUP_EMAIL
   }
+
 
 }

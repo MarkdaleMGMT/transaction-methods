@@ -1,5 +1,6 @@
 let nodemailer = require("nodemailer");
 const util = require('util');
+const { mail_config } = require('../config')
 
 let transporter = nodemailer.createTransport({
       service: "gmail",
@@ -9,7 +10,28 @@ let transporter = nodemailer.createTransport({
       }
 });
 
-const send_email = util.promisify(transporter.sendMail);
+const sendMailAsync = util.promisify(transporter.sendMail);
+
+
+async function send_email(recipients, subject, text, attachments){
+
+  let mailOptions = {
+		from: mail_config.sender, // sender address
+		to: recipients, // list of receivers
+		subject: subject, // Subject line
+		text: text, // plain text body
+    attachments: attachments
+		};
+
+  try{
+    let result = await sendMailAsync(mailOptions);
+    return result;
+  }catch(err){
+    console.error(err);
+    throw new Error("Failed to send email ",err.message);
+  }
+
+}
 
 module.exports = {
   send_email
