@@ -8,7 +8,7 @@ DB_BACKUP_PATH='/backup/db_backup'
 
 
 
-module.exports = function backup_database(){
+module.exports = async function backup_database(){
 
 
 
@@ -40,12 +40,13 @@ module.exports = function backup_database(){
       console.log(status);
 
       //mail the file to the configured email address
+      console.log("trying to send email....");
       let text = "Attached is the database backup";
       let attachments = [{
         path: `${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql`
       }];
       let result = await send_email(db_backup.email, `Database Backup ${today}`, text, attachments);
-
+      console.log("email result: ",result);
 
 
   }
