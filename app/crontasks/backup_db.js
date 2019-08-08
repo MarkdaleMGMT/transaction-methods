@@ -25,12 +25,14 @@ module.exports = function backup_database(){
 
   if (shell.exec(db_backup_command).code !== 0) {
       status = "Database backup failed";
+      console.log(status);
       shell.echo(status);
       shell.exit(1);
   }
   else{
+      console.log(status);
       status = "Database backup complete";
-      
+
   }
 
 }
