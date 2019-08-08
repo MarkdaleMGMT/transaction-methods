@@ -3,17 +3,23 @@ const util = require('util');
 const { mail_config } = require('../../config')
 
 let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "COMPANYEMAIL@gmail.com",
-        pass: "userpass"
-      }
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  requireTLS: true,
+  auth: {
+    user: mail_config.user,
+    pass: mail_config.password
+  },
+  tls : {
+  ciphers : 'SSLv3'
+  }
 });
 
-// const sendMailAsync = util.promisify(transporter.sendMail);
+const sendMailAsync = util.promisify(transporter.sendMail);
 
 
-function send_email(recipients, subject, text, attachments){
+async function send_email(recipients, subject, text, attachments){
 
   let mailOptions = {
 		from: mail_config.sender, // sender address
@@ -24,15 +30,8 @@ function send_email(recipients, subject, text, attachments){
 		};
 
   try{
-    return new Promise(resolve => {
-      transporter.sendMail.call(mailOptions, (err,result) => {
-
-        if(err)
-          throw (err)
-        resolve(result)
-      });
-    });
-
+    let result = await sendMailAsync(mailOptions);
+    return result;
 
   }catch(err){
     console.error(err);

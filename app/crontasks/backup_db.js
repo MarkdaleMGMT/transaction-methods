@@ -45,8 +45,13 @@ module.exports = async function backup_database(){
       let attachments = [{
         path: `${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql`
       }];
+
+      try{
       let result = await send_email(db_backup.email, `Database Backup ${today}`, text, attachments);
       console.log("email result: ",result);
+    }catch(err){
+      console.error(err);
+    }
 
 
   }

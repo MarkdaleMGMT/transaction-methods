@@ -24,6 +24,8 @@ module.exports = {
   },
   mail_config:{
     sender:process.env.EMAIL_SENDER,
+    user:process.env.GMAIL,
+    password:process.env.GMAIL_PASS
 
   },
   db_backup:{

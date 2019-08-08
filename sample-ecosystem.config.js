@@ -41,7 +41,9 @@ module.exports = {
       CLAM_PAY_RPC_USER:<clamcoin_payment_rpc_user>,
       CLAM_PAY_RPC_PASS:<clamcoin_payment_rpc_pass>,
       EMAIL_SENDER:'',
-      DB_BACKUP_EMAIL : ''
+      DB_BACKUP_EMAIL : '',
+      GMAIL:'',
+      GMAIL_PASS:''
 
     },
     env_production: {
