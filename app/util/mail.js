@@ -10,10 +10,10 @@ let transporter = nodemailer.createTransport({
       }
 });
 
-const sendMailAsync = util.promisify(transporter.sendMail);
+// const sendMailAsync = util.promisify(transporter.sendMail);
 
 
-async function send_email(recipients, subject, text, attachments){
+function send_email(recipients, subject, text, attachments){
 
   let mailOptions = {
 		from: mail_config.sender, // sender address
@@ -24,8 +24,16 @@ async function send_email(recipients, subject, text, attachments){
 		};
 
   try{
-    let result = await sendMailAsync(mailOptions);
-    return result;
+    return new Promise(resolve => {
+      transporter.sendMail.call(mailOptions, (err,result) => {
+
+        if(err)
+          throw (err)
+        resolve(result)
+      });
+    });
+
+
   }catch(err){
     console.error(err);
     throw new Error("Failed to send email ",err.message);
