@@ -43,7 +43,7 @@ module.exports = async function backup_database(){
       console.log("trying to send email....");
       let text = "Attached is the database backup";
       let attachments = [{
-        path: `${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql`,
+        path: `${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql.gz`,
         encoding: 'utf-8'
       }];
 
