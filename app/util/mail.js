@@ -16,7 +16,7 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-const sendMailAsync = util.promisify(transporter.sendMail);
+// const sendMailAsync = util.promisify(transporter.sendMail);
 
 
 async function send_email(recipients, subject, text, attachments){
@@ -30,7 +30,7 @@ async function send_email(recipients, subject, text, attachments){
 		};
 
   try{
-    let result = await sendMailAsync(mailOptions);
+    let result = await transporter.sendMail(mailOptions);
     return result;
 
   }catch(err){
