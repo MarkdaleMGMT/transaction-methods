@@ -19,7 +19,7 @@ module.exports = function backup_database(){
   shell.mkdir('-p', '${DB_BACKUP_PATH}/${today}');
 
   let db_backup_command =
-  +`& mysqldump -h localhost -P 3306 --single-transaction --default-character-set=utf8 ${mysql_config.database} `
+  `mysqldump -h localhost -P 3306 --single-transaction --default-character-set=utf8 ${mysql_config.database} `
   +`| gzip > ${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql`
 
   console.log("command: \n",db_backup_command);
