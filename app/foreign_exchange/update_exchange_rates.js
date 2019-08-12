@@ -8,7 +8,7 @@ const { poloniex, bitfinex, scotiabank, cme, binance } = require('../exchanges')
 /*
 Queries exernal data sources and updates order book accordingly
 */
-module.exports = async function update_exchange_rates(req, res){
+async function update_exchange_rates(req, res){
 
   try{
     let source = req.body.source;
@@ -79,4 +79,9 @@ async function update_order_book(source, rates){
   }
 
 
+  }
+
+  module.exports = {
+    update_exchange_rates,
+    update_order_book
   }

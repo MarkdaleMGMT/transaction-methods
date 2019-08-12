@@ -21,7 +21,8 @@ load_config();
 
 
 //load the crontasks
-const crontask = require('./app/crontasks')
+const { schedule_and_run_crontasks } = require('./app/crontasks');
+schedule_and_run_crontasks();
 
 
 app.use(bodyParser.json());

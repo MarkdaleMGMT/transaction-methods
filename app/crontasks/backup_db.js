@@ -1,10 +1,12 @@
 const shell = require('shelljs');
 const dateFormat = require('dateformat')
+const moment = require('moment')
 const { send_email } = require('../util/mail')
 const { mysql_config , db_backup} = require('../../config')
 
 
 DB_BACKUP_PATH='/backup/db_backup'
+DB_RETAIN_DAYS = 90
 
 
 
@@ -56,5 +58,14 @@ module.exports = async function backup_database(){
 
 
   }
+
+  //TODO: delete old backups
+  let dateOffset = (24*60*60*1000) * (90);
+  let date_90_days = new Date();
+  date_90_days.setTime(datetime.getTime() - dateOffset);
+  let date_90_days_str = dateFormat(date_90_days, "dd_mm_yyyy");
+
+
+
 
 }

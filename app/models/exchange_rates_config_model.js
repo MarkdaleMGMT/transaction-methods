@@ -1,5 +1,10 @@
 var db = require('../util/mysql_connection');
 
+async function get_all_exchange_rate_configs(){
+  const [rows, fields] = await db.connection.query("SELECT * FROM exchange_rates_config");
+  return rows;
+}
+
 async function rates_source_currency(from_currency){
 
   const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to',  source FROM exchange_rates_config WHERE from_to like ?",[from_currency+'_%']);
@@ -89,5 +94,6 @@ module.exports = {
   rates_target_currency,
   rates_by_source,
   get_rates_currency_pair,
-  get_currency_pair_info
+  get_currency_pair_info,
+  get_all_exchange_rate_configs
 };
