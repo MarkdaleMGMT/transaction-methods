@@ -76,6 +76,7 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
        user_balance.push({
          'account_id':account.account_id,
          'investment_id':account.investment_id,
+         'investment_name':investment.investment_name,
          'balance':balance,
          'balance_cad':balance_cad,
          'currency':currency
