@@ -56,6 +56,7 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
     //TODO: optimize it later to perform minimal db queries
     let investment = await get_investment_by_id(account.investment_id);
+    let investment_name = investment.investment_name;
     let currency = investment.currency;
 
     //get the latest exchange rate from the db src:investment currency, target: CAD
@@ -98,7 +99,8 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
         'account_balance_cad':account_balance_cad,
         'custom_memo':account_transaction.custom_memo,
         'currency':currency,
-        'username':account.username
+        'username':account.username,
+        investment_name
 
       };
 
