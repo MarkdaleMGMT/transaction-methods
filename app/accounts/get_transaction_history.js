@@ -73,27 +73,30 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
     for(let i=0; i<transactions.length; i++){
       let account_transaction = transactions[i];
+      let { amount } = account_transaction[i];
 
       if (account_type == 'debit'){
         //debits mean increase in balance
         //credits mean decrease in balance
-        account_balance += parseFloat(account_transaction.amount);
+        account_balance += parseFloat(amount);
       }
       else {
         //debits mean decrease in balance
         //credits mean increase in balance
-        account_balance += parseFloat(account_transaction.amount)*-1.0;
+        account_balance += parseFloat(amount)*-1.0;
       }
 
       account_balance = parseFloat(account_balance.toFixed(8));
       let account_balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
+      let amount_cad = parseFloat((exchange_rate * amount)).toFixed(8);
 
 
 
       let transaction_json = {
         'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
         'description': account_transaction.memo,
-        'amount':Math.abs(account_transaction.amount),
+        'amount':Math.abs(amount),
+        'amount_cad':Math.abs(amount_cad)
         'type': account_transaction.amount <0 ? 'credit':'debit',
         'account_balance':account_balance,
         'account_balance_cad':account_balance_cad,
