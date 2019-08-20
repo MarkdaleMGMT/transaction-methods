@@ -37,13 +37,13 @@ const uuidv1 = require('uuid/v1');//timestamp
      let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to transfer amount');}
-     res.send({ code: "transfer amount successful" })
+     res.send({ code: "Success", message:'Transfer successful' })
 
 
    }
    catch(err){
      console.log("error "+err);
-     res.status(400).send({msg:err.message});
+     res.status(400).send({message:err.message});
    }
 
 
