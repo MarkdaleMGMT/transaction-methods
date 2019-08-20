@@ -67,6 +67,10 @@ const uuidv1 = require('uuid/v1');//timestamp
 
     if (!recipient_accnt ){
 
+      //check if recipient user exists in the database
+      recipient_user = await get_user_by_username(recipient);
+      if(!recipient_user)
+        throw new Error("Invalid recipient");
       //create a recipient account
       recipient_accnt_id = await create_user_account(recipient,investment_id);
 
