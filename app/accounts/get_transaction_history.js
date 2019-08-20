@@ -73,7 +73,7 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
     for(let i=0; i<transactions.length; i++){
       let account_transaction = transactions[i];
-      let { amount } = account_transaction[i];
+      let { amount } = account_transaction;
 
       if (account_type == 'debit'){
         //debits mean increase in balance
@@ -96,8 +96,8 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
         'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
         'description': account_transaction.memo,
         'amount':Math.abs(amount),
-        'amount_cad':Math.abs(amount_cad),
-        'type': account_transaction.amount <0 ? 'credit':'debit',
+        'amount_cad':Math.abs(amount_cad)
+        'type': amount <0 ? 'credit':'debit',
         'account_balance':account_balance,
         'account_balance_cad':account_balance_cad,
         'custom_memo':account_transaction.custom_memo,
