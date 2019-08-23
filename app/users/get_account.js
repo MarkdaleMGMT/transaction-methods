@@ -18,7 +18,7 @@ module.exports = async function get_user_account_api(req, res) {
     res.send({ code: "Success", account })
   }
   catch(err){
-    res.status(400).send({msg: err.message});
+    res.status(400).send({code:"Error fetching accout details", message: err.message});
   }
 
 };
