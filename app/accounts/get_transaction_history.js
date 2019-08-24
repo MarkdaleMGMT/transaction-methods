@@ -39,7 +39,7 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
      res.send({ code: "Success", transaction_history })
    }
    catch(err){
-     res.status(400).send({msg: 'Unable to fetch transaction history', error:err.message});
+     res.status(400).send({code: 'Unable to fetch transaction history', message:err.message});
    }
 
 
