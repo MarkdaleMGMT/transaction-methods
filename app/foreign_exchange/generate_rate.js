@@ -52,6 +52,9 @@ async function calculate_rate(src_currency, target_currency){
     //TODO: get exchange path
     let currency_pair_info = await get_currency_pair_info(src_currency, target_currency)
     // let exchange_path = ['CLAM', 'BTC', 'USD', 'CAD'];
+
+    if(!currency_pair_info) throw new Error("Exchange rate is not configured on the system")
+
     let exchange_path = currency_pair_info.path.split(',');
     console.log("exchange_path",exchange_path);
 
