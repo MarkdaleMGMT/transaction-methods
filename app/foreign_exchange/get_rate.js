@@ -23,7 +23,7 @@ async function get_quoted_rate(from_currency, to_currency){
   let rate = 1;
   if(from_currency == to_currency){
     rate = {
-      from_to:from_currency+'_'+from_currency,
+      from_to:from_currency+'_'+to_currency,
       bid: 1,
       ask: 1,
       mid: 1
@@ -44,7 +44,7 @@ async function get_quoted_rate(from_currency, to_currency){
   }
   else {
     return {
-      from_to:null,
+      from_to:from_currency+'_'+to_currency,
       bid: null,
       ask: null,
       mid: null
