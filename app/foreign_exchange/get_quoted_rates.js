@@ -5,8 +5,8 @@ async function get_quoted_rates_api(req,res){
 
   try{
 
-    let rate = await get_all_quoted_rates();
-    res.send({ code: "rate fetched successfully", rate });
+    let rates = await get_all_quoted_rates();
+    res.send({ code: "rate fetched successfully", rates });
   }
   catch(err){
     console.error("got err",err);
