@@ -36,7 +36,7 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
         transaction_history = await get_transaction_for_all_accounts();
      }
-     res.send({ code: "Success", transaction_history })
+     res.send({ code: "Success", transaction_history: transaction_history.reverse() })
    }
    catch(err){
      res.status(400).send({code: 'Unable to fetch transaction history', message:err.message});
