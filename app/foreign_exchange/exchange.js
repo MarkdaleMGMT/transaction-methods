@@ -33,7 +33,7 @@ module.exports = async function exchange(req,res){
   }
   catch(err){
     console.error("got err",err);
-    res.status(400).send({code:"Failed to exchange investment" message:err.message});
+    res.status(400).send({code:"Failed to exchange investment" , message:err.message});
   }
 
 }
