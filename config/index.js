@@ -21,6 +21,9 @@ module.exports = {
     port:process.env.CLAM_PAY_PORT,
     rpc_user:process.env.CLAM_PAY_RPC_USER,
     rpc_pass:process.env.CLAM_PAY_RPC_PASS
-  }
+  },
+  
+  base_currency:'CAD'
+
 
 }
