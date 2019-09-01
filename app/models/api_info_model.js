@@ -7,7 +7,7 @@ const { get_investment_by_id } = require('./investment_model')
 
 async function get_investments_with_api_info(){
 
-  const [investments, fields] = await db.connection.query("SELECT distinct(investment_id) as 'investment_id' FROM api_access_info WHERE investment_id IS NOT NULL");
+  const [investments, fields] = await db.connection.query("SELECT distinct(investment_id) as 'investment_id' FROM api_info WHERE investment_id IS NOT NULL");
 
 
   let investment_ids = [];
@@ -21,7 +21,7 @@ async function get_investments_with_api_info(){
 
 async function get_exchange_api(source){
 
-  const [exchange_apis, fields] = await db.connection.query("SELECT * FROM api_access_info WHERE type = 'exchange' and description = ?",[source]);
+  const [exchange_apis, fields] = await db.connection.query("SELECT * FROM api_info WHERE type = 'exchange' and description = ?",[source]);
   return exchange_apis[0];
 
 }
@@ -32,7 +32,7 @@ async function get_balance(investment_id){
 
   let investment = await get_investment_by_id(investment_id);
   console.log(util.format("investment: %s, currency: %s", investment.investment_name, investment.currency));
-  const [apis, fields] = await db.connection.query("SELECT * FROM api_access_info WHERE investment_id = ?",[investment_id]);
+  const [apis, fields] = await db.connection.query("SELECT * FROM api_info WHERE investment_id = ?",[investment_id]);
 
   let balance = 0;
 

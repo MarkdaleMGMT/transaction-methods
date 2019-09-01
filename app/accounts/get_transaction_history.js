@@ -3,7 +3,7 @@ const dateFormat = require('dateformat');
 const { get_account_by_id, get_accounts, get_accounts_per_user } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
-const { get_quoted_rate } = require('../foreign_exchange/get_rate')
+const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
 
 /**
  * API to fetch all transactions for a specific account

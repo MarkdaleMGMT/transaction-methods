@@ -1,6 +1,6 @@
-const { get_latest_quoted_rate } = require('../models').quoted_fx_rate;
+const { get_latest_quoted_rate } = require('../models').fx_quoted_rates;
 
-async function get_rate(req,res){
+async function quote_fx_rate(req,res){
 
   try{
     let to_currency = req.body.to_currency;
@@ -53,6 +53,6 @@ async function get_quoted_rate(from_currency, to_currency){
 }
 
 module.exports={
-  get_rate,
+  quote_fx_rate,
   get_quoted_rate
 }

@@ -1,6 +1,6 @@
-const { log_new_rate } = require('../models/order_book_model');
-const { get_exchange_api } = require('../models/api_access_model');
-const { rates_by_source } = require('../models').exchange_rates_config;
+const { log_new_rate } = require('../models').fx_raw_rates;
+const { get_exchange_api } = require('../models').api_info_model;
+const { rates_by_source } = require('../models').fx_weight_model;
 
 const axios = require("axios");
 const { poloniex, bitfinex, scotiabank, cme, binance } = require('../exchanges');
@@ -8,13 +8,13 @@ const { poloniex, bitfinex, scotiabank, cme, binance } = require('../exchanges')
 /*
 Queries exernal data sources and updates order book accordingly
 */
-module.exports = async function update_exchange_rates(req, res){
+module.exports = async function scrape_fx_rate(req, res){
 
   try{
     let source = req.body.source;
     let rates = req.body.rates_for;
 
-    let result = await update_order_book(source, rates);
+    let result = await update_fx_raw_rates(source, rates);
     res.send({ code: "balance updated", result })
   }
   catch(err){
@@ -25,7 +25,7 @@ module.exports = async function update_exchange_rates(req, res){
 
 }
 
-async function update_order_book(source, rates){
+async function update_fx_raw_rates(source, rates){
 
   //get all the 'exchange' records from API table
   let exchange_api = await get_exchange_api(source);

@@ -1,6 +1,6 @@
 const { get_all_currencies } = require('../models').investment_model;
 const { base_currency } = require('../../config');
-const { get_latest_quoted_rate } = require('../models').quoted_fx_rate;
+const { get_latest_quoted_rate } = require('../models').fx_quoted_rates;
 
 module.exports = async function get_rates_in_cad_api(req, res){
 

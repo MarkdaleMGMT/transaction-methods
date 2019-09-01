@@ -1,4 +1,4 @@
-const { get_quoted_rate } = require('./get_rate');
+const { get_quoted_rate } = require('./quote_fx_rate');
 const { get_all_currencies } = require('../models').investment_model;
 
 async function get_quoted_rates_api(req,res){

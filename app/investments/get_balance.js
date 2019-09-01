@@ -1,4 +1,4 @@
-var {  get_balance } = require('../models/api_access_model');
+var {  get_balance } = require('../models/api_info_model');
 
 
 module.exports = async function get_investment_balance(req, res){

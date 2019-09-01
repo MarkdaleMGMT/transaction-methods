@@ -4,8 +4,8 @@ module.exports = {
   user_model : require('./user_model'),
   account_model : require('./account_model'),
   investment_model : require('./investment_model'),
-  api_access_model : require('./api_access_model'),
-  order_book : require('./order_book_model'),
-  exchange_rates_config : require('./exchange_rates_config_model'),
-  quoted_fx_rate: require('./quoted_fx_rates_model')
+  api_info_model : require('./api_info_model'),
+  fx_raw_rates : require('./fx_raw_rates_model'),
+  fx_weight_model : require('./fx_weight_model'),
+  fx_quoted_rates: require('./fx_quoted_rates_model')
 }

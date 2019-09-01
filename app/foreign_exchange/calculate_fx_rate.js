@@ -1,8 +1,8 @@
-const { rates_source_currency, rates_target_currency, get_rates_currency_pair, get_currency_pair_info } = require('../models').exchange_rates_config;
-const { log_quoted_rate } = require('../models').quoted_fx_rate;
-const { find_valid_rate } = require('../models').order_book;
+const { rates_source_currency, rates_target_currency, get_rates_currency_pair, get_currency_pair_info } = require('../models').fx_weight_model;
+const { log_quoted_rate } = require('../models').fx_quoted_rates;
+const { find_valid_rate } = require('../models').fx_raw_rates;
 
-async function generate_rate(req, res){
+async function calculate_fx_rate(req, res){
 
   try{
     let to_currency = req.body.to_currency;
@@ -172,6 +172,6 @@ async function find_exchange_path(src_currency, target_currency, exchange_path =
 }
 
 module.exports = {
-  generate_rate,
+  calculate_fx_rate,
   get_path
 };

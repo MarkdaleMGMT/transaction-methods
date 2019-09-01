@@ -1,4 +1,4 @@
-const { get_balance, get_investments_with_api_info } = require('../models/api_access_model');
+const { get_balance, get_investments_with_api_info } = require('../models/api_info_model');
 const { get_user_by_username } = require('../models/user_model');
 const { update_investment_balance } =require('./global_update');
 

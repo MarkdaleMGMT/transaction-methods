@@ -2,7 +2,7 @@ const dateFormat = require('dateformat');
 const { get_account_transactions_by_date } = require('../models').transaction_model
 const { get_account_by_id, account_balance } = require('../models').account_model
 const { get_investment_by_id } = require('../models').investment_model
-const { get_quoted_rate } = require('../foreign_exchange/get_rate')
+const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
 const { getDates } = require('../util/common')
 /**
  * API to fetch the balance history for a specific account over a period of time
@@ -107,6 +107,8 @@ async function get_balance_history(account_id, time_period_days){
 
 
    }//end for
+
+   console.log(transaction_history);
 
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
