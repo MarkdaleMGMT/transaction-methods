@@ -103,7 +103,7 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
       let transaction_json = {
         // 'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
-        'time': tx_time_moment.format('YYYY-MM-DD HH:mm:ss A'),
+        'time': tx_time_moment.format('DD MMM YYYY HH:mm:ss A'),
         'description': account_transaction.memo,
         'amount':Math.abs(amount),
         'amount_cad':Math.abs(amount_cad),
