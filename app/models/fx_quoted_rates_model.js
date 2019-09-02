@@ -84,7 +84,7 @@ function get_valid_rate(timestamped_rates, timestamp){
 
 
   //if the search timestamp falls before any of the rates were logged, return the first logged rate
-  if(filtered_rates.length == 0){
+  if(filtered_rates.length == 0 && timestamped_rates.length != 0){
     if( moment(timestamped_rates[0].rate.valid_from).format('YYYY-MM-DD HH:mm:ss') > search_timestamp)
       filtered_rates.push(timestamped_rates[0]);
   }
