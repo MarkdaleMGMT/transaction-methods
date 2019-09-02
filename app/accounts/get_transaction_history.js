@@ -101,9 +101,10 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
       let account_balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
       let amount_cad = parseFloat((exchange_rate * amount)).toFixed(8);
 
+      console.log("time format ", tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'));
       let transaction_json = {
         // 'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
-        'time': tx_time_moment.format('DD MMM YYYY, HH:mm:ss A'),
+        'time': tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'),
         'description': account_transaction.memo,
         'amount':Math.abs(amount),
         'amount_cad':Math.abs(amount_cad),
