@@ -62,7 +62,7 @@ async function get_rates_history(time_period_days){
       let tx_time_moment = moment(date);
       let exchange_rate = get_valid_rate(timestamped_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
 
-      return { date: tx_time_moment.format('DD MM YYYY') , rate: exchange_rate.bid }
+      return { date: tx_time_moment.format('DD MM YYYY') , rate: parseFloat(exchange_rate.bid) }
     });
 
     rates_history.push({ currency: currencies[i], rates });
