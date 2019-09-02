@@ -11,3 +11,5 @@ app.post('/calculate_rate', require('./calculate_fx_rate').calculate_fx_rate);
 app.post('/quote_rate', require('./quote_fx_rate').quote_fx_rate);
 app.get('/quote_rates', require('./quote_rates').get_quoted_rates_api);
 app.get('/quote_rates_in_cad', require('./quote_rates_in_cad'));
+
+app.post('/rates_history', require('./get_rates_history'));

@@ -1,8 +1,14 @@
 const dateFormat = require('dateformat');
+const moment = require('moment');
+
 const { get_account_transactions_by_date } = require('../models').transaction_model
 const { get_account_by_id, account_balance } = require('../models').account_model
 const { get_investment_by_id } = require('../models').investment_model
-const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
+
+// const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
+const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').fx_quoted_rates
+
+
 const { getDates } = require('../util/common')
 /**
  * API to fetch the balance history for a specific account over a period of time
@@ -92,9 +98,12 @@ async function get_balance_history(account_id, time_period_days){
      balance = parseFloat(balance.toFixed(8));
 
 
-
+     console.log("time: ",account_transaction.time);
 
      let transaction_json = {
+       // 'date':dateFormat(new Date(account_transaction.time),'dd mm yyyy'),
+       // 'date':dateFormat(new Date(account_transaction.time),'fullDate'),
+
        'date':dateFormat(new Date(account_transaction.time),'dd mm yyyy'),
        'account_balance':balance,
        // 'account_balance_cad':balance_cad,
@@ -113,10 +122,13 @@ async function get_balance_history(account_id, time_period_days){
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
 
-   //TODO: multiply it by the exchange rate at that time period
+   //multiply it by the exchange rate at that time period
    //get the latest exchange rate from the db src:investment currency, target: CAD
-   let quoted_rate = await get_quoted_rate(currency, 'CAD');
-   let exchange_rate = parseFloat(quoted_rate.bid);
+
+   /*let quoted_rate = await get_quoted_rate(currency, 'CAD');
+   let exchange_rate = parseFloat(quoted_rate.bid);*/
+
+   let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
 
    let balance_history = [];
@@ -149,10 +161,17 @@ async function get_balance_history(account_id, time_period_days){
        transaction_history = transaction_history.splice(relevant_entries.length)
      }
 
-
+     //Get the valid rate
+     let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
+;
+     let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
+     console.log("exchange_rate", exchange_rate);
+     exchange_rate = exchange_rate.bid;
      let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
+
      balance_history.push({
-       date:dates[i],
+       date:tx_time_moment.format('DD MM YYYY'),
+       exchange_rate: exchange_rate,
        account_balance: last_balance,
        account_balance_cad: balance_cad,
        currency:currency

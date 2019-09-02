@@ -1,9 +1,13 @@
 var db = require('../util/mysql_connection')
 const dateFormat = require('dateformat');
+const moment = require('moment');
 const { get_account_by_id, get_accounts, get_accounts_per_user } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
-const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
+
+
+// const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
+const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').fx_quoted_rates
 
 /**
  * API to fetch all transactions for a specific account
@@ -60,8 +64,9 @@ const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
     let currency = investment.currency;
 
     //get the latest exchange rate from the db src:investment currency, target: CAD
-    let quoted_rate = await get_quoted_rate(currency, 'CAD');
-    let exchange_rate = parseFloat(quoted_rate.bid);
+    // let quoted_rate = await get_quoted_rate(currency, 'CAD');
+    // let exchange_rate = parseFloat(quoted_rate.bid);
+    let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
     if(!account) throw new Error('Account does not exist');
 
@@ -87,13 +92,18 @@ const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
       }
 
       account_balance = parseFloat(account_balance.toFixed(8));
+
+      //get the valid exchange rate based on the transaction time
+      let tx_time_moment = moment(account_transaction.time);
+      let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
+      exchange_rate =  exchange_rate.bid;
+
       let account_balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
       let amount_cad = parseFloat((exchange_rate * amount)).toFixed(8);
 
-
-
       let transaction_json = {
-        'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
+        // 'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
+        'time': tx_time_moment.format('YYYY-MM-DD HH:mm:ss A'),
         'description': account_transaction.memo,
         'amount':Math.abs(amount),
         'amount_cad':Math.abs(amount_cad),
