@@ -89,7 +89,7 @@ function get_valid_rate(timestamped_rates, timestamp){
       filtered_rates.push(timestamped_rates[0]);
   }
 
-  return filtered_rates[0].rate;
+  return (filtered_rates && filtered_rates.length != 0) ? filtered_rates[0].rate : [];
 
 }
 
