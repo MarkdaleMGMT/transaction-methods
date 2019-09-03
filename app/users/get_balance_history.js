@@ -13,10 +13,11 @@ module.exports = async function balance_history_api(req, res) {
 
   let username = req.body.username;
   let time_period_days = req.body.time_period_days;
+  let chart = req.body.chart;
 
   try{
     console.log("inside balance history");
-    let balance_history = await get_user_balance_history(username, time_period_days);
+    let balance_history = await get_user_balance_history(username, time_period_days, chart);
     res.send({ code: "Success", balance_history })
   }
   catch(err){
@@ -27,7 +28,7 @@ module.exports = async function balance_history_api(req, res) {
 
 };
 
-async function get_user_balance_history(username, time_period_days){
+async function get_user_balance_history(username, time_period_days, chart=false){
 
 
   let user_accounts = await get_accounts_per_user(username);
@@ -41,7 +42,7 @@ async function get_user_balance_history(username, time_period_days){
     let investment = await get_investment_by_id(user_account.investment_id)
 
     console.log("fetching balance history for account ", account_id);
-    let account_balance_history = await get_balance_history(account_id, time_period_days);
+    let account_balance_history = await get_balance_history(account_id, time_period_days, chart);
     user_balance_history.push(
     {
       account_id:user_account.account_id,
