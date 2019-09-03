@@ -21,10 +21,11 @@ async function balance_history_api(req, res) {
 
   let account_id = req.body.account_id;
   let time_period_days = req.body.time_period_days;
+  let chart = req.body.chart;
 
   try{
     console.log("inside balance history");
-    let balance_history = await get_balance_history(account_id, time_period_days);
+    let balance_history = await get_balance_history(account_id, time_period_days, chart);
     res.send({ code: "Success", balance_history })
   }
   catch(err){
@@ -36,7 +37,7 @@ async function balance_history_api(req, res) {
 
 };
 
-async function get_balance_history(account_id, time_period_days){
+async function get_balance_history(account_id, time_period_days, chart=false){
 
 
   console.log("inside get_balance_history");
@@ -82,7 +83,7 @@ async function get_balance_history(account_id, time_period_days){
    // balance = last_balance = await account_balance(account_id);
 
    balance = await account_balance(account_id);
-   last_balance = await account_balance_by_date(account_id, start_date);
+   last_balance = chart? balance : await account_balance_by_date(account_id, start_date);
 
    console.log("last balance ", last_balance);
 
