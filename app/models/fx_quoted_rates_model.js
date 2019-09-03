@@ -27,6 +27,24 @@ async function get_quoted_rates_with_validity(from_currency, to_currency){
   const [rates, fields] = await db.connection.query("SELECT * FROM fx_quoted_rates WHERE from_to = ? OR from_to = ? ORDER BY timestamp ASC",[from_currency+"_"+to_currency, to_currency + '_' + from_currency]);
 
   let timestamped_rates = [];
+
+  if(from_currency == to_currency){
+
+    timestamped_rates.push(
+    {  rate: {
+        bid:1,
+        ask:1,
+        mid:1,
+        valid_from : new Date().toISOString(),
+        valid_until: null,
+        from_to:from_currency+"_"+to_currency
+      }}
+    );
+
+    return timestamped_rates;
+  }
+
+
   for(let i=0; i<rates.length; i++){
 
     let rate = rates[i];
@@ -56,7 +74,7 @@ async function get_quoted_rates_with_validity(from_currency, to_currency){
 function get_valid_rate(timestamped_rates, timestamp){
 
   let search_timestamp = moment(timestamp).format('YYYY-MM-DD HH:mm:ss');
-  console.log(search_timestamp)
+  // console.log(search_timestamp)
 
 
   let filtered_rates = timestamped_rates.filter( rate_row => {

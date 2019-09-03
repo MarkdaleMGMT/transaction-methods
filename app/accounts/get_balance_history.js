@@ -2,7 +2,7 @@ const dateFormat = require('dateformat');
 const moment = require('moment');
 
 const { get_account_transactions_by_date } = require('../models').transaction_model
-const { get_account_by_id, account_balance } = require('../models').account_model
+const { get_account_by_id, account_balance, account_balance_by_date } = require('../models').account_model
 const { get_investment_by_id } = require('../models').investment_model
 
 // const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
@@ -74,10 +74,18 @@ async function get_balance_history(account_id, time_period_days){
 
    //get the balance history between start and end date
    let transactions = await get_account_transactions_by_date(account_id, start_date, end_date);
+   console.log("account history: transactions", transactions);
+
 
    let transaction_history = [];
    let last_balance = 0, balance = 0;
-   balance = last_balance = await account_balance(account_id);
+   // balance = last_balance = await account_balance(account_id);
+
+   balance = await account_balance(account_id);
+   last_balance = await account_balance_by_date(account_id, start_date);
+
+   console.log("last balance ", last_balance);
+
 
    for(let i=0; i<transactions.length; i++){
      let account_transaction = transactions[i];
@@ -96,15 +104,16 @@ async function get_balance_history(account_id, time_period_days){
      }
 
      balance = parseFloat(balance.toFixed(8));
+     console.log(i, " ", balance);
 
 
-     console.log("time: ",account_transaction.time);
+     // console.log("time: ",account_transaction.time);
 
      let transaction_json = {
        // 'date':dateFormat(new Date(account_transaction.time),'dd mm yyyy'),
        // 'date':dateFormat(new Date(account_transaction.time),'fullDate'),
 
-       'date':dateFormat(new Date(account_transaction.time),'dd mm yyyy'),
+       'date':dateFormat(new Date(account_transaction.time),'yyyy-mm-dd'),
        'account_balance':balance,
        // 'account_balance_cad':balance_cad,
        'currency':currency
@@ -117,7 +126,7 @@ async function get_balance_history(account_id, time_period_days){
 
    }//end for
 
-   console.log(transaction_history);
+   console.log("account history: transaction_history" ,transaction_history);
 
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
@@ -128,19 +137,65 @@ async function get_balance_history(account_id, time_period_days){
    /*let quoted_rate = await get_quoted_rate(currency, 'CAD');
    let exchange_rate = parseFloat(quoted_rate.bid);*/
 
+   console.log("currency: ", currency);
    let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
 
    let balance_history = [];
-   let dates = getDates(start_date,end_date).reverse();
+   let dates = getDates(start_date,end_date);
+
+   for(let i=0; i<dates.length; i++){
+
+     //entries of current date
+     if(transaction_history && transaction_history.length){
+
+       console.log("dates ", dates[i]);
+
+       let relevant_entries = transaction_history.filter(function (el) {
+         // console.log(el.date,dates[i]);
+         return el.date == dates[i];
+       });
+
+       if(relevant_entries.length > 0){
+
+         last_balance = relevant_entries[0].account_balance;
+         console.log("updated last balance", last_balance);
+       }
+
+       //remove the found entries, assuming transaction is sorted in descending order
+       transaction_history = transaction_history.splice(relevant_entries.length)
+     }
+
+     //Get the valid rate
+     let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
+     let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
+     console.log("exchange_rate", tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
+     exchange_rate = exchange_rate.bid;
+     let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
+
+     balance_history.push({
+       date:tx_time_moment.format('DD MM YYYY'),
+       exchange_rate: exchange_rate,
+       account_balance: last_balance,
+       account_balance_cad: balance_cad,
+       currency:currency
+
+     });
+
+
+
+   }
+
+   //sort the dates in descending order
+   /*let dates = getDates(start_date,end_date).reverse();
 
 
    // let last_balance = 0;
    //if there were no transactions in that period
-   if(transaction_history && transaction_history.length > 0){
-
-     last_balance = transaction_history[0].account_balance;
-   }
+   // if(transaction_history && transaction_history.length > 0){
+   //
+   //   last_balance = transaction_history[0].account_balance;
+   // }
 
 
    for(let i=0; i<dates.length; i++){
@@ -163,9 +218,8 @@ async function get_balance_history(account_id, time_period_days){
 
      //Get the valid rate
      let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
-;
      let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
-     console.log("exchange_rate", exchange_rate);
+     // console.log("exchange_rate", exchange_rate);
      exchange_rate = exchange_rate.bid;
      let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
 
@@ -180,7 +234,7 @@ async function get_balance_history(account_id, time_period_days){
 
 
 
-   }
+   }*/
 
 
    return balance_history;
