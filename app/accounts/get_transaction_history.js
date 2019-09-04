@@ -115,6 +115,7 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
         // 'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
         'time': tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'),
         'description': account_transaction.memo,
+        'transaction_type':account_transaction.transaction_type,
         'amount':Math.abs(amount),
         'amount_cad':Math.abs(amount_cad),
         'type': amount <0 ? 'credit':'debit',
