@@ -52,6 +52,10 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  async function transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo){
 
+   if(amount <= 0){
+     throw new Error("Invalid amount, enter a positive value");
+   }
+
    let recipient_accnt = await get_account_by_investment(recipient,investment_id);
    let sender_accnt = await get_account_by_investment(sender, investment_id);
 
