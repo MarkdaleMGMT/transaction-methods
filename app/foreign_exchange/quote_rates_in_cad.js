@@ -34,19 +34,33 @@ async function get_rates_in_cad(){
 
     let c = currencies[i];
     let rate = await get_latest_quoted_rate(c, base_currency);
+
+    //parse all rates to float
+    rate['bid'] = parseFloat(rate['bid'])
+    rate['ask'] = parseFloat(rate['ask'])
+    rate['mid'] = parseFloat(rate['mid'])
+
     console.log("rate", rate);
-    let exchange_rate = 1;
+    let exchange_rate = {
+      bid:1,
+      ask:1,
+      mid:1
+    };
 
 
     if(rate){
       if(rate.from_to == c+"_"+base_currency){
-          exchange_rate = rate.bid;
+          exchange_rate['bid'] = parseFloat(rate.bid.toFixed(2));
+          exchange_rate['ask'] = parseFloat(rate.ask.toFixed(2));
+          exchange_rate['mid'] = parseFloat(rate.mid.toFixed(2));
       }
       else {
-          exchange_rate = 1/ rate.ask;
+          exchange_rate['bid'] = parseFloat((1/ rate.ask).toFixed(2));
+          exchange_rate['ask'] = parseFloat((1/rate.bid).toFixed(2));
+          exchange_rate['mid'] = parseFloat((1/rate.mid).toFixed(2));
       }
 
-      currency_rates.push({ currency:c, rate_in_cad: parseFloat(exchange_rate).toFixed(2)});
+      currency_rates.push({ currency:c, rate_in_cad: exchange_rate });
     }
 
 
