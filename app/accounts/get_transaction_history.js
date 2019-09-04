@@ -1,7 +1,7 @@
 var db = require('../util/mysql_connection')
 const dateFormat = require('dateformat');
 const moment = require('moment');
-const { get_account_by_id, get_accounts, get_accounts_per_user } = require('../models').account_model
+const { get_account_by_id, get_accounts, get_accounts_per_user, get_accounts_by_investment } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
 
@@ -18,12 +18,18 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
    let account_id = null;
    let username = null;
+   let investment_id = null;
+
    if(req.body.hasOwnProperty('account_id')){
      account_id = req.body.account_id;
    }
 
    if(req.body.hasOwnProperty('username')){
      username = req.body.username;
+   }
+
+   if(req.body.hasOwnProperty('investment_id')){
+     investment_id = req.body.investment_id;
    }
 
 
@@ -35,6 +41,9 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
      else if(username){
        transaction_history = await get_transaction_for_user(username);
+     }
+     else if(investment_id){
+       transaction_history = await get_transaction_for_all_accounts(investment_id);
      }
      else{
 
@@ -140,9 +149,14 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
      return ((aD < bD) ? -1 : ((aD > bD) ? 1 : 0));
  }
 
-  async function get_transaction_for_all_accounts(){
+  async function get_transaction_for_all_accounts(investment_id=null){
 
-    let accounts = await get_accounts();
+    let accounts = [];
+
+    if(investment_id)
+      accounts = await get_accounts_by_investment(investment_id);
+    else
+      accounts = await get_accounts();
     let transaction_history = [];
     for(let i=0; i<accounts.length; i++){
 
