@@ -30,7 +30,8 @@ module.exports = {
   },
   db_backup:{
     email:process.env.DB_BACKUP_EMAIL
-  }
+  },
+  base_currency:'CAD'
 
 
 }

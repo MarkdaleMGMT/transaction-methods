@@ -37,13 +37,13 @@ const uuidv1 = require('uuid/v1');//timestamp
      let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to transfer amount');}
-     res.send({ code: "transfer amount successful" })
+     res.send({ code: "Success", message:'Transfer successful' })
 
 
    }
    catch(err){
      console.log("error "+err);
-     res.status(400).send({msg:err.message});
+     res.status(400).send({message:err.message});
    }
 
 
@@ -51,6 +51,10 @@ const uuidv1 = require('uuid/v1');//timestamp
  };
 
  async function transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo){
+
+   if(amount <= 0){
+     throw new Error("Invalid amount, enter a positive value");
+   }
 
    let recipient_accnt = await get_account_by_investment(recipient,investment_id);
    let sender_accnt = await get_account_by_investment(sender, investment_id);
@@ -67,6 +71,10 @@ const uuidv1 = require('uuid/v1');//timestamp
 
     if (!recipient_accnt ){
 
+      //check if recipient user exists in the database
+      recipient_user = await get_user_by_username(recipient);
+      if(!recipient_user)
+        throw new Error("Invalid recipient");
       //create a recipient account
       recipient_accnt_id = await create_user_account(recipient,investment_id);
 

@@ -7,20 +7,20 @@ async function get_all_exchange_rate_configs(){
 
 async function rates_source_currency(from_currency){
 
-  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to',  source FROM exchange_rates_config WHERE from_to like ?",[from_currency+'_%']);
+  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to',  source FROM fx_weight WHERE from_to like ?",[from_currency+'_%']);
   return rows;
 }
 
 
 async function rates_target_currency(to_currency){
 
-  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source  FROM exchange_rates_config WHERE from_to like ? ",['%_' + to_currency]);
+  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source  FROM fx_weight WHERE from_to like ? ",['%_' + to_currency]);
   return rows;
 }
 
 async function rates_by_source(from_currency, to_currency, source){
 
-  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight, reference_rate_gap  FROM exchange_rates_config WHERE from_to = ? AND  source = ?",[from_currency + '_' + to_currency, source]);
+  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight, reference_rate_gap  FROM fx_weight WHERE from_to = ? AND  source = ?",[from_currency + '_' + to_currency, source]);
   return rows[0];
 }
 
@@ -31,11 +31,11 @@ async function rates_by_source(from_currency, to_currency, source){
   let pairB = to_currency+'_'+from_currency;
 
 
-  let [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM exchange_rates_config WHERE from_to = ? OR from_to = ?",[pairA, pairB]);
+  let [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM fx_weight WHERE from_to = ? OR from_to = ?",[pairA, pairB]);
 
   // if (rows.length == 0){
   //   let pairB = to_currency+'_'+from_currency;
-  //   [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM exchange_rates_config WHERE from_to = ? or from_to = ? ",[pairA, pairB]);
+  //   [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to', source, weight  FROM fx_weight WHERE from_to = ? or from_to = ? ",[pairA, pairB]);
   //
   // }
 
@@ -79,7 +79,7 @@ async function get_currency_pair_info(from_currency, to_currency){
 
   let pairA = from_currency+'_'+to_currency;
   let pairB = to_currency+'_'+from_currency;
-  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(currency_pair, '_', 1) as 'from', SUBSTRING_INDEX(currency_pair, '_', -1) as 'to',  spread, path FROM currency_pair WHERE currency_pair = ? or currency_pair = ? ",[pairA, pairB]);
+  const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(currency_pair, '_', 1) as 'from', SUBSTRING_INDEX(currency_pair, '_', -1) as 'to',  spread, path FROM fx_path WHERE currency_pair = ? or currency_pair = ? ",[pairA, pairB]);
 
   // let spread = rows[0].from == from_currency? 1 / ( 1 + rows[0].spread ) : ( 1 + rows[0].spread );
   return rows[0];

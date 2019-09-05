@@ -42,13 +42,13 @@ CREATE TABLE `account` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `api_access_info`
+-- Table structure for table `api_info`
 --
 
-DROP TABLE IF EXISTS `api_access_info`;
+DROP TABLE IF EXISTS `api_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `api_access_info` (
+CREATE TABLE `api_info` (
   `access_id` int(11) NOT NULL AUTO_INCREMENT,
   `investment_id` int(11) DEFAULT NULL,
   `type` varchar(45) NOT NULL,
@@ -85,21 +85,6 @@ CREATE TABLE `control` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `currency_pair`
---
-
-DROP TABLE IF EXISTS `currency_pair`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `currency_pair` (
-  `currency_pair` varchar(10) NOT NULL,
-  `spread` decimal(20,8) NOT NULL,
-  `path` varchar(100) NOT NULL,
-  PRIMARY KEY (`currency_pair`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='		';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Temporary table structure for view `daily_registered_users`
 --
 
@@ -113,13 +98,67 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Table structure for table `exchange_rates_config`
+-- Table structure for table `fx_path`
 --
 
-DROP TABLE IF EXISTS `exchange_rates_config`;
+DROP TABLE IF EXISTS `fx_path`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `exchange_rates_config` (
+CREATE TABLE `fx_path` (
+  `currency_pair` varchar(10) NOT NULL,
+  `spread` decimal(20,8) NOT NULL,
+  `path` varchar(100) NOT NULL,
+  PRIMARY KEY (`currency_pair`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='		';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `fx_quoted_rates`
+--
+
+DROP TABLE IF EXISTS `fx_quoted_rates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `fx_quoted_rates` (
+  `rate_id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` datetime NOT NULL,
+  `from_to` varchar(10) NOT NULL,
+  `bid` decimal(20,8) NOT NULL,
+  `ask` decimal(20,8) NOT NULL,
+  `mid` decimal(20,8) NOT NULL,
+  PRIMARY KEY (`rate_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `fx_raw_rates`
+--
+
+DROP TABLE IF EXISTS `fx_raw_rates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `fx_raw_rates` (
+  `rate_id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `from_to` varchar(10) NOT NULL,
+  `source` varchar(45) NOT NULL,
+  `bid` decimal(20,8) NOT NULL,
+  `ask` decimal(20,8) NOT NULL,
+  `quoted_bid` decimal(20,8) NOT NULL,
+  `quoted_ask` decimal(20,8) NOT NULL,
+  PRIMARY KEY (`rate_id`),
+  UNIQUE KEY `currency_code_UNIQUE` (`rate_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3224 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `fx_weight`
+--
+
+DROP TABLE IF EXISTS `fx_weight`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `fx_weight` (
   `config_id` int(11) NOT NULL AUTO_INCREMENT,
   `from_to` varchar(10) NOT NULL,
   `source` varchar(45) NOT NULL,
@@ -178,27 +217,6 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Table structure for table `order_book`
---
-
-DROP TABLE IF EXISTS `order_book`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `order_book` (
-  `rate_id` int(11) NOT NULL AUTO_INCREMENT,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `from_to` varchar(10) NOT NULL,
-  `source` varchar(45) NOT NULL,
-  `bid` decimal(20,8) NOT NULL,
-  `ask` decimal(20,8) NOT NULL,
-  `quoted_bid` decimal(20,8) NOT NULL,
-  `quoted_ask` decimal(20,8) NOT NULL,
-  PRIMARY KEY (`rate_id`),
-  UNIQUE KEY `currency_code_UNIQUE` (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `pending_deposits`
 --
 
@@ -232,24 +250,6 @@ CREATE TABLE `process_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `quoted_fx_rates`
---
-
-DROP TABLE IF EXISTS `quoted_fx_rates`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `quoted_fx_rates` (
-  `rate_id` int(11) NOT NULL AUTO_INCREMENT,
-  `timestamp` datetime NOT NULL,
-  `from_to` varchar(10) NOT NULL,
-  `bid` decimal(20,8) NOT NULL,
-  `ask` decimal(20,8) NOT NULL,
-  `mid` decimal(20,8) NOT NULL,
-  PRIMARY KEY (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `transaction`
 --
 
@@ -273,7 +273,7 @@ CREATE TABLE `transaction` (
   KEY `fk_transaction_investment_idx` (`investment_id`),
   CONSTRAINT `fk_transaction_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_transaction_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=397 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=399 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -344,4 +344,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-04 15:03:39
+-- Dump completed on 2019-08-31 20:49:21

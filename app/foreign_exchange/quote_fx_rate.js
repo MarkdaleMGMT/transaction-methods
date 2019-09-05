@@ -1,6 +1,6 @@
-const { get_latest_quoted_rate } = require('../models').quoted_fx_rate;
+const { get_latest_quoted_rate } = require('../models').fx_quoted_rates;
 
-async function get_rate(req,res){
+async function quote_fx_rate(req,res){
 
   try{
     let to_currency = req.body.to_currency;
@@ -23,7 +23,7 @@ async function get_quoted_rate(from_currency, to_currency){
   let rate = 1;
   if(from_currency == to_currency){
     rate = {
-      from_to:from_currency+'_'+from_currency,
+      from_to:from_currency+'_'+to_currency,
       bid: 1,
       ask: 1,
       mid: 1
@@ -35,16 +35,28 @@ async function get_quoted_rate(from_currency, to_currency){
 
    console.log("get_quoted_rate rate ",rate);
   if(rate){
-    return {
-      from_to:rate.from_to,
-      bid: rate.bid,
-      ask: rate.ask,
-      mid: rate.mid
-    };
+
+    if(rate.from_to == from_currency+'_'+to_currency)
+    {  return {
+        from_to:rate.from_to,
+        bid: rate.bid,
+        ask: rate.ask,
+        mid: rate.mid
+      };
+    }else{
+
+      return {
+          from_to:rate.from_to,
+          bid: 1/rate.ask,
+          ask: 1/rate.bid,
+          mid: 1/rate.mid
+    }
+  }
+
   }
   else {
     return {
-      from_to:null,
+      from_to:from_currency+'_'+to_currency,
       bid: null,
       ask: null,
       mid: null
@@ -53,6 +65,6 @@ async function get_quoted_rate(from_currency, to_currency){
 }
 
 module.exports={
-  get_rate,
+  quote_fx_rate,
   get_quoted_rate
 }

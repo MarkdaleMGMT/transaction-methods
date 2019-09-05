@@ -1,4 +1,4 @@
-const { get_quoted_rate } = require('./get_rate');
+const { get_quoted_rate } = require('./quote_fx_rate');
 const { get_investment_by_id } = require('../models/investment_model');
 const { get_account_by_investment, get_fx_account , account_balance } = require('../models/account_model');
 const { build_insert_transaction } = require('../models/transaction_model');
@@ -29,11 +29,11 @@ module.exports = async function exchange(req,res){
 
 
     let isSuccesful = await exchange_investment(username, source_investment_id, target_investment_id, amount, memo);
-    res.send({ code: "exchange transaction successful", isSuccesful })
+    res.send({ code: "Exchange transaction successful", isSuccesful })
   }
   catch(err){
     console.error("got err",err);
-    res.status(400).send({msg:err.message});
+    res.status(400).send({code:"Failed to exchange investment" , message:err.message});
   }
 
 }

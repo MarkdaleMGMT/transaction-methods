@@ -2,8 +2,14 @@ const app = module.exports = require('express')();
 
 
 
-app.post('/update_exchange_rates', require('./update_exchange_rates').update_exchange_rates);
+
 app.post('/exchange', require('./exchange'));
-app.post('/generate_rate', require('./generate_rate').generate_rate);
-app.post('/get_path', require('./generate_rate').get_path);
-app.post('/get_rate', require('./get_rate').get_rate);
+app.post('/get_path', require('./calculate_fx_rate').get_path);
+
+app.post('/scrape_rate', require('./scrape_fx_rate'));
+app.post('/calculate_rate', require('./calculate_fx_rate').calculate_fx_rate);
+app.post('/quote_rate', require('./quote_fx_rate').quote_fx_rate);
+app.get('/quote_rates', require('./quote_rates').get_quoted_rates_api);
+app.get('/quote_rates_in_cad', require('./quote_rates_in_cad'));
+
+app.post('/rates_history', require('./get_rates_history'));

@@ -1,9 +1,13 @@
 var db = require('../util/mysql_connection')
 const dateFormat = require('dateformat');
-const { get_account_by_id, get_accounts, get_accounts_per_user } = require('../models').account_model
+const moment = require('moment');
+const { get_account_by_id, get_accounts, get_accounts_per_user, get_accounts_by_investment } = require('../models').account_model
 const { get_account_transactions } = require('../models').transaction_model
 const { get_investment_by_id } = require('../models').investment_model
-const { get_quoted_rate } = require('../foreign_exchange/get_rate')
+
+
+// const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
+const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').fx_quoted_rates
 
 /**
  * API to fetch all transactions for a specific account
@@ -14,12 +18,18 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
    let account_id = null;
    let username = null;
+   let investment_id = null;
+
    if(req.body.hasOwnProperty('account_id')){
      account_id = req.body.account_id;
    }
 
    if(req.body.hasOwnProperty('username')){
      username = req.body.username;
+   }
+
+   if(req.body.hasOwnProperty('investment_id')){
+     investment_id = req.body.investment_id;
    }
 
 
@@ -32,14 +42,17 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
      else if(username){
        transaction_history = await get_transaction_for_user(username);
      }
+     else if(investment_id){
+       transaction_history = await get_transaction_for_all_accounts(investment_id);
+     }
      else{
 
         transaction_history = await get_transaction_for_all_accounts();
      }
-     res.send({ code: "Success", transaction_history })
+     res.send({ code: "Success", transaction_history: transaction_history.reverse() })
    }
    catch(err){
-     res.status(400).send({msg: 'Unable to fetch transaction history', error:err.message});
+     res.status(400).send({code: 'Unable to fetch transaction history', message:err.message});
    }
 
 
@@ -56,11 +69,13 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
     //TODO: optimize it later to perform minimal db queries
     let investment = await get_investment_by_id(account.investment_id);
+    let investment_name = investment.investment_name;
     let currency = investment.currency;
 
     //get the latest exchange rate from the db src:investment currency, target: CAD
-    let quoted_rate = await get_quoted_rate(currency, 'CAD');
-    let exchange_rate = parseFloat(quoted_rate.bid);
+    // let quoted_rate = await get_quoted_rate(currency, 'CAD');
+    // let exchange_rate = parseFloat(quoted_rate.bid);
+    let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
     if(!account) throw new Error('Account does not exist');
 
@@ -72,33 +87,44 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
 
     for(let i=0; i<transactions.length; i++){
       let account_transaction = transactions[i];
+      let { amount } = account_transaction;
 
       if (account_type == 'debit'){
         //debits mean increase in balance
         //credits mean decrease in balance
-        account_balance += parseFloat(account_transaction.amount);
+        account_balance += parseFloat(amount);
       }
       else {
         //debits mean decrease in balance
         //credits mean increase in balance
-        account_balance += parseFloat(account_transaction.amount)*-1.0;
+        account_balance += parseFloat(amount)*-1.0;
       }
 
       account_balance = parseFloat(account_balance.toFixed(8));
+
+      //get the valid exchange rate based on the transaction time
+      let tx_time_moment = moment(account_transaction.time);
+      let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
+      exchange_rate =  exchange_rate.bid;
+
       let account_balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
+      let amount_cad = parseFloat((exchange_rate * amount)).toFixed(8);
 
-
-
+      console.log("time format ", tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'));
       let transaction_json = {
-        'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
+        // 'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
+        'time': tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'),
         'description': account_transaction.memo,
-        'amount':Math.abs(account_transaction.amount),
-        'type': account_transaction.amount <0 ? 'credit':'debit',
+        'transaction_type':account_transaction.transaction_type,
+        'amount':Math.abs(amount),
+        'amount_cad':Math.abs(amount_cad),
+        'type': amount <0 ? 'credit':'debit',
         'account_balance':account_balance,
         'account_balance_cad':account_balance_cad,
         'custom_memo':account_transaction.custom_memo,
         'currency':currency,
-        'username':account.username
+        'username':account.username,
+        investment_name
 
       };
 
@@ -124,9 +150,14 @@ const { get_quoted_rate } = require('../foreign_exchange/get_rate')
      return ((aD < bD) ? -1 : ((aD > bD) ? 1 : 0));
  }
 
-  async function get_transaction_for_all_accounts(){
+  async function get_transaction_for_all_accounts(investment_id=null){
 
-    let accounts = await get_accounts();
+    let accounts = [];
+
+    if(investment_id)
+      accounts = await get_accounts_by_investment(investment_id);
+    else
+      accounts = await get_accounts();
     let transaction_history = [];
     for(let i=0; i<accounts.length; i++){
 

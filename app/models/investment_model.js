@@ -21,9 +21,15 @@ async function create_investment(investment_name, description, currency, usernam
   return result.insertId;
 }
 
+async function get_all_currencies(){
+  let [currencies, fields] = await db.connection.query("SELECT DISTINCT(currency) FROM investment");
+  return currencies.map(currencyObj => { return currencyObj.currency});
+}
+
 module.exports ={
   get_all_investments,
   get_investment_by_id,
   get_investment_by_name,
-  create_investment
+  create_investment,
+  get_all_currencies
 }

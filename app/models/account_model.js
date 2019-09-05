@@ -1,5 +1,5 @@
 var db = require('../util/mysql_connection');
-const { get_account_transactions, get_account_transactions_end_date } = require('./transaction_model')
+const { get_account_transactions, get_account_transactions_by_date } = require('./transaction_model')
 
 async function get_accounts(){
   const [rows, fields] = await db.connection.query("SELECT * FROM account ");
@@ -106,7 +106,7 @@ async function account_balance_by_date(account_id, date){
   let account_type = account.account_type;
 
 
-  let transactions = await get_account_transactions_end_date(account_id,date);
+  let transactions = await get_account_transactions_by_date(account_id,date);
 
   let total_credits = 0;
   let total_debits = 0;
