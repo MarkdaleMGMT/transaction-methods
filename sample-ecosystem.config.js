@@ -43,7 +43,8 @@ module.exports = {
       EMAIL_SENDER:'',
       DB_BACKUP_EMAIL : '',
       GMAIL:'',
-      GMAIL_PASS:''
+      GMAIL_PASS:'',
+      ADMIN_USER:''
 
     },
     env_production: {

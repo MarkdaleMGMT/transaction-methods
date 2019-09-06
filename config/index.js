@@ -31,7 +31,7 @@ module.exports = {
   db_backup:{
     email:process.env.DB_BACKUP_EMAIL
   },
-  base_currency:'CAD'
-
+  base_currency:'CAD',
+  admin_user:process.env.ADMIN_USER
 
 }

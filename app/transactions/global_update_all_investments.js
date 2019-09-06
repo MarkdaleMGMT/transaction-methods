@@ -1,6 +1,7 @@
 const { get_balance, get_investments_with_api_info } = require('../models/api_info_model');
 const { get_user_by_username } = require('../models/user_model');
 const { update_investment_balance } =require('./global_update');
+const { admin_user } = require('../../config')
 
 const bcrypt = require('bcrypt');
 
@@ -65,7 +66,7 @@ module.exports = async function update_investments_balance(){
       if(!balance) continue;
 
       //run global update
-      let isSuccesful = await update_investment_balance(username,investment_id,balance,datetime);
+      let isSuccesful = await update_investment_balance(admin_user,investment_id,balance,datetime);
       if (!isSuccesful){ console.error('unable to update balance ' + investment_id);}
       result.push({ investment_id, isSuccesful });
 
