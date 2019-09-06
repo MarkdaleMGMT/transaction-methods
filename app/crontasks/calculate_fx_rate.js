@@ -35,5 +35,7 @@ module.exports = async function build_crontasks(){
     }
 
   });
+  console.log(crontasks);
+  return crontasks;
 
 }
