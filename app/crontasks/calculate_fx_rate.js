@@ -1,7 +1,7 @@
 const dateFormat = require('dateformat');
 const { get_fx_paths } = require('../models').fx_weight_model;
 const { generate_cronconfig } = require('../util/common');
-const { calculate_rate } = require('foreign_exchange/calculate_fx_rate')
+const { calculate_rate } = require('../foreign_exchange/calculate_fx_rate')
 
 //get all the currency pairs from fx_path table
 
