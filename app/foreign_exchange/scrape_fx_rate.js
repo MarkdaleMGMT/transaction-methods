@@ -3,7 +3,7 @@ const { get_exchange_api } = require('../models').api_info_model;
 const { rates_by_source } = require('../models').fx_weight_model;
 
 const axios = require("axios");
-const { poloniex, bitfinex, scotiabank, cme, binance } = require('../exchanges');
+const { poloniex, bitfinex, scotiabank, cme, binance, kitco } = require('../exchanges');
 
 /*
 Queries exernal data sources and updates order book accordingly
@@ -53,6 +53,9 @@ async function update_fx_raw_rates(source, rates){
     }
     else if(exchange_api.description == 'bitfinex'){
       exchange_rate = await bitfinex.get_exchange_rate(base_url, rate);
+    }
+    else if(exchange_api.description == 'kitco'){
+      exchange_rate = await kitco.get_exchange_rate(base_url, rate);
     }
     else if(exchange_api.description == 'cme'){
       let cme_config = await rates_by_source(rate.split('_')[0], rate.split('_')[1],  source);
