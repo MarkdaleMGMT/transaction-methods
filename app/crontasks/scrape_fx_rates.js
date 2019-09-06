@@ -24,9 +24,9 @@ module.exports = async function build_crontasks(){
       console.log("-------------------");
       console.log(datetime + " :Running Cronjob : Update Order Book "+config.from_to);
 
-      // let result = await update_order_book(config.source, [config.from_to]);
+      let result = await update_fx_raw_rates(config.source, [config.from_to]);
       console.log(datetime + " :Complete Cronjob : Update Order Book "+config.from_to + " Status: ");
-      // console.log(result);
+      console.log(result);
 
 
       }
