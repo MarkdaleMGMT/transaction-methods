@@ -95,5 +95,5 @@ module.exports = {
   rates_by_source,
   get_rates_currency_pair,
   get_currency_pair_info,
-  get_all_exchange_rate_configs
+  get_fx_rates_config
 };
