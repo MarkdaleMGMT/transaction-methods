@@ -70,6 +70,21 @@ function getDates(startDate, stopDate) {
     return dateArray;
 }
 
+function generate_cronconfig(freq_min) {
+
+  let hours = freq_min/60;
+  if(hours >= 1){
+
+    hours = parseInt(hours);
+    return `0 0 */${hours} * * *`
+  }
+  else{
+
+    return `0 */${freq_min} * * * *`
+
+  }
+}
+
 
 
 module.exports = {
@@ -79,5 +94,6 @@ module.exports = {
   encrypt_sha512,
   encrypt_sha384,
   toCamelCase,
-  writeFileAsync
+  writeFileAsync,
+  generate_cronconfig
 }
