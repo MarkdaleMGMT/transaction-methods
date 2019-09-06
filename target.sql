@@ -38,7 +38,7 @@ CREATE TABLE `account` (
   KEY `fk_account_investment_idx` (`investment_id`),
   CONSTRAINT `fk_account_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_account_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -61,7 +61,7 @@ CREATE TABLE `api_info` (
   UNIQUE KEY `access_id_UNIQUE` (`access_id`),
   KEY `fk_address_investment_idx` (`investment_id`),
   CONSTRAINT `fk_address_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,7 +92,7 @@ DROP TABLE IF EXISTS `daily_registered_users`;
 /*!50001 DROP VIEW IF EXISTS `daily_registered_users`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `daily_registered_users` AS SELECT 
+/*!50001 CREATE VIEW `daily_registered_users` AS SELECT
  1 AS `registered_on`,
  1 AS `count`*/;
 SET character_set_client = @saved_cs_client;
@@ -128,7 +128,7 @@ CREATE TABLE `fx_quoted_rates` (
   `ask` decimal(20,8) NOT NULL,
   `mid` decimal(20,8) NOT NULL,
   PRIMARY KEY (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,7 +149,7 @@ CREATE TABLE `fx_raw_rates` (
   `quoted_ask` decimal(20,8) NOT NULL,
   PRIMARY KEY (`rate_id`),
   UNIQUE KEY `currency_code_UNIQUE` (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3240 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,7 +167,7 @@ CREATE TABLE `fx_weight` (
   `weight` int(11) NOT NULL,
   `reference_rate_gap` decimal(20,8) DEFAULT NULL,
   PRIMARY KEY (`config_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,7 +200,7 @@ CREATE TABLE `investment` (
   `currency` varchar(5) NOT NULL,
   PRIMARY KEY (`investment_id`),
   UNIQUE KEY `investment_name_UNIQUE` (`investment_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -211,7 +211,7 @@ DROP TABLE IF EXISTS `investment_trial_balance`;
 /*!50001 DROP VIEW IF EXISTS `investment_trial_balance`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT 
+/*!50001 CREATE VIEW `investment_trial_balance` AS SELECT
  1 AS `investment_id`,
  1 AS `currency`,
  1 AS `trial_balance`*/;
@@ -247,7 +247,7 @@ CREATE TABLE `process_log` (
   `process_type` varchar(45) NOT NULL,
   `status` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -274,7 +274,7 @@ CREATE TABLE `transaction` (
   KEY `fk_transaction_investment_idx` (`investment_id`),
   CONSTRAINT `fk_transaction_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_transaction_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=440 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
