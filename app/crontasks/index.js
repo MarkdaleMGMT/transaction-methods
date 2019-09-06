@@ -10,25 +10,24 @@ const cron = require("node-cron");
 async function schedule_and_run_crontasks(){
 
   //mail a db backup every midnight
-  // cron.schedule("0/1 0 * * *",backup_db);
+  cron.schedule("0 0 * * *",backup_db);
 
   //run global update for all investments
-  cron.schedule("0 */1 * * * *", update_investment_balance);
+  cron.schedule("0 0 * * *", update_investment_balance);
 
 
   //scrape raw rates
-  // let scrape_fx_crons = await scrape_fx_rate_crontasks();
-  // for(let i=0; i<scrape_fx_crons.length; i++){
-  //   cron.schedule(scrape_fx_crons[i].cron_interval,()=>{ scrape_fx_crons[i].cron_fn(); });
-  // }
+  let scrape_fx_crons = await scrape_fx_rate_crontasks();
+  for(let i=0; i<scrape_fx_crons.length; i++){
+    cron.schedule(scrape_fx_crons[i].cron_interval,()=>{ scrape_fx_crons[i].cron_fn(); });
+  }
 
 
   //calculate rates
-  // let calculate_rate_crons = await calculate_rate_crontasks();
-  // for(let i=0; i<calculate_rate_crons.length; i++){
-  //   cron.schedule(calculate_rate_crons[i].cron_interval,()=>{ calculate_rate_crons[i].cron_fn(); });
-  // }
-
+  let calculate_rate_crons = await calculate_rate_crontasks();
+  for(let i=0; i<calculate_rate_crons.length; i++){
+    cron.schedule(calculate_rate_crons[i].cron_interval,()=>{ calculate_rate_crons[i].cron_fn(); });
+  }
 
 
 
