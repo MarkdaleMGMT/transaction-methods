@@ -3,14 +3,14 @@ const dateFormat = require('dateformat')
 const moment = require('moment')
 const { send_email } = require('../util/mail')
 const { mysql_config , db_backup} = require('../../config')
+const fs = require("fs");
+
+const DB_BACKUP_PATH='/backup/db_backup'
+const DB_RETAIN_DAYS = 90
 
 
-DB_BACKUP_PATH='/backup/db_backup'
-DB_RETAIN_DAYS = 90
 
-
-
-module.exports = async function backup_database(){
+async function backup_database(){
 
 
 
@@ -19,9 +19,18 @@ module.exports = async function backup_database(){
   let status = ""
   console.log("-------------------");
   console.log(datetime + " :Running Cronjob : Backup started for database "+mysql_config.database);
+  console.log(`${DB_BACKUP_PATH}/${today}`);
 
-  shell.mkdir('-p', '${DB_BACKUP_PATH}/${today}');
 
+   //if backup directory does not exist, create it
+   try{
+	fs.mkdirSync( `${DB_BACKUP_PATH}/${today}`, { recursive: true })
+   }catch(err){
+	console.error(err)
+   }
+
+
+  //shell.mkdir('-p', `${DB_BACKUP_PATH}/${today}`);
   let db_backup_command =
   `mysqldump -h localhost -P 3306 --single-transaction --default-character-set=utf8 ${mysql_config.database} `
   +`| gzip > ${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql.gz`
@@ -68,4 +77,12 @@ module.exports = async function backup_database(){
 
 
 
+}
+
+
+//backup_database();
+
+
+module.exports = {
+	backup_database
 }
