@@ -48,11 +48,11 @@ function generate_cronconfig(freq_min){
   if(hours >= 1){
 
     hours = parseInt(hours);
-    return `* 0/${hours} * * *`
+    return `0 0 */${hours} * * *`
   }
   else{
 
-    return `0/${freq_min} * * * *`
+    return `0 */${freq_min} * * * *`
 
   }
 }
