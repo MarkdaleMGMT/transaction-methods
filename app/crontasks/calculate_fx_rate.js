@@ -23,13 +23,13 @@ module.exports = async function build_crontasks(){
       let datetime = new Date();
       let today = dateFormat(datetime, "dd_mm_yyyy");
       let status = "";
-      let [ from_currency, to_currency ] = fx_path.from_to.split("_");
+      let [ from_currency, to_currency ] = fx_path.currency_pair.split("_");
 
       console.log("-------------------");
-      console.log(datetime + " :Running Cronjob : Calculate FX Rate "+fx_path.from_to);
+      console.log(datetime + " :Running Cronjob : Calculate FX Rate "+fx_path.currency_pair);
 
       let result = await calculate_rate(from_currency, to_currency );
-      console.log(datetime + " :Complete Cronjob : Calculate FX Rate "+fx_path.from_to + " Status: ",result);
+      console.log(datetime + " :Complete Cronjob : Calculate FX Rate "+fx_path.currency_pair + " Status: ",result);
 
       }
     }
