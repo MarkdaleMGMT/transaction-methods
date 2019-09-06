@@ -1,7 +1,7 @@
 var db = require('../util/mysql_connection');
 
-async function get_all_exchange_rate_configs(){
-  const [rows, fields] = await db.connection.query("SELECT * FROM exchange_rates_config");
+async function get_fx_rates_config(){
+  const [rows, fields] = await db.connection.query("SELECT * FROM fx_weight");
   return rows;
 }
 

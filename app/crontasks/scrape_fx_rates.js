@@ -1,11 +1,11 @@
 const dateFormat = require('dateformat')
-const { get_all_exchange_rate_configs } = require('../models').exchange_rates_config
-const { update_order_book } = require('../foreign_exchange/update_exchange_rates')
+const { get_fx_rates_config } = require('../models').fx_weight_model
+const { update_fx_raw_rates } = require('../foreign_exchange/scrape_fx_rate')
 
 module.exports = async function build_crontasks(){
 
   let crontasks = [];
-  let exchange_rates_config = await get_all_exchange_rate_configs();
+  let exchange_rates_config = await get_fx_rates_config();
 
   for(let i=0; i<exchange_rates_config.length; i++){
 
@@ -35,6 +35,7 @@ module.exports = async function build_crontasks(){
 
   }//end for
 
+  console.log("built crontasks ", crontasks);
   return crontasks;
 
 
@@ -47,11 +48,11 @@ function generate_cronconfig(freq_min){
   if(hours >= 1){
 
     hours = parseInt(hours);
-    return `* * */${hours} * *`
+    return `* 0/${hours} * * *`
   }
   else{
 
-    return `* */${freq_min} * * *`
+    return `0/${freq_min} * * * *`
 
   }
 }

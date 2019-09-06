@@ -1,8 +1,9 @@
 const { backup_database } = require('./backup_db');
-//const build_orderbook_crontasks = require('./update_exchange_rates')
+const build_orderbook_crontasks = require('./scrape_fx_rates')
 const cron = require("node-cron");
 
-backup_database();
+// backup_database();
+build_orderbook_crontasks();
 
 async function schedule_and_run_crontasks(){
 
