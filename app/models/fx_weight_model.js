@@ -5,6 +5,11 @@ async function get_fx_rates_config(){
   return rows;
 }
 
+async function get_fx_paths(){
+  const [rows, fields] = await db.connection.query("SELECT * FROM fx_path");
+  return rows;
+}
+
 async function rates_source_currency(from_currency){
 
   const [rows,fields] = await db.connection.query("SELECT SUBSTRING_INDEX(from_to, '_', 1) as 'from', SUBSTRING_INDEX(from_to, '_', -1) as 'to',  source FROM fx_weight WHERE from_to like ?",[from_currency+'_%']);
@@ -95,5 +100,6 @@ module.exports = {
   rates_by_source,
   get_rates_currency_pair,
   get_currency_pair_info,
-  get_fx_rates_config
+  get_fx_rates_config,
+  get_fx_paths
 };

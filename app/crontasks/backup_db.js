@@ -24,9 +24,9 @@ async function backup_database(){
 
    //if backup directory does not exist, create it
    try{
-	fs.mkdirSync( `${DB_BACKUP_PATH}/${today}`, { recursive: true })
+	    fs.mkdirSync( `${DB_BACKUP_PATH}/${today}`, { recursive: true });
    }catch(err){
-	console.error(err)
+	    console.error(err);
    }
 
 

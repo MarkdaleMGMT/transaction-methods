@@ -1,6 +1,7 @@
 const dateFormat = require('dateformat')
 const { get_fx_rates_config } = require('../models').fx_weight_model
 const { update_fx_raw_rates } = require('../foreign_exchange/scrape_fx_rate')
+const { generate_cronconfig } = require('../util/common')
 
 module.exports = async function build_crontasks(){
 
@@ -22,11 +23,11 @@ module.exports = async function build_crontasks(){
       let status = "";
 
       console.log("-------------------");
-      console.log(datetime + " :Running Cronjob : Update Order Book "+config.from_to);
+      console.log(datetime + " :Running Cronjob : Scrape FX Rate "+config.from_to);
 
       let result = await update_fx_raw_rates(config.source, [config.from_to]);
-      console.log(datetime + " :Complete Cronjob : Update Order Book "+config.from_to + " Status: ");
-      console.log(result);
+      console.log(datetime + " :Complete Cronjob : Scrape FX Rate "+config.from_to + " Status: ",result);
+
 
 
       }
@@ -41,18 +42,3 @@ module.exports = async function build_crontasks(){
 
 
 };
-
-function generate_cronconfig(freq_min){
-
-  let hours = freq_min/60;
-  if(hours >= 1){
-
-    hours = parseInt(hours);
-    return `0 0 */${hours} * * *`
-  }
-  else{
-
-    return `0 */${freq_min} * * * *`
-
-  }
-}
