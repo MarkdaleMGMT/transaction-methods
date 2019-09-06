@@ -62,7 +62,7 @@ async function get_miner_balance(explorer_url, miner_address){
   try {
     const response = await axios.get(explorer_url+miner_address);
     const data = response.data;
-    console.log(data);
+    // console.log(data);
 
     return parseFloat(data);
 
