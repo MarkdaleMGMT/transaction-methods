@@ -15,6 +15,7 @@
     "axios": "^0.18.1",
     "bcrypt": "^3.0.6",
     "bitcoind-rpc": "^0.8.0",
+    "cheerio": "^1.0.0-rc.3",
     "coffee-script": "^1.12.7",
     "coffeescript": "^2.4.1",
     "crypto": "^1.0.1",
