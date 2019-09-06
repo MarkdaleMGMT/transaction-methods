@@ -61,7 +61,7 @@ CREATE TABLE `api_info` (
   UNIQUE KEY `access_id_UNIQUE` (`access_id`),
   KEY `fk_address_investment_idx` (`investment_id`),
   CONSTRAINT `fk_address_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -108,6 +108,7 @@ CREATE TABLE `fx_path` (
   `currency_pair` varchar(10) NOT NULL,
   `spread` decimal(20,8) NOT NULL,
   `path` varchar(100) NOT NULL,
+  `frequency_min` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`currency_pair`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='		';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -127,7 +128,7 @@ CREATE TABLE `fx_quoted_rates` (
   `ask` decimal(20,8) NOT NULL,
   `mid` decimal(20,8) NOT NULL,
   PRIMARY KEY (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -148,7 +149,7 @@ CREATE TABLE `fx_raw_rates` (
   `quoted_ask` decimal(20,8) NOT NULL,
   PRIMARY KEY (`rate_id`),
   UNIQUE KEY `currency_code_UNIQUE` (`rate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3224 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3240 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,7 +167,7 @@ CREATE TABLE `fx_weight` (
   `weight` int(11) NOT NULL,
   `reference_rate_gap` decimal(20,8) DEFAULT NULL,
   PRIMARY KEY (`config_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +274,7 @@ CREATE TABLE `transaction` (
   KEY `fk_transaction_investment_idx` (`investment_id`),
   CONSTRAINT `fk_transaction_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_transaction_investment` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=399 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=440 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -344,4 +345,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-31 20:49:21
+-- Dump completed on 2019-09-06 14:17:03
