@@ -10,7 +10,7 @@ const cron = require("node-cron");
 async function schedule_and_run_crontasks(){
 
   //mail a db backup every midnight
-  cron.schedule("0 0 * * *",backup_db);
+  cron.schedule("0 0 * * *",backup_database);
 
   //run global update for all investments
   cron.schedule("0 0 * * *", update_investment_balance);
