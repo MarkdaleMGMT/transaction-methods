@@ -40,6 +40,8 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  async function update_investment_balance(username,investment_id,amount,datetime){
 
+   
+
     //check if the user is admin, if not throw an error
     let user = await user_model.get_user_by_username(username)
 

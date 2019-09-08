@@ -173,5 +173,6 @@ async function find_exchange_path(src_currency, target_currency, exchange_path =
 
 module.exports = {
   calculate_fx_rate,
+  calculate_rate,
   get_path
 };

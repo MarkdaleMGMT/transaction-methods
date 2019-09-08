@@ -54,8 +54,8 @@ async function get_wallet_balance(base_url, api_key, secret, wallet_type, curren
     url: base_url + url
   }
 
-  console.log("req data ",req_body);
-  console.log("options ",options);
+  // console.log("req data ",req_body);
+  // console.log("options ",options);
 
   const response = await axios(options)
   const data = response.data;

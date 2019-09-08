@@ -16,4 +16,4 @@ app.post('/rollback', require('./rollback'));
 app.post('/trial_balance', require('./trial_balance'));
 app.post('/balance_sheet_summary', require('./balance_sheet_summary'));
 
-app.post('/auto_global_update', require('./global_update_all_investments'));
+// app.post('/auto_global_update', require('./global_update_all_investments'));
