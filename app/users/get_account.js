@@ -18,7 +18,7 @@ module.exports = async function get_user_account_api(req, res) {
     res.send({ code: "Success", account })
   }
   catch(err){
-    res.status(400).send({code:"Error fetching accout details", message: err.message});
+    res.status(400).send({code:"Error fetching account details", message: err.message});
   }
 
 };
@@ -26,6 +26,8 @@ module.exports = async function get_user_account_api(req, res) {
 async function get_account_details(username, investment_id){
 
   let account = await get_account_by_investment(username, investment_id);
+  if(!account) throw new Error("Account does not exist")
+  
   let investment = await get_investment_by_id(investment_id);
 
   let quoted_rate = await get_quoted_rate(investment.currency, 'CAD');
