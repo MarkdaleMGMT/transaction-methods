@@ -1,7 +1,7 @@
 const { get_account_by_investment, account_balance } = require('../models').account_model;
 const { get_investment_by_id } = require('../models').investment_model;
 const { get_quoted_rate }  = require('../foreign_exchange/quote_fx_rate');
-const { base_currency } = require('../config')
+const { base_currency } = require('../../config')
 /**
  * API to get all the account that a particular user owns in a particular investment
  * @param  {string} username     username of the user whose account you want to fetch
