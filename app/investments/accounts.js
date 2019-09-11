@@ -2,6 +2,7 @@ var db = require('../util/mysql_connection')
 const { get_accounts_by_investment,account_balance  } = require('../models').account_model
 const { get_investment_by_id  } = require('../models').investment_model
 const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
+const { base_currency } = require('../config')
 
 
 
@@ -32,8 +33,9 @@ const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
    let accounts = await get_accounts_by_investment(investment_id);
 
    //get the latest exchange rate from the db src:investment currency, target: CAD
-   let quoted_rate = await get_quoted_rate(investment.currency, 'CAD');
-   let exchange_rate = parseFloat(quoted_rate.bid);
+   let quoted_rate = await get_quoted_rate(investment.currency, base_currency);
+    let exchange_rate = quoted_rate.from_to == currency+'_'+base_currency ? parseFloat(quoted_rate.bid) : parseFloat(1/quoted_rate.ask);
+   // let exchange_rate = parseFloat(quoted_rate.bid);
    console.log(investment.currency, '/CAD: ',exchange_rate);
 
    let account_details = [];

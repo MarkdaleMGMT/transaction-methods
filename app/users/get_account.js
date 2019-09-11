@@ -1,6 +1,7 @@
 const { get_account_by_investment, account_balance } = require('../models').account_model;
 const { get_investment_by_id } = require('../models').investment_model;
 const { get_quoted_rate }  = require('../foreign_exchange/quote_fx_rate');
+const { base_currency } = require('../config')
 /**
  * API to get all the account that a particular user owns in a particular investment
  * @param  {string} username     username of the user whose account you want to fetch
@@ -27,11 +28,11 @@ async function get_account_details(username, investment_id){
 
   let account = await get_account_by_investment(username, investment_id);
   if(!account) throw new Error("Account does not exist")
-  
+
   let investment = await get_investment_by_id(investment_id);
 
-  let quoted_rate = await get_quoted_rate(investment.currency, 'CAD');
-  let exchange_rate = parseFloat(quoted_rate.bid);
+  let quoted_rate = await get_quoted_rate(investment.currency, base_currency);
+  let exchange_rate = quoted_rate.from_to == currency+'_'+base_currency ? parseFloat(quoted_rate.bid) : parseFloat(1/quoted_rate.ask);
 
   let account_balance_val = await account_balance(account.account_id);
   //round CAD to 2dp
