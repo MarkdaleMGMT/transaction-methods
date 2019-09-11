@@ -34,7 +34,7 @@ const { base_currency } = require('../../config')
 
    //get the latest exchange rate from the db src:investment currency, target: CAD
    let quoted_rate = await get_quoted_rate(investment.currency, base_currency);
-    let exchange_rate = quoted_rate.from_to == currency+'_'+base_currency ? parseFloat(quoted_rate.bid) : parseFloat(1/quoted_rate.ask);
+    let exchange_rate = quoted_rate.from_to == investment.currency+'_'+base_currency ? parseFloat(quoted_rate.bid) : parseFloat(1/quoted_rate.ask);
    // let exchange_rate = parseFloat(quoted_rate.bid);
    console.log(investment.currency, '/CAD: ',exchange_rate);
 
