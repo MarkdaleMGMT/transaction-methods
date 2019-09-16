@@ -12,8 +12,8 @@ async function schedule_and_run_crontasks(){
   //mail a db backup every midnight
   cron.schedule("0 0 * * *",backup_database);
 
-  //run global update for all investments
-  cron.schedule("0 0 * * *", update_investment_balance);
+  //run global update for all investments every hour
+  cron.schedule("0 0 */1 * * ", update_investment_balance);
 
 
   //scrape raw rates
