@@ -33,6 +33,11 @@ module.exports = {
       FX_ACNT:'',
       FAUCET_ACNT:'',
       WITHDRAWAL_FEES_ACNT:'',
+      ADMIN_USER:'',
+      EMAIL_SENDER:'',
+      DB_BACKUP_EMAIL:'',
+      GMAIL:'',
+      GMAIL_PASS:'',
       BTC_PAY_HOST:'',
       BTC_PAY_PORT:'',
       BTC_PAY_RPC_USER:'',
@@ -41,9 +46,7 @@ module.exports = {
       CLAM_PAY_PORT:'',
       CLAM_PAY_RPC_USER:'',
       CLAM_PAY_RPC_PASS:'',
-      EMAIL_SENDER:'',
-      DB_BACKUP_EMAIL : '',
-      ADMIN_USER:''
+
 
     },
     env_production: {
