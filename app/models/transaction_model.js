@@ -18,7 +18,7 @@ async function get_account_transactions(account_id){
 }
 
 async function get_account_transactions_by_date(account_id, start_date, end_date){
-  const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? AND time between ? AND ? ORDER BY time DESC ",[account_id, start_date, end_date]);
+  const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? AND time >= ? ORDER BY time DESC ",[account_id, start_date]);
   return rows;
 }
 
