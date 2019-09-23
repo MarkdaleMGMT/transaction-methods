@@ -88,10 +88,10 @@ async function get_balance_history(account_id, time_period_days, chart=false){
    console.log("last balance ", last_balance);
 
 
-   for(let i=0; i<transactions.length; i++){
+   for(let i=transactions.length-1; i>=0; i--){
      let account_transaction = transactions[i];
 
-     if(i!=0){
+     if(i!= transactions.length - 1){
        if (account_type == 'debit'){
          //debits mean increase  balance
          //credits mean decrease in balance
@@ -174,16 +174,31 @@ async function get_balance_history(account_id, time_period_days, chart=false){
        //transaction_history = transaction_history.splice(relevant_entries.length)
      //}
      
+    //Day starts exactly at the 0th hour, 0th minute, 0th second, 0th milisecond
+    let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
+
     if (transaction_history && transaction_history.length != 0){
 	if (dates[i] == curTransc.date){
+	//if (tx_time_moment.date() == curTransc.date){
 		curTransc = transaction_history.shift()
 		account_balance = curTransc.account_balance
+
+	//If transaction day (tx_time) is equal to the day of the current transaction
+		//set transaction time to current transaction time
+		//account_balance to current account balance
+
+		//iteratively loop transaction history list until curtransaction day changes
+			//push the balance to balance history
+			
+		//skip to the next transaction day
+	//else (there is no transaction on this day)
+		//set as the previous transaction
 	}
     }
 
      //Get the valid rate
-     let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
-     let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
+     //let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
+     let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD'));
     // console.log("exchange_rate", tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
      exchange_rate = exchange_rate.bid;
      let balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
