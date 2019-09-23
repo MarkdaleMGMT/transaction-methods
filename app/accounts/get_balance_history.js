@@ -82,7 +82,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
    let last_balance = 0, balance = 0;
    // balance = last_balance = await account_balance(account_id);
 
-   balance = await account_balance(account_id);
+   //balance = await account_balance(account_id);
    last_balance = chart? balance : await account_balance_by_date(account_id, start_date);
 
    console.log("last balance ", last_balance);
@@ -93,18 +93,20 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
      if(i!=0){
        if (account_type == 'debit'){
-         //debits mean increase in balance
+         //debits mean increase  balance
          //credits mean decrease in balance
-         balance -= parseFloat(transactions[i-1].amount);
+         balance += parseFloat(account_transaction.amount);
        }
        else {
          //debits mean decrease in balance
          //credits mean increase in balance
-         balance -= parseFloat(transactions[i-1].amount)*-1.0;
+         balance -= parseFloat(account_transaction.amount);
        }
+     } else { // first balance
+	 balance = account_transaction.amount;
      }
 
-     balance = parseFloat(balance.toFixed(8));
+     balance = parseFloat(balance);
      console.log(i, " ", balance);
 
 
@@ -127,7 +129,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
    }//end for
 
-   console.log("account history: transaction_history" ,transaction_history);
+   console.log("Balance History" ,transaction_history);
 
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
@@ -144,40 +146,53 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
    let balance_history = [];
    let dates = getDates(start_date,end_date);
+   
+   let account_balance = 0
+   let curTransc = null
+   
+   if (transaction_history && transaction_history.length != 0){ 
+        curTransc = transaction_history.shift()
+        account_balance = curTransc.account_balance
+    }
+
 
    for(let i=0; i<dates.length; i++){
-
      //entries of current date
-     if(transaction_history && transaction_history.length){
-
-       console.log("dates ", dates[i]);
-
-       let relevant_entries = transaction_history.filter(function (el) {
+     //if(transaction_history && transaction_history.length){
+       //console.log("dates ", dates[i]);
+       //let relevant_entries = transaction_history.filter(function (el) {
          // console.log(el.date,dates[i]);
-         return el.date == dates[i];
-       });
-
-       if(relevant_entries.length > 0){
-
-         last_balance = relevant_entries[0].account_balance;
-         console.log("updated last balance", last_balance);
-       }
+         //return el.date == dates[i];
+       //});
+	//console.log("Relevant Entries: " + relevant_entries)
+       //if(relevant_entries.length > 0){
+         //last_balance = relevant_entries[0].account_balance;
+         //console.log("updated last balance", last_balance);
+       //}
 
        //remove the found entries, assuming transaction is sorted in descending order
-       transaction_history = transaction_history.splice(relevant_entries.length)
-     }
+       //transaction_history = transaction_history.splice(relevant_entries.length)
+     //}
+     
+    if (transaction_history && transaction_history.length != 0){
+	if (dates[i] == curTransc.date){
+		curTransc = transaction_history.shift()
+		account_balance = curTransc.account_balance
+	}
+    }
 
      //Get the valid rate
      let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
      let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
-     console.log("exchange_rate", tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
+    // console.log("exchange_rate", tx_time_moment.format('YYYY-MM-DD HH:mm:ss'));
      exchange_rate = exchange_rate.bid;
-     let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
-
+     let balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
+     
+   //  console.log(`${tx_time_moment.format('DD MM YYYY')} ${account_balance}`)
      balance_history.push({
        date:tx_time_moment.format('DD MM YYYY'),
        exchange_rate: exchange_rate,
-       account_balance: last_balance,
+       account_balance: account_balance,
        account_balance_cad: balance_cad,
        currency:currency
 
