@@ -116,8 +116,9 @@ async function get_balance_history(account_id, time_period_days, chart=false){
        // 'date':dateFormat(new Date(account_transaction.time),'dd mm yyyy'),
        // 'date':dateFormat(new Date(account_transaction.time),'fullDate'),
 
-       'date':dateFormat(new Date(account_transaction.time),'yyyy-mm-dd'),
-       'account_balance':balance,
+       'date':dateFormat(new Date(account_transaction.time),'yyyy-mm-dd HH:MM:ss'),
+       //'date':(account),
+	'account_balance':balance,
        // 'account_balance_cad':balance_cad,
        'currency':currency
 
@@ -157,29 +158,12 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
 
    for(let i=0; i<dates.length; i++){
-     //entries of current date
-     //if(transaction_history && transaction_history.length){
-       //console.log("dates ", dates[i]);
-       //let relevant_entries = transaction_history.filter(function (el) {
-         // console.log(el.date,dates[i]);
-         //return el.date == dates[i];
-       //});
-	//console.log("Relevant Entries: " + relevant_entries)
-       //if(relevant_entries.length > 0){
-         //last_balance = relevant_entries[0].account_balance;
-         //console.log("updated last balance", last_balance);
-       //}
-
-       //remove the found entries, assuming transaction is sorted in descending order
-       //transaction_history = transaction_history.splice(relevant_entries.length)
-     //}
      
     //Day starts exactly at the 0th hour, 0th minute, 0th second, 0th milisecond
     let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
 
     if (transaction_history && transaction_history.length != 0){
-	if (dates[i] == curTransc.date){
-	//if (tx_time_moment.date() == curTransc.date){
+	if (moment(tx_time_moment).isSame(curTransc.date, "day")){
 		curTransc = transaction_history.shift()
 		account_balance = curTransc.account_balance
 
