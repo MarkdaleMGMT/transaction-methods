@@ -135,53 +135,51 @@ async function get_balance_history(account_id, time_period_days, chart=false){
    let dates = getDates(start_date,end_date);
    
    let account_balance = 0
+   let curTranscIndex = 0
    let curTransc = null
    
    if (transaction_history && transaction_history.length != 0){ 
-        curTransc = transaction_history.shift()
-        account_balance = curTransc.account_balance
+        curTransc = transaction_history[curTranscIndex]
+	last_balance = curTransc.account_balance
     }
 
 
    for(let i=0; i<dates.length; i++){
      
     //Day starts exactly at the 0th hour, 0th minute, 0th second, 0th milisecond
-    let tx_time_moment = moment(dates[i]).set({hour:13,minute:1,second:0,millisecond:0});
+    let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
 
-    if (transaction_history && transaction_history.length != 0){
-	if (moment(tx_time_moment).isSame(curTransc.date, "day")){
-		curTransc = transaction_history.shift()
-		account_balance = curTransc.account_balance
+    //Get the valid exchange rate on this day
+    let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD'));
+    exchange_rate = exchange_rate.bid;
+    let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
 
-	//If transaction day (tx_time) is equal to the day of the current transaction
-		//set transaction time to current transaction time
-		//account_balance to current account balance
-
-		//iteratively loop transaction history list until curtransaction day changes
-			//push the balance to balance history
-			
-		//skip to the next transaction day
-	//else (there is no transaction on this day)
-		//set as the previous transaction
-	}
-    }
-
-     //Get the valid rate
-     let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD'));
-     exchange_rate = exchange_rate.bid;
-     let balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
-     
+    //Set the day's beginning balance
      balance_history.push({
        date:tx_time_moment.toISOString(),
        exchange_rate: exchange_rate,
-       account_balance: account_balance,
+       account_balance: last_balance,
        account_balance_cad: balance_cad,
        currency:currency
-
      });
 
+     //Loop through the transaction on this given date
+     while (transaction_history && transaction_history.length != curTranscIndex && moment(tx_time_moment).isSame(curTransc.date, "day")) {
+	
+	 balance_cad = parseFloat((exchange_rate * curTransc.account_balance).toFixed(8));
+	 balance_history.push({
+       		date:curTransc.date,
+       		exchange_rate: exchange_rate,
+       		account_balance: curTransc.account_balance,
+       		account_balance_cad: balance_cad,
+       		currency:currency
+     	});
 
-
+	last_balance = curTransc.account_balance
+  	curTranscIndex += 1
+	curTransc = transaction_history[curTranscIndex]
+	
+     }
    }
 
    //sort the dates in descending order
