@@ -56,7 +56,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
     // start_date = start_date.toMysqlFormat();
     // end_date = end_date.toMysqlFormat();
     start_date = dateFormat(start_date,'yyyy-mm-dd');
-    end_date = dateFormat(end_date,'yyyy-mm-dd');
+    //end_date = dateFormat(end_date,'yyyy-mm-dd');
 
     console.log("start_date ",start_date);
     console.log("end_date ",end_date);
@@ -79,19 +79,17 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
 
    let transaction_history = [];
-   let last_balance = 0, balance = 0;
+   let balance = 0;
    // balance = last_balance = await account_balance(account_id);
 
    //balance = await account_balance(account_id);
-   last_balance = chart? balance : await account_balance_by_date(account_id, start_date);
+   balance = await account_balance_by_date(account_id, start_date);
 
-   console.log("last balance ", last_balance);
-   balance = last_balance
+   console.log("last balance ", balance);
 
    for(let i=transactions.length-1; i>=0; i--){
      let account_transaction = transactions[i];
 
-     if(i!= transactions.length - 1){
        if (account_type == 'debit'){
          //debits mean increase  balance
          //credits mean decrease in balance
@@ -100,10 +98,6 @@ async function get_balance_history(account_id, time_period_days, chart=false){
        else {
          balance -= parseFloat(account_transaction.amount);
        }
-
-     } else { // first balance
-	 balance = account_transaction.amount;
-     }
 
      balance = parseFloat(balance);
      console.log(i, " ", balance);
