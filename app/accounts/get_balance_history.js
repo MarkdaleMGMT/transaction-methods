@@ -86,7 +86,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
    last_balance = chart? balance : await account_balance_by_date(account_id, start_date);
 
    console.log("last balance ", last_balance);
-
+   balance = last_balance
 
    for(let i=transactions.length-1; i>=0; i--){
      let account_transaction = transactions[i];
