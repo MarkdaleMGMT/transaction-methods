@@ -26,7 +26,7 @@ async function balance_history_api(req, res) {
   try{
     console.log("inside balance history");
     let balance_history = await get_balance_history(account_id, time_period_days, chart);
-    res.send({ code: "Success", "balance_history": balance_history[0], "transaction_times": balance_history[1] })
+    res.send({ code: "Success", "balance_history": balance_history })
   }
   catch(err){
     console.error(err);
@@ -125,10 +125,8 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
    let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
-  // let balance_history = [];
-   let balance_history_map = {}
-   transactionTimes = []
-   let dates = getDates(start_date,end_date);
+   let balance_history = [];
+  let dates = getDates(start_date,end_date);
    
    let account_balance = 0
    let curTranscIndex = 0
@@ -151,16 +149,8 @@ async function get_balance_history(account_id, time_period_days, chart=false){
     let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
 
     //Set the day's beginning balance
-    //  balance_history.push({
-    //    date:tx_time_moment.toISOString(),
-    //    exchange_rate: exchange_rate,
-    //    account_balance: last_balance,
-    //    account_balance_cad: balance_cad,
-    //    currency:currency
-    //  });
-
-     balance_history_map[tx_time_moment.toISOString()] = ({
-       date:tx_time_moment.toISOString(),
+     balance_history.push({
+       date:tx_time_moment.format(),
        exchange_rate: exchange_rate,
        account_balance: last_balance,
        account_balance_cad: balance_cad,
@@ -171,23 +161,15 @@ async function get_balance_history(account_id, time_period_days, chart=false){
   while (transaction_history && transaction_history.length != curTranscIndex && moment(tx_time_moment).isSame(curTransc.date, "day")) {
 	
     balance_cad = parseFloat((exchange_rate * curTransc.account_balance).toFixed(8));
-    // balance_history.push({
-    //         date:curTransc.date,
-    //         exchange_rate: exchange_rate,
-    //         account_balance: curTransc.account_balance,
-    //         account_balance_cad: balance_cad,
-    //         currency:currency
-    //     });
-    balance_history_map[curTransc.date] = ({
+    balance_history.push({
             date:curTransc.date,
             exchange_rate: exchange_rate,
             account_balance: curTransc.account_balance,
             account_balance_cad: balance_cad,
             currency:currency
         });
-    
-    transactionTimes.push(curTransc.date)
 
+    
     last_balance = curTransc.account_balance
     curTranscIndex += 1
     curTransc = transaction_history[curTranscIndex]
@@ -195,7 +177,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
      }
    }
 
-   return [ balance_history_map, transactionTimes];
+   return balance_history
 
 
 }
