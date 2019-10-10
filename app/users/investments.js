@@ -70,7 +70,8 @@ async function get_user_investment_details(username){
           'investment_name':investment.investment_name,
           'balance':account? account.balance: 0,
           'balance_cad':balance_cad,
-          'currency':currency
+          'currency':currency,
+          'isCrypto': !(['CAD','USD'].includes(currency))
 
         })
     }
