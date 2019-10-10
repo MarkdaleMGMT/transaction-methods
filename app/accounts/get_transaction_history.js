@@ -49,6 +49,7 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
         transaction_history = await get_transaction_for_all_accounts();
      }
+
      res.send({ code: "Success", transaction_history: transaction_history.reverse() })
    }
    catch(err){
