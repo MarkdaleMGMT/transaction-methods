@@ -91,7 +91,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    let filtered_transactions = transactions.slice(left_idx);
    console.log("filtered_transactions len: ", filtered_transactions.length)
    // console.log("filtered_transactions", filtered_transactions );
-   let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
+
    let transaction_history = filtered_transactions.map(tx => {
 
      // let exchange_rate = get_valid_rate(timestamped_quoted_rates, moment(tx.time).format('YYYY-MM-DD'));
@@ -99,7 +99,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
 
      // console.log("tx", tx)
      return {
-       'date':moment(tx.time).format(), //ISO string format
+       'date':tx.time, //ISO string format
        'currency':currency,
        // 'exchange_rate': exchange_rate.bid,
        'account_balance':tx.balance,
@@ -115,11 +115,6 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    //multiply it by the exchange rate at that time period
    //get the latest exchange rate from the db src:investment currency, target: CAD
 
-
-
-
-
-   /*
 
    let balance_history = [];
    let dates = getDates(start_date,end_date);
@@ -173,9 +168,9 @@ async function get_balance_history(account, time_period_days, chart=false, inves
      }
    }
 
-   return balance_history */
+   return balance_history
 
-   return transaction_history;
+   // return transaction_history;
 
 
 }
