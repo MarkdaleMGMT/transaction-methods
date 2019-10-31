@@ -49,7 +49,7 @@ async function get_user_balance_history(username, time_period_days, chart=false)
     // let investment = await get_investment_by_id(user_account.investment_id)
 
     // console.log("fetching balance history for account ", account_id);
-    let account_balance_history = await get_balance_history(user_account, investment_map[user_account.investment_id], time_period_days, chart);
+    let account_balance_history = await get_balance_history(user_account, time_period_days, chart, investment_map[user_account.investment_id]);
     user_balance_history.push(
     {
       account_id:user_account.account_id,
