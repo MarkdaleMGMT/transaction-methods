@@ -7,6 +7,7 @@ var pool = mysql.createPool(mysql_config);
 exports.connection = {
 
     query: async function (query,queryValues){
+      //connection is automatically released when the query resolves
       return await pool.query(query,queryValues);
     },
 

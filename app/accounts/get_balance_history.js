@@ -37,7 +37,8 @@ async function balance_history_api(req, res) {
 
 };
 
-async function get_balance_history(account_id, time_period_days, chart=false){
+//TODO: update the above API to pass the user acount
+async function get_balance_history(account, investment, time_period_days, chart=false){
 
 
   console.log("inside get_balance_history");
@@ -61,21 +62,17 @@ async function get_balance_history(account_id, time_period_days, chart=false){
     console.log("start_date ",start_date);
     console.log("end_date ",end_date);
 
-   let account = await get_account_by_id(account_id);
+   // let account = await get_account_by_id(account_id);
 
    //TODO: optimize it later to perform minimal db queries
-   let investment = await get_investment_by_id(account.investment_id);
+   // let investment = await get_investment_by_id(account.investment_id);
    let currency = investment.currency;
-
-
-
    if(!account) throw new Error('Account does not exist');
-
    let account_type = account.account_type;
 
    //get the balance history between start and end date
-   let transactions = await get_account_transactions_by_date(account_id, start_date, end_date);
-   console.log("account history: transactions", transactions);
+   let transactions = await get_account_transactions_by_date(account.account_id, start_date, end_date);
+   // console.log("account history: transactions", transactions);
 
 
    let transaction_history = [];
@@ -83,7 +80,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
    // balance = last_balance = await account_balance(account_id);
 
    //balance = await account_balance(account_id);
-   balance = await account_balance_by_date(account_id, start_date);
+   balance = await account_balance_by_date(account.account_id, start_date);
 
    console.log("last balance ", balance);
 
@@ -126,20 +123,20 @@ async function get_balance_history(account_id, time_period_days, chart=false){
    let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
    let balance_history = [];
-  let dates = getDates(start_date,end_date);
-   
+   let dates = getDates(start_date,end_date);
+
    let account_balance = 0
    let curTranscIndex = 0
    let curTransc = null
-   
-   if (transaction_history && transaction_history.length != 0){ 
+
+   if (transaction_history && transaction_history.length != 0){
         curTransc = transaction_history[curTranscIndex]
-	last_balance = curTransc.account_balance
+	      last_balance = curTransc.account_balance
     }
 
 
    for(let i=0; i<dates.length; i++){
-     
+
     //Day starts exactly at the 0th hour, 0th minute, 0th second, 0th milisecond
     let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
 
@@ -159,7 +156,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
      //Loop through the transaction on this given date
   while (transaction_history && transaction_history.length != curTranscIndex && moment(tx_time_moment).isSame(curTransc.date, "day")) {
-	
+
     balance_cad = parseFloat((exchange_rate * curTransc.account_balance).toFixed(8));
     balance_history.push({
             date:curTransc.date,
@@ -169,11 +166,11 @@ async function get_balance_history(account_id, time_period_days, chart=false){
             currency:currency
         });
 
-    
+
     last_balance = curTransc.account_balance
     curTranscIndex += 1
     curTransc = transaction_history[curTranscIndex]
-	
+
      }
    }
 
