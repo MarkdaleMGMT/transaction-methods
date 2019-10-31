@@ -115,6 +115,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    //multiply it by the exchange rate at that time period
    //get the latest exchange rate from the db src:investment currency, target: CAD
 
+   let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
    let balance_history = [];
    let dates = getDates(start_date,end_date);
