@@ -95,15 +95,15 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    let transaction_history = filtered_transactions.map(tx => {
 
      // let exchange_rate = get_valid_rate(timestamped_quoted_rates, moment(tx.time).format('YYYY-MM-DD'));
-     // let balance_cad = parseFloat((exchange_rate.bid * tx.balance).toFixed(8));
+     let balance_cad = parseFloat((tx.exchange_rate * tx.balance).toFixed(8));
 
      // console.log("tx", tx)
      return {
        'date':tx.time, //ISO string format
        'currency':currency,
-       // 'exchange_rate': exchange_rate.bid,
+       'exchange_rate': tx.exchange_rate,
        'account_balance':tx.balance,
-       // 'account_balance_cad': balance_cad
+       'account_balance_cad': balance_cad
 
      }
    });
@@ -115,7 +115,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    //multiply it by the exchange rate at that time period
    //get the latest exchange rate from the db src:investment currency, target: CAD
 
-   let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
+   //let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
    let balance_history = [];
    let dates = getDates(start_date,end_date);
@@ -123,10 +123,13 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    let account_balance = 0
    let curTranscIndex = 0
    let curTransc = null
+   let exchange_rate = 1
 
    if (transaction_history && transaction_history.length != 0){
         curTransc = transaction_history[curTranscIndex]
 	      last_balance = curTransc.account_balance
+        last_balance = curTransc.exchange_rate
+
     }
 
 
@@ -136,8 +139,8 @@ async function get_balance_history(account, time_period_days, chart=false, inves
     let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
 
     //Get the valid exchange rate on this day
-    let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD'));
-    exchange_rate = exchange_rate.bid;
+    // let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD'));
+    // exchange_rate = exchange_rate.bid;
     let balance_cad = parseFloat((exchange_rate * last_balance).toFixed(8));
 
     //Set the day's beginning balance
@@ -152,10 +155,10 @@ async function get_balance_history(account, time_period_days, chart=false, inves
   //Loop through the transaction on this given date
   while (transaction_history && transaction_history.length != curTranscIndex && moment(tx_time_moment).isSame(curTransc.date, "day")) {
 
-    balance_cad = parseFloat((exchange_rate * curTransc.account_balance).toFixed(8));
+    balance_cad = parseFloat((curTransc.exchange_rate * curTransc.account_balance).toFixed(8));
     balance_history.push({
             date:curTransc.date,
-            exchange_rate: exchange_rate,
+            exchange_rate: curTransc.exchange_rate,
             account_balance: curTransc.account_balance,
             account_balance_cad: balance_cad,
             currency:currency
