@@ -3,18 +3,19 @@ const axios = require("axios");
 /**
  * 
  * @param {*} base_url (ex. https://freiexchange.com/market/orderbook/)
- * @param {*} param (ex. CLAM)
+ * @param {*} param (ex. BTC_CLAM)
  */
 async function get_exchange_rate(base_url, param){
 
   let param_parts = param.split("_");
-  let source  = param_parts[0] //Alawys BTC
-  let des  = param_parts[1]
+  let des  = param_parts[0] //Alawys BTC
+  let base  = param_parts[1]
 
   console.log(`get_exchange_rate: ${base_url}${des}`);
 
   let response = await axios.get(base_url + des);
   let data = response.data;
+  console.log(data)
 
   //Get highest bid
   let highestBid = data["buy"].length == 0 ? 0 : calculateExchange(data["buy"][0])
@@ -43,11 +44,11 @@ async function get_exchange_rate(base_url, param){
 }
 
 function calculateExchange(obj){
-  return obj["price"] / obj["amount"]
+  return obj["price"]
 }
 
 module.exports = {
   get_exchange_rate
 }
 
-get_exchange_rate("https://freiexchange.com/market/orderbook/", "BTC_CLAM").then((obj) => {console.log(obj)})
+get_exchange_rate("https://freiexchange.com/market/orderbook/", "CLAM_BTC").then((obj) => {console.log(obj)})
