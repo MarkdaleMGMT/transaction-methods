@@ -102,8 +102,8 @@ async function get_balance_history(account, time_period_days, chart=false, inves
        'date':tx.time, //ISO string format
        'currency':currency,
        'exchange_rate': parseFloat(tx.exchange_rate),
-       'account_balance':tx.balance,
-       'account_balance_cad': balance_cad
+       'account_balance':account.account_type == 'credit' ? tx.balance*-1.0 : tx.balance,
+       'account_balance_cad': account.account_type == 'credit' ? balance_cad*-1.0 : balance_cad
 
      }
    });
