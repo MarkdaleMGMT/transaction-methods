@@ -24,7 +24,7 @@ async function get_latest_quoted_rate(from_currency, to_currency){
 async function get_quoted_rates_with_validity(from_currency, to_currency){
 
   const from_to = from_currency+"_"+to_currency;
-  const [rates, fields] = await db.connection.query("SELECT * FROM fx_quoted_rates WHERE from_to = ? OR from_to = ? ORDER BY timestamp ASC",[from_currency+"_"+to_currency, to_currency + '_' + from_currency]);
+  const [rates, fields] = await db.connection.query("SELECT SQL_CACHE * FROM fx_quoted_rates WHERE from_to = ? OR from_to = ? ORDER BY timestamp ASC",[from_currency+"_"+to_currency, to_currency + '_' + from_currency]);
 
   let timestamped_rates = [];
 
@@ -71,6 +71,8 @@ async function get_quoted_rates_with_validity(from_currency, to_currency){
 
 }
 
+
+//OPTIMIZE THIS
 function get_valid_rate(timestamped_rates, timestamp){
 
   let search_timestamp = moment(timestamp).format('YYYY-MM-DD HH:mm:ss');

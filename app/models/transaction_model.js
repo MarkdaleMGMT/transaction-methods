@@ -78,6 +78,20 @@ async function get_transactions_summary(investment_id){
 
 }
 
+async function get_transactions_with_balance(account_id){
+
+  const [rows, fields] = await db.connection.query(
+   "SET @runtot:=0, @id:=NULL; " +
+   "SELECT SQL_CACHE transaction.time, transaction.transaction_id,account_id, transaction.amount, " +
+   "(@runtot := if(account_id=@id,@runtot,0) + if(account_type='debit',amount, -1*amount) ) AS balance " +
+   "from transaction " +
+   "WHERE transaction.account_id = ? " +
+   "ORDER BY transaction.time;"
+   ,[account_id]);
+
+   return rows[1];
+}
+
 
 
 
@@ -94,4 +108,5 @@ module.exports ={
   get_trial_balance_per_currency,
   get_transactions_summary,
   get_account_transactions_by_enddate,
+  get_transactions_with_balance
 }
