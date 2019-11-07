@@ -101,7 +101,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
      return {
        'date':tx.time, //ISO string format
        'currency':currency,
-       'exchange_rate': tx.exchange_rate,
+       'exchange_rate': parseFloat(tx.exchange_rate),
        'account_balance':tx.balance,
        'account_balance_cad': balance_cad
 
