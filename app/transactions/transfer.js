@@ -4,6 +4,10 @@ const { get_user_by_username } = require('../models').user_model;
 const { get_account_by_investment, account_balance, create_user_account } = require('../models').account_model;
 const uuidv1 = require('uuid/v1');//timestamp
 
+const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
+const { base_currency } = require('../../config');
+const { get_investment_by_id } = require('../models').investment_model
+
 /**
  * API to transfer amount from one account to another
  * @param  {string} username     Username of the user who initiated the request
@@ -58,6 +62,8 @@ const uuidv1 = require('uuid/v1');//timestamp
 
    let recipient_accnt = await get_account_by_investment(recipient,investment_id);
    let sender_accnt = await get_account_by_investment(sender, investment_id);
+   let {currency} = await get_investment_by_id(investment_id);
+   let fx_rate = await get_quoted_bid(currency, base_currency);
 
    let recipient_accnt_id;
 
@@ -99,9 +105,9 @@ const uuidv1 = require('uuid/v1');//timestamp
 
     console.log("custom_memo: ",custom_memo);
     //debit the sender
-    let debit_query_with_vals = build_insert_transaction(sender_accnt.account_id, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,investment_id,custom_memo);
+    let debit_query_with_vals = build_insert_transaction(sender_accnt.account_id, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,investment_id, fx_rate, custom_memo);
     //credit the recipient
-    let credit_query_with_vals = build_insert_transaction(recipient_accnt_id, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,investment_id, custom_memo);
+    let credit_query_with_vals = build_insert_transaction(recipient_accnt_id, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,investment_id,fx_rate, custom_memo);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);

@@ -3,6 +3,11 @@ var db = require('../util/mysql_connection')
 var { control_model, user_model, account_model, transaction_model, investment_model } = require('../models')
 const uuidv1 = require('uuid/v1');//timestamp
 
+
+const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
+const { base_currency } = require('../../config');
+
+
 // var control_model = require('../mo/control_model')
 // var user_model = require('./user_model')
 // var transaction_model = require('../transactions/transaction_model')
@@ -40,7 +45,7 @@ const uuidv1 = require('uuid/v1');//timestamp
 
  async function update_investment_balance(username,investment_id,amount,datetime){
 
-   
+
 
     //check if the user is admin, if not throw an error
     let user = await user_model.get_user_by_username(username)
@@ -55,6 +60,8 @@ const uuidv1 = require('uuid/v1');//timestamp
     if(!investment){
       throw new Error('Invalid investment ID');
     }
+
+    let fx_rate = await get_quoted_bid(investment.currency, base_currency);
 
 
 
@@ -105,7 +112,7 @@ const uuidv1 = require('uuid/v1');//timestamp
      let transaction_queries = []
 
      //update debit query
-     let debit_investment_accnt = transaction_model.build_insert_transaction(investment_account.account_id, change, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id);
+     let debit_investment_accnt = transaction_model.build_insert_transaction(investment_account.account_id, change, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id, fx_rate);
      transaction_queries.push(debit_investment_accnt);
 
 
@@ -139,7 +146,7 @@ const uuidv1 = require('uuid/v1');//timestamp
        }
 
 
-       let credit_user_account = transaction_model.build_insert_transaction(account_id, accnt_balance_change*-1, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id);
+       let credit_user_account = transaction_model.build_insert_transaction(account_id, accnt_balance_change*-1, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id, fx_rate);
        transaction_queries.push(credit_user_account);
        remainder -= accnt_balance_change;
 
@@ -176,7 +183,7 @@ const uuidv1 = require('uuid/v1');//timestamp
          }
 
          //update debit query
-         let credit_affiliate_accnt = transaction_model.build_insert_transaction(affiliate_accnt_id, affiliate_commission*-1, 'admin', datetime, 'global update', 'affiliate commission',transaction_event_id, investment_id);
+         let credit_affiliate_accnt = transaction_model.build_insert_transaction(affiliate_accnt_id, affiliate_commission*-1, 'admin', datetime, 'global update', 'affiliate commission',transaction_event_id, investment_id, fx_rate);
          transaction_queries.push(credit_affiliate_accnt);
          console.log("affiliate_commission",affiliate_commission);
 
@@ -205,7 +212,7 @@ const uuidv1 = require('uuid/v1');//timestamp
      let credit_rake_balance = parseFloat((rake_amount + remainder).toFixed(8));
 
      // fetch rake user and update credit query
-     let credit_rake_user = transaction_model.build_insert_transaction(rake_account.account_id,credit_rake_balance*-1, 'admin', datetime, 'global update', 'rake', transaction_event_id, investment_id);
+     let credit_rake_user = transaction_model.build_insert_transaction(rake_account.account_id,credit_rake_balance*-1, 'admin', datetime, 'global update', 'rake', transaction_event_id, investment_id, fx_rate);
      transaction_queries.push(credit_rake_user);
 
 

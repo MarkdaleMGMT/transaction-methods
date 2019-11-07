@@ -3,7 +3,9 @@ const { build_insert_transaction, get_transactions_per_event } = require('../mod
 const { get_user_by_username } = require('../models').user_model;
 const uuidv1 = require('uuid/v1');//timestamp
 
-
+const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
+const { base_currency } = require('../../config');
+const { get_investment_by_id } = require('../models').investment_model
 
 /**
  * API for the deposit transaction
@@ -50,6 +52,20 @@ const uuidv1 = require('uuid/v1');//timestamp
      let event_transactions = await get_transactions_per_event(transaction_event_id);
      let queries_with_val = [];
 
+
+     let investment_set = new Set(event_transactions.map( tx => tx.investment_id));
+     // console.log("investment_set", investment_set);
+     let fx_rate_map = {};
+     for ( let investment_id of investment_set){
+
+       console.log("here!")
+       let {currency} = await get_investment_by_id(investment_id);
+       fx_rate_map[investment_id] = await get_quoted_bid(currency, base_currency);
+     }
+
+     console.log("fx_rate_map", fx_rate_map);
+
+
      for(let i = 0; i < event_transactions.length; i++){
 
        //reverse debit to credit
@@ -58,7 +74,9 @@ const uuidv1 = require('uuid/v1');//timestamp
        //assign rollback to a new transaction event
 
        let tx = event_transactions[i];
-       let adjustment_query = build_insert_transaction(tx.account_id, tx.amount*-1, user.username,datetime, 'rollback', 'rollback of transaction' + transaction_event_id, rollback_tx_event_id, tx.investment_id);
+
+
+       let adjustment_query = build_insert_transaction(tx.account_id, tx.amount*-1, user.username,datetime, 'rollback', 'rollback of transaction: ' + transaction_event_id, rollback_tx_event_id, tx.investment_id, fx_rate_map[tx.investment_id]);
        queries_with_val.push(adjustment_query);
      }
 

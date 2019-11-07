@@ -53,7 +53,20 @@ async function get_quoted_rate(from_currency, to_currency){
   }
 }
 
+
+//gets the rate from currency to to currency
+async function get_quoted_bid(from_currency, to_currency){
+
+  let db_quoted_rate = await get_quoted_rate(from_currency, to_currency);
+  if (db_quoted_rate.from_to == from_currency+'_'+to_currency){
+    return db_quoted_rate.bid ? db_quoted_rate.bid : null
+  }else{
+    return db_quoted_rate.ask ? 1/db_quoted_rate.ask : null
+  }
+}
+
 module.exports={
   quote_fx_rate,
-  get_quoted_rate
+  get_quoted_rate,
+  get_quoted_bid
 }
