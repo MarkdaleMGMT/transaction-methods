@@ -5,5 +5,6 @@ module.exports = {
   cme : require('./cme'),
   binance: require('./binance'),
   kitco: require('./kitco'),
-  freiexchange: require('./freiexchange')
+  freiexchange: require('./freiexchange'),
+  tradesatoshi: require('./tradesatoshi')
 }
