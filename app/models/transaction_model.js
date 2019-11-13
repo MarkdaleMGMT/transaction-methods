@@ -18,7 +18,12 @@ async function get_account_transactions(account_id){
 }
 
 async function get_account_transactions_by_date(account_id, start_date, end_date){
-  const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? AND time between ? AND ? ORDER BY time DESC ",[account_id, start_date, end_date]);
+  const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? AND time >= ? and time <= ? ORDER BY time DESC ",[account_id, start_date, end_date]);
+  return rows;
+}
+
+async function get_account_transactions_by_enddate (account_id,  end_date) {
+  const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE account_id = ? and time <= ? ORDER BY time DESC", [account_id, end_date])
   return rows;
 }
 
@@ -87,5 +92,6 @@ module.exports ={
   get_trial_balance,
   get_trial_balance_per_investment,
   get_trial_balance_per_currency,
-  get_transactions_summary
+  get_transactions_summary,
+  get_account_transactions_by_enddate,
 }

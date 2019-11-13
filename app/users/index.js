@@ -13,3 +13,4 @@ app.post('/balance', require('./get_balance'));
 app.post('/balance_history', require('./get_balance_history'));
 app.post('/get_accounts', require('./get_accounts'));
 app.post('/get_account', require('./get_account'));
+app.post('/investments', require('./investments'));
