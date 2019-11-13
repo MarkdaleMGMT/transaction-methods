@@ -4,5 +4,6 @@ module.exports = {
   scotiabank : require('./scotiabank'),
   cme : require('./cme'),
   binance: require('./binance'),
-  kitco: require('./kitco')
+  kitco: require('./kitco'),
+  freiexchange: require('./freiexchange')
 }

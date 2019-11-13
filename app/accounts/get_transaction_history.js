@@ -49,6 +49,7 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
         transaction_history = await get_transaction_for_all_accounts();
      }
+
      res.send({ code: "Success", transaction_history: transaction_history.reverse() })
    }
    catch(err){
@@ -110,7 +111,7 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
       let account_balance_cad = parseFloat((exchange_rate * account_balance).toFixed(8));
       let amount_cad = parseFloat((exchange_rate * amount)).toFixed(8);
 
-      console.log("time format ", tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'));
+      //console.log("time format ", tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'));
       let transaction_json = {
         // 'time':dateFormat(new Date(account_transaction.time),'dd mmm yyyy, h:MM:ss TT'),
         'time': tx_time_moment.format('DD MMM YYYY, hh:mm:ss A'),
