@@ -22,7 +22,7 @@ async function get_exchange_rate(base_url, param){
     let lowestBid = sell[0]["rate"]
   
     return {
-        timestamp: 12,//new Date().toMysqlFormat(),
+        timestamp: new Date().toMysqlFormat(),
         from_to: param,
         source: 'Trade Satoshi',
         bid: parseFloat(highestBid),
