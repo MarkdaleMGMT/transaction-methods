@@ -15,7 +15,7 @@ async function get_exchange_rate(base_url, param){
 
   let response = await axios.get(base_url + "/" + des);
   let data = response.data;
-  console.log(data)
+ // console.log(data)
 
   //Get highest bid
   let highestBid = data["buy"].length == 0 ? 0 : calculateExchange(data["buy"][0])
@@ -51,4 +51,4 @@ module.exports = {
   get_exchange_rate
 }
 
-get_exchange_rate("https://freiexchange.com/market/orderbook/", "CLAM_BTC").then((obj) => {console.log(obj)})
+//get_exchange_rate("https://freiexchange.com/market/orderbook/", "CLAM_BTC").then((obj) => {console.log(obj)})

@@ -10,10 +10,11 @@ async function get_exchange_rate(base_url, param){
   let param_parts = param.split("_");
   let des  = param_parts[0] //Alawys BTC
   let base  = param_parts[1]
-
-  console.log(`get_exchange_rate: ${base_url}${des}`);
-
+  console.log("test");
+  //console.log(`get_exchange_rate: ${base_url}${des}`);
+  console.log(`${base_url}?market=${param}&type=both&depth=20`);
   try{
+    console.log(`${base_url}?market=${param}&type=both&depth=20`);
     let response = await axios.get(`${base_url}?market=${param}&type=both&depth=20`);
     let buy = response.data["result"]["buy"]
     let highestBid = buy[0]["rate"]
@@ -24,7 +25,7 @@ async function get_exchange_rate(base_url, param){
     return {
         timestamp: new Date().toMysqlFormat(),
         from_to: param,
-        source: 'Trade Satoshi',
+        source: 'tradesatoshi',
         bid: parseFloat(highestBid),
         ask: parseFloat(lowestBid)
     };
@@ -38,4 +39,4 @@ module.exports = {
   get_exchange_rate
 }
 
-get_exchange_rate("https://tradesatoshi.com/api/public/getorderbook", "LTC_BTC").then((obj) => {console.log(obj)})
+//get_exchange_rate("https://tradesatoshi.com/api/public/getorderbook", "LTC_BTC").then((obj) => {console.log(obj)})
