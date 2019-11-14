@@ -134,7 +134,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    if (transaction_history && transaction_history.length != 0){
         curTransc = transaction_history[curTranscIndex]
         // console.log(transaction_history[curTranscIndex])
-	      last_balance = curTransc.account_balance - curTransc.amount
+	      last_balance = curTransc.account_balance
         exchange_rate = curTransc.exchange_rate
     }
 
