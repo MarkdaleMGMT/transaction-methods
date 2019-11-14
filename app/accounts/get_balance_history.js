@@ -24,7 +24,6 @@ async function balance_history_api(req, res) {
   let chart = req.body.chart;
 
   try{
-    console.log("inside balance history");
     let balance_history = await get_balance_history(account_id, time_period_days, chart);
     res.send({ code: "Success", "balance_history": balance_history })
   }
@@ -39,11 +38,7 @@ async function balance_history_api(req, res) {
 
 async function get_balance_history(account_id, time_period_days, chart=false){
 
-
-  console.log("inside get_balance_history");
-    //parse time period
-    //find start date and end date
-
+    console.log(`Getting Balance History for Account ID: ${account_id}`)
     let dateOffset = (24*60*60*1000) * (time_period_days -1);
 
     // let end_date = new Date(new Date().setHours(0,0,0,0));
@@ -57,9 +52,6 @@ async function get_balance_history(account_id, time_period_days, chart=false){
     // end_date = end_date.toMysqlFormat();
     start_date = dateFormat(start_date,'yyyy-mm-dd');
     //end_date = dateFormat(end_date,'yyyy-mm-dd');
-
-    console.log("start_date ",start_date);
-    console.log("end_date ",end_date);
 
    let account = await get_account_by_id(account_id);
 
@@ -75,8 +67,6 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
    //get the balance history between start and end date
    let transactions = await get_account_transactions_by_date(account_id, start_date, end_date);
-   console.log("account history: transactions", transactions);
-
 
    let transaction_history = [];
    let balance = 0;
@@ -84,8 +74,6 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
    //balance = await account_balance(account_id);
    balance = await account_balance_by_date(account_id, start_date);
-
-   console.log("last balance ", balance);
 
    for(let i=transactions.length-1; i>=0; i--){
      let account_transaction = transactions[i];
@@ -100,7 +88,6 @@ async function get_balance_history(account_id, time_period_days, chart=false){
        }
 
      balance = parseFloat(balance);
-     console.log(i, " ", balance);
 
      let transaction_json = {
        'date':(account_transaction.time), //ISO string format
@@ -115,10 +102,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
 
    }//end for
 
-   console.log("Balance History" ,transaction_history);
-
    //We have the transaction history at this point
-   // console.log("transaction_history\n",transaction_history);
 
    //multiply it by the exchange rate at that time period
    //get the latest exchange rate from the db src:investment currency, target: CAD
@@ -126,7 +110,7 @@ async function get_balance_history(account_id, time_period_days, chart=false){
    let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
    let balance_history = [];
-  let dates = getDates(start_date,end_date);
+   let dates = getDates(start_date,end_date);
    
    let account_balance = 0
    let curTranscIndex = 0
