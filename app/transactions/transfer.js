@@ -1,13 +1,17 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model;
-const { get_balance, get_user_by_username } = require('../models').user_model;
+const { get_user_by_username } = require('../models').user_model;
+const { get_account_by_investment, account_balance, create_user_account } = require('../models').account_model;
+const uuidv1 = require('uuid/v1');//timestamp
 
 /**
  * API to transfer amount from one account to another
  * @param  {string} username     Username of the user who initiated the request
- * @param  {string} sender     Username of the sender
- * @param  {string} recipient     Username of the recipient
+ * @param  {string} sender     username of the sender
+ * @param  {string} recipient    username of the recipient
  * @param  {float} amount    Amount to be deposited
+ * @param  {string} custom_memo     custom user memo for transaction
+ * @param  {int} investment_id    investment id corresponding to the sender and recipient account
  * @return {JSON} Returns success
  */
  module.exports = async function transfer_api(req, res) {
@@ -17,6 +21,8 @@ const { get_balance, get_user_by_username } = require('../models').user_model;
    let username = req.body.username
    let amount = parseFloat(req.body.amount)
    let datetime = new Date().toMysqlFormat()
+   let custom_memo = req.body.custom_memo
+   let investment_id = req.body.investment_id
 
    try{
 
@@ -28,38 +34,59 @@ const { get_balance, get_user_by_username } = require('../models').user_model;
       throw new Error('not authorized to initiate transfer');
      }
 
-     let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime);
+     let isSuccesful = await transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to transfer amount');}
-     res.send({ code: "transfer amount successful" })
+     res.send({ code: "Success", message:'Transfer successful' })
 
 
    }
    catch(err){
      console.log("error "+err);
-     res.status(400).send({msg:err.message});
+     res.status(400).send({message:err.message});
    }
 
 
 
  };
 
- async function transfer_amount(username,sender,recipient,amount,datetime){
+ async function transfer_amount(username,sender,recipient,amount,datetime, investment_id, custom_memo){
 
+   if(amount <= 0){
+     throw new Error("Invalid amount, enter a positive value");
+   }
 
+   let recipient_accnt = await get_account_by_investment(recipient,investment_id);
+   let sender_accnt = await get_account_by_investment(sender, investment_id);
+
+   let recipient_accnt_id;
 
     //users should exist in the database
     if(sender == recipient){
       throw new Error("Invalid request");
     }
-    else if (await get_user_by_username(recipient)==null){
-      throw new Error("Recipient does not exist ");
-    }else if(await get_user_by_username(sender)==null){
-      throw new Error("Sender does not exist ");
+    else if(!sender_accnt ){
+      throw new Error("Invalid sender account");
     }
 
+    if (!recipient_accnt ){
+
+      //check if recipient user exists in the database
+      recipient_user = await get_user_by_username(recipient);
+      if(!recipient_user)
+        throw new Error("Invalid recipient");
+      //create a recipient account
+      recipient_accnt_id = await create_user_account(recipient,investment_id);
+
+
+      // throw new Error("Invalid recipient account ");
+    }else{
+      recipient_accnt_id = recipient_accnt.account_id;
+    }
+
+
     //sender should have enough balance
-    let sender_balance = await get_balance(sender);
+    let sender_balance = await account_balance(sender_accnt.account_id);
     console.log("sender balance",sender_balance);
     console.log("Amount",amount);
 
@@ -68,12 +95,13 @@ const { get_balance, get_user_by_username } = require('../models').user_model;
     }
 
     let queries_with_val = [];
+    let transaction_event_id = uuidv1();
 
-
+    console.log("custom_memo: ",custom_memo);
     //debit the sender
-    let debit_query_with_vals = build_insert_transaction(sender, amount, username, datetime, 'transfer', 'transfer to '+recipient);
+    let debit_query_with_vals = build_insert_transaction(sender_accnt.account_id, amount, username, datetime, 'transfer', 'transfer to '+recipient, transaction_event_id,investment_id,custom_memo);
     //credit the recipient
-    let credit_query_with_vals = build_insert_transaction(recipient, amount*-1, username, datetime, 'transfer', 'transfer from '+sender);
+    let credit_query_with_vals = build_insert_transaction(recipient_accnt_id, amount*-1, username, datetime, 'transfer', 'transfer from '+sender, transaction_event_id,investment_id, custom_memo);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);

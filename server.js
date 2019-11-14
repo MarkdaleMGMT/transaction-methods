@@ -7,11 +7,22 @@ const { createTerminus } = require('@godaddy/terminus');
 const http = require('http');
 // var https = require('https');
 
+
 const port = 3000 // port
 const app = express()
 
+
 var { connection } = require('./app/util/mysql_connection')
 
+
+//load configuration
+var { load_config } = require('./app/models/global_config_model');
+load_config();
+
+
+//load the crontasks
+const { schedule_and_run_crontasks } = require('./app/crontasks');
+schedule_and_run_crontasks();
 
 
 app.use(bodyParser.json());
@@ -36,7 +47,7 @@ app.use(function(req, res, next) {
 });
 
 // mount the routes
-app.use(routes);
+app.use('/backend',routes);
 
 
 const server = http.createServer(app);

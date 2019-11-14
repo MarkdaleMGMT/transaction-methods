@@ -1,26 +1,35 @@
 var db = require('../util/mysql_connection')
 const { build_insert_transaction } = require('../models').transaction_model
+const { get_user_by_username } = require('../models').user_model
+const  {  get_investment_account, get_account_by_investment, create_user_account, get_account_by_id } = require('../models').account_model
+const uuidv1 = require('uuid/v1');//timestamp
+
 
 /**
  * API for the deposit transaction
- * @param  {string} username     Username of the user doing the transaction
+ * @param  {string} investment_id     investment for which deposit is made
+ * @param  {string} deposit_to     username to whom the deposit is made
+ * @param  {float} username   username of the initiator of the deposit
  * @param  {float} amount    Amount to be deposited
  * @return {JSON}         Returns success
  */
- module.exports = async function deposit_api(req, res) {
+ async function deposit_api(req, res) {
 
+   let investment_id = req.body.investment_id
+   let deposit_to = req.body.deposit_to
    let username = req.body.username
    let amount = req.body.amount
+
    let datetime = new Date().toMysqlFormat()
 
    try{
-     let isSuccesful = await deposit(username,amount,datetime);
+     let isSuccesful = await deposit(username,investment_id,deposit_to,amount, datetime);
      console.log("isSuccesful",isSuccesful);
      if (!isSuccesful){ throw Error ('unable to deposit amount');}
      res.send({ code: "Deposit successful" })
    }
    catch(err){
-     res.status(400).send({msg: 'Deposit failed', err});
+     res.status(400).send({msg: 'Deposit failed', error:err.message});
    }
 
 
@@ -28,18 +37,40 @@ const { build_insert_transaction } = require('../models').transaction_model
  };
 
 
- async function deposit(username,amount,datetime){
+ async function deposit(username,investment_id,deposit_to,amount, datetime){
 
 
    try{
-
     let queries_with_val = []
+    let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
-    console.log("deposit transaction  ",username," ",amount," ",datetime);
+    console.log("deposit transaction  ",username," ",investment_id," ",deposit_to," ",amount," ",datetime);
+
+    //check if the user is admin or not, throw error if unauthorized
+    //level 0 is admin
+    //level 1 is a normal user
+    let user = await get_user_by_username(username);
+
+    if(!user || user.level!=0){
+     throw new Error('Not authorized to initiate deposit');
+    }
+
+    //get user account
+    let deposit_account = await get_account_by_investment(deposit_to,investment_id);
+    if(!deposit_account){
+     //create a new user account
+     let deposit_account_id = await create_user_account(deposit_to, investment_id);
+     deposit_account = await get_account_by_id(deposit_account_id);
+    }
 
 
-    let debit_query_with_vals = build_insert_transaction('clam_miner', amount, 'admin', datetime, 'deposit', 'deposit');
-    let credit_query_with_vals = build_insert_transaction(username, amount*-1, 'admin', datetime, 'deposit', 'deposit');
+
+    //get the corresponding investment account (i.e. similiar to clam miner) - level 1
+    let investment_account = await get_investment_account(investment_id);
+
+
+    let debit_query_with_vals = build_insert_transaction(investment_account.account_id, amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id);
+    let credit_query_with_vals = build_insert_transaction(deposit_account.account_id, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
@@ -57,11 +88,16 @@ const { build_insert_transaction } = require('../models').transaction_model
 
      return rows_affected == queries_with_val.length;
    }
-   catch(err){
-     console.log("got err",err);
-     return false;
+   //end try
+    catch(err){
+      console.error(err.message);
+      throw err;
    }
 
 
+ }
 
+ module.exports = {
+   deposit_api,
+   deposit
  }

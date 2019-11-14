@@ -1,3 +1,5 @@
+const dateFormat = require('dateformat');
+
 var db = require('../util/mysql_connection')
 const { get_user_transactions } = require('../models').transaction_model
 const { get_user_by_username } = require('../models').user_model
@@ -55,11 +57,12 @@ const { get_user_by_username } = require('../models').user_model
 
 
       let transaction_json = {
-        'time':user_transaction.time,
+        'time':dateFormat(new Date(user_transaction.time),'yyyy mm dd , HH:MM:ss'),
         'description': user_transaction.memo,
         'amount':Math.abs(user_transaction.amount),
         'type': user_transaction.amount <0 ? 'credit':'debit',
-        'user_balance':user_balance
+        'user_balance':parseFloat(user_balance.toFixed(8)),
+        'transaction_event_id':user_transaction.transaction_event_id
 
       };
 
