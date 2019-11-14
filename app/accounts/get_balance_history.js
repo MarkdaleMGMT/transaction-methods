@@ -1,7 +1,7 @@
 const dateFormat = require('dateformat');
 const moment = require('moment');
 
-const { get_transactions_with_balance } = require('../models').transaction_model
+const { get_transactions_with_balance  } = require('../models').transaction_model
 const { get_account_by_id, account_balance, account_balance_by_date } = require('../models').account_model
 const { get_investment_by_id } = require('../models').investment_model
 
@@ -108,7 +108,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
      }
    });
 
-   // console.log("Balance history ", transaction_history );
+   console.log("Balance history ", transaction_history[0]);
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
 
@@ -119,17 +119,21 @@ async function get_balance_history(account, time_period_days, chart=false, inves
 
    let balance_history = [];
    let dates = getDates(start_date,end_date);
+   console.log("Dates: ", dates[0]);
 
+   //starting balance is carried from last transaction
+   // let last_tx = (await get_transaction_before_date(account.account_id, start_date, 1))[0]
+   // let curTranscIndex = 0;
    let account_balance = 0
    let curTranscIndex = 0
    let curTransc = null
    let exchange_rate = 1
 
+   //set the last balance to the first transactions balance
    if (transaction_history && transaction_history.length != 0){
         curTransc = transaction_history[curTranscIndex]
 	      last_balance = curTransc.account_balance
-        last_balance = curTransc.exchange_rate
-
+        exchange_rate = curTransc.exchange_rate
     }
 
 
@@ -137,6 +141,8 @@ async function get_balance_history(account, time_period_days, chart=false, inves
 
     //Day starts exactly at the 0th hour, 0th minute, 0th second, 0th milisecond
     let tx_time_moment = moment(dates[i]).set({hour:0,minute:0,second:0,millisecond:0});
+
+
 
     //Get the valid exchange rate on this day
     // let exchange_rate = get_valid_rate(timestamped_quoted_rates, tx_time_moment.format('YYYY-MM-DD'));
@@ -169,8 +175,12 @@ async function get_balance_history(account, time_period_days, chart=false, inves
     curTranscIndex += 1
     curTransc = transaction_history[curTranscIndex]
 
-     }
+  }
    }
+
+
+
+
 
    return balance_history
 
