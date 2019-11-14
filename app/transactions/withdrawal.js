@@ -4,6 +4,9 @@ const { get_user_by_username } = require('../models').user_model
 const  { get_account_by_id, get_investment_account, get_withdrawal_fees_account, get_account_by_investment} = require('../models').account_model
 const uuidv1 = require('uuid/v1');//timestamp
 
+const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
+const { base_currency } = require('../../config');
+const { get_investment_by_id } = require('../models').investment_model
 /**
  * API for withdrawal transaction
  * @param  {string} withdraw_from     username from whose account the amount will be withdrawn from
@@ -61,13 +64,16 @@ const uuidv1 = require('uuid/v1');//timestamp
 
       //get the corresponding investment account (i.e. similiar to clam miner) - level 1
       let investment_account = await get_investment_account(investment_id);
+      let { currency } = await get_investment_by_id(investment_id);
+      let fx_rate = await get_quoted_bid(currency, base_currency);
+
 
       let queries_with_val = []
       let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
 
-      let debit_query_with_vals = build_insert_transaction(withdrawal_account.account_id, amount, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id);
-      let credit_query_with_vals = build_insert_transaction(investment_account.account_id, amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id);
+      let debit_query_with_vals = build_insert_transaction(withdrawal_account.account_id, amount, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
+      let credit_query_with_vals = build_insert_transaction(investment_account.account_id, amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
 
        queries_with_val.push(debit_query_with_vals);
        queries_with_val.push(credit_query_with_vals);
@@ -116,6 +122,8 @@ const uuidv1 = require('uuid/v1');//timestamp
       }
 
       let investment_id = withdrawal_account.investment_id;
+      let {currency} = await get_investment_by_id(investment_id);
+      let fx_rate = await get_quoted_bid(currency, base_currency);
 
       //get the corresponding investment account (i.e. similiar to clam miner) - level 1
       let investment_account = await get_investment_account(investment_id);
@@ -125,9 +133,9 @@ const uuidv1 = require('uuid/v1');//timestamp
       let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
 
-      let debit_user = build_insert_transaction(withdrawal_account.account_id, parseFloat((amount+tx_fee+withdrawal_fee).toFixed(8)), 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id,'tx_id:'+tx_id);
-      let credit_investment_account = build_insert_transaction(investment_account.account_id, parseFloat((amount+tx_fee).toFixed(8))*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id,'tx_id:'+tx_id);
-      let credit_withdrawal_fees_account = build_insert_transaction(withdraw_fees_account.account_id, withdrawal_fee*-1, 'admin', datetime, 'withdrawal', 'withdrawal fees', transaction_event_id, investment_id,'tx_id:'+tx_id);
+      let debit_user = build_insert_transaction(withdrawal_account.account_id, parseFloat((amount+tx_fee+withdrawal_fee).toFixed(8)), 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
+      let credit_investment_account = build_insert_transaction(investment_account.account_id, parseFloat((amount+tx_fee).toFixed(8))*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
+      let credit_withdrawal_fees_account = build_insert_transaction(withdraw_fees_account.account_id, withdrawal_fee*-1, 'admin', datetime, 'withdrawal', 'withdrawal fees', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
 
       queries_with_val.push(debit_user);
       queries_with_val.push(credit_investment_account);

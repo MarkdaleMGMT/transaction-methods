@@ -1,7 +1,10 @@
 var db = require('../util/mysql_connection')
+const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
+const { base_currency } = require('../../config');
+const { get_investment_by_id } = require('../models').investment_model
 const { build_insert_transaction } = require('../models').transaction_model
 const { get_user_by_username } = require('../models').user_model
-const  {  get_investment_account, get_account_by_investment, create_user_account, get_account_by_id } = require('../models').account_model
+const { get_investment_account, get_account_by_investment, create_user_account, get_account_by_id } = require('../models').account_model
 const uuidv1 = require('uuid/v1');//timestamp
 
 
@@ -67,10 +70,14 @@ const uuidv1 = require('uuid/v1');//timestamp
 
     //get the corresponding investment account (i.e. similiar to clam miner) - level 1
     let investment_account = await get_investment_account(investment_id);
+    let { currency } = await get_investment_by_id(investment_id);
+
+    //get the exchange rate
+    let fx_rate = await get_quoted_bid(currency, base_currency);
 
 
-    let debit_query_with_vals = build_insert_transaction(investment_account.account_id, amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id);
-    let credit_query_with_vals = build_insert_transaction(deposit_account.account_id, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id);
+    let debit_query_with_vals = build_insert_transaction(investment_account.account_id, amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id, fx_rate);
+    let credit_query_with_vals = build_insert_transaction(deposit_account.account_id, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id, fx_rate);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
