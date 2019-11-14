@@ -10,7 +10,7 @@ const { get_user_transactions } = require('./transaction_model')
 //
 // }
 
-function calculate_balances(original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share){
+/*function calculate_balances(original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share){
 
   // console.log("original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share");
   // console.log(original_clam_balance,prev_user_balance,change_in_clam_balance, rake_share);
@@ -31,8 +31,7 @@ function calculate_balances(original_clam_balance,prev_user_balance,change_in_cl
     "rake_balance":rake_balance
   };
 
-}
-
+}*/
 
 
 async function get_all_users(){
@@ -92,7 +91,7 @@ async function get_balance(username){
 
 module.exports = {
   // build_update_user_balance,
-  calculate_balances,
+  // calculate_balances,
   get_user_by_username,
   get_all_users,
   get_balance

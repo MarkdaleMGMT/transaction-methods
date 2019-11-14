@@ -26,7 +26,7 @@ exports.connection = {
             queryPromises.push(connection.query(queryWithValues.query, queryWithValues.queryValues));
         });
         let results = await Promise.all(queryPromises);
-        console.log("results",results);
+        // console.log("results",results);
 
         await connection.commit();
         await connection.release();

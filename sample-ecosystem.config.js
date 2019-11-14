@@ -1,5 +1,16 @@
 module.exports = {
   apps : [{
+      name:'load_config',
+      script:'./load_config.js',
+       env: {
+      NODE_ENV: 'development',
+      DB_USER:'app',
+      DB_HOST:'142.93.148.141',
+      DB_PASS:'3b391ec5',
+      DB_DATABASE:'development'
+    }
+
+  },{
     name: 'server',
     script: "npm",
     args : "start server.js",
@@ -13,28 +24,55 @@ module.exports = {
     max_memory_restart: '1G',
     env: {
       NODE_ENV: 'development',
-      DB_USER:<db_username>,
-      DB_HOST:<server_ip>,
-      DB_PASS:<db_password>,
-      DB_DATABASE:<db_name>
+      DB_HOST:'',
+      DB_USER:'',
+      DB_PASS:'',
+      DB_DATABASE:'',
+      INVESTMENT_ACNT:'',
+      RAKE_ACNT:'',
+      FX_ACNT:'',
+      FAUCET_ACNT:'',
+      WITHDRAWAL_FEES_ACNT:'',
+      ADMIN_USER:'',
+      EMAIL_SENDER:'',
+      DB_BACKUP_EMAIL : '',
+      GMAIL:'',
+      GMAIL_PASS:'',
+      BTC_PAY_HOST:'',
+      BTC_PAY_PORT:'',
+      BTC_PAY_RPC_USER:'',
+      BTC_PAY_RPC_PASS:'',
+      CLAM_PAY_HOST:'',
+      CLAM_PAY_PORT:'',
+      CLAM_PAY_RPC_USER:'',
+      CLAM_PAY_RPC_PASS:''
+
+
     },
     env_production: {
       NODE_ENV: 'production',
-      DB_USER:<db_username>,
-      DB_HOST:<server_ip>,
-      DB_PASS:<db_password>,
-      DB_DATABASE:<db_name>
+      DB_HOST:'',
+      DB_USER:'',
+      DB_PASS:'',
+      DB_DATABASE:'',
+      INVESTMENT_ACNT:'',
+      RAKE_ACNT:'',
+      FX_ACNT:'',
+      FAUCET_ACNT:'',
+      WITHDRAWAL_FEES_ACNT:'',
+      ADMIN_USER:'',
+      EMAIL_SENDER:'',
+      DB_BACKUP_EMAIL : '',
+      GMAIL:'',
+      GMAIL_PASS:'',
+      BTC_PAY_HOST:'',
+      BTC_PAY_PORT:'',
+      BTC_PAY_RPC_USER:'',
+      BTC_PAY_RPC_PASS:'',
+      CLAM_PAY_HOST:'',
+      CLAM_PAY_PORT:'',
+      CLAM_PAY_RPC_USER:'',
+      CLAM_PAY_RPC_PASS:''
     }
-  }],
-
-  deploy : {
-    production : {
-      user : 'node',
-      host : '212.83.163.1',
-      ref  : 'origin/master',
-      repo : 'git@github.com:repo.git',
-      path : '/var/www/production',
-      'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production'
-    }
-  }
+  }]
 };
