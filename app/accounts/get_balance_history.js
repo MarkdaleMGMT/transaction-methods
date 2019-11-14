@@ -102,13 +102,14 @@ async function get_balance_history(account, time_period_days, chart=false, inves
        'date':tx.time, //ISO string format
        'currency':currency,
        'exchange_rate': parseFloat(tx.exchange_rate),
+       'amount': account.account_type == 'credit' ? tx.amount*-1.0 : tx.amount,
        'account_balance':account.account_type == 'credit' ? tx.balance*-1.0 : tx.balance,
        'account_balance_cad': account.account_type == 'credit' ? balance_cad*-1.0 : balance_cad
 
      }
    });
 
-   console.log("Balance history ", transaction_history[0]);
+   console.log("Balance history ", transaction_history.length);
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
 
@@ -132,7 +133,8 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    //set the last balance to the first transactions balance
    if (transaction_history && transaction_history.length != 0){
         curTransc = transaction_history[curTranscIndex]
-	      last_balance = curTransc.account_balance
+        // console.log(transaction_history[curTranscIndex])
+	      last_balance = curTransc.account_balance - curTransc.amount
         exchange_rate = curTransc.exchange_rate
     }
 
@@ -158,25 +160,36 @@ async function get_balance_history(account, time_period_days, chart=false, inves
        currency:currency
      });
 
-  //Loop through the transaction on this given date
-  while (transaction_history && transaction_history.length != curTranscIndex && moment(tx_time_moment).isSame(curTransc.date, "day")) {
-
-    balance_cad = parseFloat((curTransc.exchange_rate * curTransc.account_balance).toFixed(8));
-    balance_history.push({
-            date:curTransc.date,
-            exchange_rate: curTransc.exchange_rate,
-            account_balance: curTransc.account_balance,
-            account_balance_cad: balance_cad,
-            currency:currency
-        });
+     //Loop through the transaction on this given date
 
 
-    last_balance = curTransc.account_balance
-    curTranscIndex += 1
-    curTransc = transaction_history[curTranscIndex]
+    while (transaction_history && transaction_history.length != curTranscIndex && moment(tx_time_moment).isSame(curTransc.date, "day")) {
+
+
+      last_balance = curTransc.account_balance
+      exchange_rate = curTransc.exchange_rate
+      curTranscIndex += 1
+      curTransc = transaction_history[curTranscIndex]
+
+    }
+
+    //only push that days last balance
+
+    if(curTranscIndex > 0){
+      last_tx_of_day = transaction_history[curTranscIndex - 1];
+
+      // console.log("last_tx_of_day ", curTranscIndex);
+      balance_cad = parseFloat((last_tx_of_day.exchange_rate * last_tx_of_day.account_balance).toFixed(8));
+      balance_history.push({
+              date:last_tx_of_day.date,
+              exchange_rate: last_tx_of_day.exchange_rate,
+              account_balance: last_tx_of_day.account_balance,
+              account_balance_cad: balance_cad,
+              currency:currency
+          });
+    }
 
   }
-   }
 
 
 
