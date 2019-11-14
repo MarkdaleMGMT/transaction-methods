@@ -1,11 +1,11 @@
 'use strict'
 var db = require('../util/mysql_connection')
 
-function build_insert_transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, custom_memo=''){
+function build_insert_transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, exchange_rate, custom_memo=''){
   console.log("build tx custom_memo: ",custom_memo);
   return  {
-    query:"INSERT INTO transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, custom_memo) VALUES (?,?,?,?,?,?,?,?,?)",
-    queryValues:[account_id, amount, created_by, time, transaction_type, memo, transaction_event_id, investment_id, custom_memo ]
+    query:"INSERT INTO transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, custom_memo, exchange_rate) VALUES (?,?,?,?,?,?,?,?,?,?)",
+    queryValues:[account_id, amount, created_by, time, transaction_type, memo, transaction_event_id, investment_id, custom_memo, exchange_rate]
   };
 
 }
@@ -78,7 +78,26 @@ async function get_transactions_summary(investment_id){
 
 }
 
+async function get_transactions_with_balance(account_id){
 
+  const [rows, fields] = await db.connection.query(
+   "SET @runtot:=0, @id:=NULL; " +
+   "SELECT SQL_CACHE transaction.time, transaction.transaction_id,account_id, transaction.amount, transaction.exchange_rate, " +
+   "(@runtot := if(account_id=@id,@runtot,0) + amount ) AS balance, account_id=(@id:=account_id) " +
+   "from transaction " +
+   "WHERE transaction.account_id = ? " +
+   "ORDER BY transaction.time;"
+   ,[account_id]);
+
+   return rows[1];
+}
+
+async function get_transaction_before_date(account_id, date, limit){
+
+  const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE time < ? and account_id = ? ORDER BY time DESC LIMIT ?;",[date, account_id, limit]);
+  return rows;
+
+}
 
 
 
@@ -94,4 +113,5 @@ module.exports ={
   get_trial_balance_per_currency,
   get_transactions_summary,
   get_account_transactions_by_enddate,
+  get_transactions_with_balance
 }

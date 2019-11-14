@@ -1,5 +1,5 @@
 const { get_accounts_per_user } = require('../models').account_model
-const { get_investment_by_id } = require('../models').investment_model
+const { get_investment_by_id, get_all_investments } = require('../models').investment_model
 const { get_balance_history } = require('../accounts/get_balance_history')
 
 /**
@@ -32,22 +32,29 @@ async function get_user_balance_history(username, time_period_days, chart=false)
 
 
   let user_accounts = await get_accounts_per_user(username);
+  let investments = await get_all_investments();
+  let investment_map = {}
+  for(let j=0; j<investments.length; j++){
+    investment_map[investments[j]['investment_id']] = investments[j];
+  }
+
+
   console.log("user_accounts: ", user_accounts.length);
   let user_balance_history = [];
 
   for(let i=0; i < user_accounts.length; i++){
 
     let user_account = user_accounts[i];
-    let account_id = user_account.account_id;
-    let investment = await get_investment_by_id(user_account.investment_id)
+    // let account_id = user_account.account_id;
+    // let investment = await get_investment_by_id(user_account.investment_id)
 
-    console.log("fetching balance history for account ", account_id);
-    let account_balance_history = await get_balance_history(account_id, time_period_days, chart);
+    // console.log("fetching balance history for account ", account_id);
+    let account_balance_history = await get_balance_history(user_account, time_period_days, chart, investment_map[user_account.investment_id]);
     user_balance_history.push(
     {
       account_id:user_account.account_id,
       investment_id:user_account.investment_id,
-      investment_name:investment.investment_name,
+      investment_name:investment_map[user_account.investment_id]['investment_name'],
       account_history:account_balance_history
     });
 

@@ -106,6 +106,7 @@ async function account_balance_by_date(account_id, date){
   let account_type = account.account_type;
 
 
+  //gets all transactions before a date for a specific account 
   let transactions = await get_account_transactions_by_enddate(account_id,date);
 
   let total_credits = 0;

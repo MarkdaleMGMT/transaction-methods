@@ -24,6 +24,11 @@ load_config();
 const { schedule_and_run_crontasks } = require('./app/crontasks');
 schedule_and_run_crontasks();
 
+//fill in the exchange rate
+const fill_tx_with_valid_rates  = require('./app/util/fill_tx_exchange_rate');
+fill_tx_with_valid_rates();
+
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
