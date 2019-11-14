@@ -2,7 +2,7 @@ const axios = require("axios");
 
 /**
  * 
- * @param {*} base_url (ex. https://freiexchange.com/market/orderbook/)
+ * @param {*} base_url (ex. https://freiexchange.com/market/orderbook)
  * @param {*} param (ex. BTC_CLAM)
  */
 async function get_exchange_rate(base_url, param){
@@ -13,7 +13,7 @@ async function get_exchange_rate(base_url, param){
 
   console.log(`get_exchange_rate: ${base_url}${des}`);
 
-  let response = await axios.get(base_url + des);
+  let response = await axios.get(base_url + "/" + des);
   let data = response.data;
   console.log(data)
 
