@@ -42,10 +42,12 @@ async function balance_history_api(req, res) {
 async function get_balance_history(account, time_period_days, chart=false, investment){
 
 
-  console.log("inside get_balance_history");
+  console.log("inside get_balance_history account_id: ", account.account_id);
     //parse time period
     //find start date and end date
-
+    let start_time = new Date();
+    let end_time = new Date();
+    let interm_time = start_time;
     let dateOffset = (24*60*60*1000) * (time_period_days -1);
 
     // let end_date = new Date(new Date().setHours(0,0,0,0));
@@ -71,8 +73,18 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    let currency = investment.currency;
    if(!account) throw new Error('Account does not exist');
 
+   end_time = new Date()
+   console.log("");
+   console.info('time to fetch investments: %dms', end_time - interm_time)
+   interm_time = end_time
+
    let transactions = await get_transactions_with_balance(account.account_id);
    console.log("transactions len: ", transactions.length)
+
+   end_time = new Date()
+   console.log("");
+   console.info('time to fetch tc: %dms', end_time - interm_time)
+   interm_time = end_time
 
    //Filter the dates out
    //Use binary search since dates are sorted to get the index of the start date
@@ -109,7 +121,14 @@ async function get_balance_history(account, time_period_days, chart=false, inves
      }
    });
 
+   end_time = new Date()
+   console.log("");
+   console.info('time to filter tc: %dms', end_time - interm_time)
+   interm_time = end_time
+
    console.log("Balance history ", transaction_history.length);
+
+
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
 
@@ -190,6 +209,11 @@ async function get_balance_history(account, time_period_days, chart=false, inves
     }
 
   }
+
+  end_time = new Date()
+  console.log("");
+  console.info('time to restructure data tc: %dms', end_time - interm_time)
+  interm_time = end_time
 
 
 

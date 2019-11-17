@@ -92,6 +92,12 @@ async function get_transactions_with_balance(account_id){
    return rows[1];
 }
 
+async function get_derived_balance(account_id){
+
+  let txs = await get_transactions_with_balance(account_id);
+  return txs[txs.length - 1]['balance'];
+}
+
 async function get_transaction_before_date(account_id, date, limit){
 
   const [rows, fields] = await db.connection.query("SELECT * FROM transaction WHERE time < ? and account_id = ? ORDER BY time DESC LIMIT ?;",[date, account_id, limit]);
@@ -113,5 +119,6 @@ module.exports ={
   get_trial_balance_per_currency,
   get_transactions_summary,
   get_account_transactions_by_enddate,
-  get_transactions_with_balance
+  get_transactions_with_balance,
+  get_derived_balance
 }

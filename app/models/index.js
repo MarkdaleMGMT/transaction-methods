@@ -7,5 +7,6 @@ module.exports = {
   api_info_model : require('./api_info_model'),
   fx_raw_rates : require('./fx_raw_rates_model'),
   fx_weight_model : require('./fx_weight_model'),
-  fx_quoted_rates: require('./fx_quoted_rates_model')
+  fx_quoted_rates: require('./fx_quoted_rates_model'),
+  account_balance_model: require('./account_balance_model')
 }

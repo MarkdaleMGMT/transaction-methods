@@ -2,8 +2,9 @@ var db = require('../util/mysql_connection')
 const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
 const { base_currency } = require('../../config');
 const { get_investment_by_id } = require('../models').investment_model
-const { build_insert_transaction } = require('../models').transaction_model
+const { build_insert_transaction, get_derived_balance } = require('../models').transaction_model
 const { get_user_by_username } = require('../models').user_model
+const { build_insert_balance } = require('../models').account_balance_model
 const { get_investment_account, get_account_by_investment, create_user_account, get_account_by_id } = require('../models').account_model
 const uuidv1 = require('uuid/v1');//timestamp
 
@@ -82,7 +83,23 @@ const uuidv1 = require('uuid/v1');//timestamp
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);
 
-     let results = await db.connection.begin_transaction(queries_with_val);
+
+    //logging the new balances
+    let debit_balance = parseFloat(await get_derived_balance(investment_account.account_id)) + amount
+    let credit_balance = parseFloat(await get_derived_balance(deposit_account.account_id)) + amount*-1 ;
+
+    console.log("debit_balance", debit_balance);
+    console.log("credit_balance", credit_balance);
+
+
+    let debit_query_balance = build_insert_balance(datetime, investment_account.account_id, investment_id, amount, debit_balance, fx_rate, transaction_event_id);
+    let credit_query_balance = build_insert_balance(datetime, deposit_account.account_id, investment_id, amount,  credit_balance*-1, fx_rate, transaction_event_id);
+
+    queries_with_val.push(debit_query_balance);
+    queries_with_val.push(credit_query_balance);
+
+
+    let results = await db.connection.begin_transaction(queries_with_val);
 
      console.log("got results",results[0]);
      let rows_affected = 0;
