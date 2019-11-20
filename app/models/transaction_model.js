@@ -122,7 +122,7 @@ async function new_get_account_transactions(account_id){
       JOIN investment i on i.investment_id = a.investment_id
     WHERE t.account_id = ?
     ORDER BY t.time;`)
-    
+
     const [rows, fields] = await db.connection.query(query, account_id)
  
     return rows[1];
@@ -143,5 +143,6 @@ module.exports ={
   get_trial_balance_per_currency,
   get_transactions_summary,
   get_account_transactions_by_enddate,
-  get_transactions_with_balance
+  get_transactions_with_balance,
+  new_get_account_transactions
 }
