@@ -93,12 +93,10 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
     let transaction_history = [];
     for(let i=0; i<accounts.length; i++){
 
-       let account_tx_history = await get_transaction_history(accounts[i].account_id);
+       let account_tx_history = await new_get_account_transactions(accounts[i].account_id);
        transaction_history = transaction_history.concat(account_tx_history);
 
     }
-
-
 
     let sorted_tx_history = transaction_history.sort(SortByDate);
     return sorted_tx_history;
