@@ -106,6 +106,7 @@ async function new_get_account_transactions(account_id){
       t.time,
       a.account_type as type,
       t.transaction_type,
+      i.investment_name,
       i.currency,
       a.username,
       t.memo as description, 
