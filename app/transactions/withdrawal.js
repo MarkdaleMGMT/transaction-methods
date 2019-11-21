@@ -72,8 +72,8 @@ const { get_investment_by_id } = require('../models').investment_model
       let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
 
-      let debit_query_with_vals = build_insert_transaction(withdrawal_account.account_id, amount, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
-      let credit_query_with_vals = build_insert_transaction(investment_account.account_id, amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
+      let debit_query_with_vals = build_insert_transaction(withdrawal_account.account_id, withdrawal_account.account_type, withdrawal_account.username,  amount, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
+      let credit_query_with_vals = build_insert_transaction(investment_account.account_id, investment_account.account_type, investment_account.username,  amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
 
        queries_with_val.push(debit_query_with_vals);
        queries_with_val.push(credit_query_with_vals);
@@ -133,9 +133,9 @@ const { get_investment_by_id } = require('../models').investment_model
       let transaction_event_id = uuidv1(); // ⇨ '3b99e3e0-7598-11e8-90be-95472fb3ecbd'
 
 
-      let debit_user = build_insert_transaction(withdrawal_account.account_id, parseFloat((amount+tx_fee+withdrawal_fee).toFixed(8)), 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
-      let credit_investment_account = build_insert_transaction(investment_account.account_id, parseFloat((amount+tx_fee).toFixed(8))*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
-      let credit_withdrawal_fees_account = build_insert_transaction(withdraw_fees_account.account_id, withdrawal_fee*-1, 'admin', datetime, 'withdrawal', 'withdrawal fees', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
+      let debit_user = build_insert_transaction(withdrawal_account.account_id, withdrawal_account.account_type, withdrawal_account.username, parseFloat((amount+tx_fee+withdrawal_fee).toFixed(8)), 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
+      let credit_investment_account = build_insert_transaction(investment_account.account_id, investment_account.account_type, investment_account.username, parseFloat((amount+tx_fee).toFixed(8))*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
+      let credit_withdrawal_fees_account = build_insert_transaction(withdraw_fees_account.account_id, withdraw_fees_account.account_type, withdraw_fees_account.username, withdrawal_fee*-1, 'admin', datetime, 'withdrawal', 'withdrawal fees', transaction_event_id, investment_id, fx_rate, 'tx_id:'+tx_id);
 
       queries_with_val.push(debit_user);
       queries_with_val.push(credit_investment_account);
