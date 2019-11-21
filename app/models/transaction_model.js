@@ -109,7 +109,7 @@ async function new_get_account_transactions(account_id){
       t.transaction_type,
       i.investment_name,
       i.currency,
-      a.username,
+      t.username,
       t.memo as description,
       if(t.account_type = "credit", t.amount * -1,  t.amount) as amount,
       if(t.account_type = "credit", (@runtot:=@runtot + t.amount) * - 1,
