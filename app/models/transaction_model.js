@@ -120,7 +120,7 @@ async function new_get_account_transactions(account_id){
         amount_balance_cad,
       custom_memo
     FROM transaction t
-      JOIN investment i on i.investment_id = a.investment_id
+      JOIN investment i on i.investment_id = t.investment_id
     WHERE t.account_id = ?
     ORDER BY t.time;`)
 
