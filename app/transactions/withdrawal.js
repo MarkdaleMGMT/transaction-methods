@@ -1,5 +1,5 @@
 var db = require('../util/mysql_connection')
-const { build_insert_transaction } = require('../models').transaction_model
+const { build_insert_transaction, get_derived_balance } = require('../models').transaction_model
 const { get_user_by_username } = require('../models').user_model
 const  { get_account_by_id, get_investment_account, get_withdrawal_fees_account, get_account_by_investment} = require('../models').account_model
 const uuidv1 = require('uuid/v1');//timestamp
@@ -7,6 +7,7 @@ const uuidv1 = require('uuid/v1');//timestamp
 const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
 const { base_currency } = require('../../config');
 const { get_investment_by_id } = require('../models').investment_model
+const { build_insert_balance } = require('../models').account_balance_model
 /**
  * API for withdrawal transaction
  * @param  {string} withdraw_from     username from whose account the amount will be withdrawn from
@@ -75,8 +76,21 @@ const { get_investment_by_id } = require('../models').investment_model
       let debit_query_with_vals = build_insert_transaction(withdrawal_account.account_id, amount, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
       let credit_query_with_vals = build_insert_transaction(investment_account.account_id, amount*-1, 'admin', datetime, 'withdrawal', 'withdrawal', transaction_event_id, investment_id, fx_rate);
 
-       queries_with_val.push(debit_query_with_vals);
-       queries_with_val.push(credit_query_with_vals);
+      queries_with_val.push(debit_query_with_vals);
+      queries_with_val.push(credit_query_with_vals);
+
+
+      //logging the new balances
+      let debit_balance = parseFloat(await get_derived_balance(withdrawal_account.account_id)) + amount
+      let credit_balance = parseFloat(await get_derived_balance(investment_account.account_id)) + amount*-1 ;
+
+
+
+      let debit_query_balance = build_insert_balance(datetime, withdrawal_account.account_id, investment_id, -1.0*amount, debit_balance*-1, fx_rate, transaction_event_id);
+      let credit_query_balance = build_insert_balance(datetime, investment_account.account_id, investment_id, -1.0*amount,  credit_balance, fx_rate, transaction_event_id);
+
+      queries_with_val.push(debit_query_balance);
+      queries_with_val.push(credit_query_balance);
 
       let results = await db.connection.begin_transaction(queries_with_val);
       console.log("got results",results[0]);
@@ -140,6 +154,21 @@ const { get_investment_by_id } = require('../models').investment_model
       queries_with_val.push(debit_user);
       queries_with_val.push(credit_investment_account);
       queries_with_val.push(credit_withdrawal_fees_account);
+
+
+
+      //logging the new balances
+      let debit_user_balance = parseFloat(await get_derived_balance(withdrawal_account.account_id)) + (amount+tx_fee+withdrawal_fee) //credit account
+      let credit_investment_balance = parseFloat(await get_derived_balance(investment_account.account_id)) + (amount+tx_fee)*-1 ; //debit account
+      let credit_withdrawal_fee_balance = parseFloat(await get_derived_balance(withdraw_fees_account.account_id)) + withdrawal_fee //credit account
+
+      let debit_user_balance_q = build_insert_balance(datetime, withdrawal_account.account_id, investment_id, -1.0*(amount+tx_fee+withdrawal_fee), debit_user_balance*-1, fx_rate, transaction_event_id);
+      let credit_investment_balance_q = build_insert_balance(datetime, investment_account.account_id, investment_id, -1.0*(amount+tx_fee),  credit_investment_balance, fx_rate, transaction_event_id);
+      let credit_withdrawal_fee_balance_q = build_insert_balance(datetime, withdraw_fees_account.account_id, investment_id, -1.0*(withdrawal_fee),  credit_withdrawal_fee_balance*-1, fx_rate, transaction_event_id);
+
+      queries_with_val.push(debit_user_balance_q);
+      queries_with_val.push(credit_investment_balance_q);
+      queries_with_val.push(credit_withdrawal_fee_balance_q);
 
       let results = await db.connection.begin_transaction(queries_with_val);
       console.log("got results",results[0]);
