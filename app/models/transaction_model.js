@@ -103,32 +103,32 @@ async function new_get_account_transactions(account_id){
   let query = (
     `SET @runtot:=0;
     SELECT
+      SQL CACHE
       t.time,
-      a.account_type as type,
+      t.account_type as type,
       t.transaction_type,
       i.investment_name,
       i.currency,
       a.username,
-      t.memo as description, 
-      if(a.account_type = "credit", t.amount * -1,  t.amount) as amount,
-      if(a.account_type = "credit", (@runtot:=@runtot + t.amount) * - 1,
+      t.memo as description,
+      if(t.account_type = "credit", t.amount * -1,  t.amount) as amount,
+      if(t.account_type = "credit", (@runtot:=@runtot + t.amount) * - 1,
           (@runtot:=@runtot + t.amount)) AS account_balance,
       t.exchange_rate,
-      if(a.account_type = "credit", t.amount * t.exchange_rate * -1, t.amount * t.exchange_rate) as amount_cad,
-      if(a.account_type = "credit", @runtot * t.exchange_rate * -1, @runtot * t.exchange_rate) as 
+      if(t.account_type = "credit", t.amount * t.exchange_rate * -1, t.amount * t.exchange_rate) as amount_cad,
+      if(t.account_type = "credit", @runtot * t.exchange_rate * -1, @runtot * t.exchange_rate) as
         amount_balance_cad,
       custom_memo
     FROM transaction t
-      JOIN account a on a.account_id = t.account_id
       JOIN investment i on i.investment_id = a.investment_id
     WHERE t.account_id = ?
     ORDER BY t.time;`)
 
     const [rows, fields] = await db.connection.query(query, account_id)
- 
+
     return rows[1];
 
-} 
+}
 
 
 
