@@ -61,9 +61,9 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
  };
 
 
- function SortByDate(a, b){
+ function SortByDateDesc(a, b){
      var aD = new Date(a.time).getTime(), bD = new Date(b.time).getTime();
-     return ((aD < bD) ? -1 : ((aD > bD) ? 1 : 0));
+     return ((aD < bD) ? 1 : ((aD > bD) ? -1 : 0));
  }
 
   async function get_transaction_for_all_accounts(investment_id=null){
@@ -98,6 +98,6 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
     }
 
-    let sorted_tx_history = transaction_history.sort(SortByDate);
+    let sorted_tx_history = transaction_history.sort(SortByDateDesc);
     return sorted_tx_history;
   }
