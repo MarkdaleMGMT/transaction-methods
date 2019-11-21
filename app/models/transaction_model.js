@@ -103,7 +103,7 @@ async function new_get_account_transactions(account_id){
   let query = (
     `SET @runtot:=0;
     SELECT
-      SQL CACHE
+      SQL_CACHE
       t.time,
       t.account_type as type,
       t.transaction_type,
