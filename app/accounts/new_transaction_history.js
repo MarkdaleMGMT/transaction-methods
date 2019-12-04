@@ -15,7 +15,7 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
  * @return {JSON}         Transaction History
  */
  module.exports = async function transaction_history_api(req, res) {
-
+   console.log("TESTING")
    let account_id = null;
    let username = null;
    let investment_id = null;
@@ -82,8 +82,7 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
     }
 
-    let sorted_tx_history = transaction_history.sort(SortByDate);
-    return sorted_tx_history;
+    return transaction_history;
 
 
   }
@@ -98,6 +97,5 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
     }
 
-    let sorted_tx_history = transaction_history.sort(SortByDate);
-    return sorted_tx_history;
+    return transaction_history;
   }

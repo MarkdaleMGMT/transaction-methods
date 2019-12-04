@@ -122,7 +122,7 @@ async function new_get_account_transactions(account_id){
       JOIN account a on a.account_id = t.account_id
       JOIN investment i on i.investment_id = a.investment_id
     WHERE t.account_id = ?
-    ORDER BY t.time;`)
+    ORDER BY t.time DESC;`)
 
     const [rows, fields] = await db.connection.query(query, account_id)
  
