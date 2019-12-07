@@ -25,9 +25,10 @@ async function get_rates_history(time_period_days){
   let rates_history = [];
 
   for(let i=0; i<currencies.length; i++){
-    let rates = await get_currency_rates_history(currencies[i], base_currency, time_period_days)
-    rates_history.push({ currency: currencies[i], rates: rates });
-
+    if(base_currency != currencies[i]){
+      let rates = await get_currency_rates_history(currencies[i], base_currency, time_period_days)
+      rates_history.push({ currency: currencies[i], rates: rates });
+    }
   } 
 
   return rates_history;
