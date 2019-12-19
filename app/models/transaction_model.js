@@ -1,11 +1,11 @@
 'use strict'
 var db = require('../util/mysql_connection')
 
-function build_insert_transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, exchange_rate, custom_memo=''){
+function build_insert_transaction(account_id, account_type, username, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, exchange_rate, custom_memo=''){
   console.log("build tx custom_memo: ",custom_memo);
   return  {
-    query:"INSERT INTO transaction(account_id, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, custom_memo, exchange_rate) VALUES (?,?,?,?,?,?,?,?,?,?)",
-    queryValues:[account_id, amount, created_by, time, transaction_type, memo, transaction_event_id, investment_id, custom_memo, exchange_rate]
+    query:"INSERT INTO transaction(account_id, account_type, username, amount, created_by,time, transaction_type, memo, transaction_event_id, investment_id, custom_memo, exchange_rate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+    queryValues:[account_id, account_type, username, amount, created_by, time, transaction_type, memo, transaction_event_id, investment_id, custom_memo, exchange_rate]
   };
 
 }
@@ -99,6 +99,39 @@ async function get_transaction_before_date(account_id, date, limit){
 
 }
 
+async function new_get_account_transactions(account_id){
+  let query = (
+    `SET @runtot:=0;
+    SELECT * FROM (
+        SELECT
+          t.time,
+          a.account_type as type,
+          t.transaction_type,
+          i.investment_name,
+          i.currency,
+          a.username,
+          t.memo as description, 
+          if(a.account_type = "credit", t.amount * -1,  t.amount) as amount,
+          if(a.account_type = "credit", (@runtot:=@runtot + t.amount) * - 1,
+              (@runtot:=@runtot + t.amount)) AS account_balance,
+          t.exchange_rate,
+          if(a.account_type = "credit", t.amount * t.exchange_rate * -1, t.amount * t.exchange_rate) as amount_cad,
+          if(a.account_type = "credit", @runtot * t.exchange_rate * -1, @runtot * t.exchange_rate) as 
+            amount_balance_cad,
+          custom_memo
+        FROM transaction t
+          JOIN account a on a.account_id = t.account_id
+          JOIN investment i on i.investment_id = a.investment_id
+        WHERE t.account_id = ?
+        ORDER BY t.time) as parsed
+    ORDER by parsed.time DESC;`)
+
+    const [rows, fields] = await db.connection.query(query, account_id)
+
+    return rows[1];
+
+}
+
 
 
 
@@ -113,5 +146,6 @@ module.exports ={
   get_trial_balance_per_currency,
   get_transactions_summary,
   get_account_transactions_by_enddate,
-  get_transactions_with_balance
+  get_transactions_with_balance,
+  new_get_account_transactions
 }

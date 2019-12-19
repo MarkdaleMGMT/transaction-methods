@@ -76,8 +76,8 @@ const uuidv1 = require('uuid/v1');//timestamp
     let fx_rate = await get_quoted_bid(currency, base_currency);
 
 
-    let debit_query_with_vals = build_insert_transaction(investment_account.account_id, amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id, fx_rate);
-    let credit_query_with_vals = build_insert_transaction(deposit_account.account_id, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id, fx_rate);
+    let debit_query_with_vals = build_insert_transaction(investment_account.account_id, investment_account.account_type, investment_account.username, amount, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id, fx_rate);
+    let credit_query_with_vals = build_insert_transaction(deposit_account.account_id, deposit_account.account_type, deposit_account.username, amount*-1, 'admin', datetime, 'deposit', 'deposit',transaction_event_id, investment_id, fx_rate);
 
     queries_with_val.push(debit_query_with_vals);
     queries_with_val.push(credit_query_with_vals);

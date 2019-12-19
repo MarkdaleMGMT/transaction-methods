@@ -112,7 +112,7 @@ const { base_currency } = require('../../config');
      let transaction_queries = []
 
      //update debit query
-     let debit_investment_accnt = transaction_model.build_insert_transaction(investment_account.account_id, change, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id, fx_rate);
+     let debit_investment_accnt = transaction_model.build_insert_transaction(investment_account.account_id, investment_account.account_type, investment_account.username, change, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id, fx_rate);
      transaction_queries.push(debit_investment_accnt);
 
 
@@ -146,7 +146,7 @@ const { base_currency } = require('../../config');
        }
 
 
-       let credit_user_account = transaction_model.build_insert_transaction(account_id, accnt_balance_change*-1, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id, fx_rate);
+       let credit_user_account = transaction_model.build_insert_transaction(account_id, accounts[i].account_type, accounts[i].username, accnt_balance_change*-1, 'admin', datetime, 'global update', 'global update for '+investment.investment_name,transaction_event_id, investment_id, fx_rate);
        transaction_queries.push(credit_user_account);
        remainder -= accnt_balance_change;
 
@@ -169,6 +169,7 @@ const { base_currency } = require('../../config');
            //if affiliate does not have an account
            //create a new account for the affiliate in that investment
             affiliate_accnt_id = await account_model.create_user_account(affiliate_username,investment_id);
+            affiliate_accnt = await account_model.get_account_by_investment(affiliate_username,investment_id);
          }
          else{
            affiliate_accnt_id=affiliate_accnt.account_id;
@@ -183,7 +184,7 @@ const { base_currency } = require('../../config');
          }
 
          //update debit query
-         let credit_affiliate_accnt = transaction_model.build_insert_transaction(affiliate_accnt_id, affiliate_commission*-1, 'admin', datetime, 'global update', 'affiliate commission',transaction_event_id, investment_id, fx_rate);
+         let credit_affiliate_accnt = transaction_model.build_insert_transaction(affiliate_accnt_id, affiliate_accnt.account_type, affiliate_accnt.username, affiliate_commission*-1, 'admin', datetime, 'global update', 'affiliate commission',transaction_event_id, investment_id, fx_rate);
          transaction_queries.push(credit_affiliate_accnt);
          console.log("affiliate_commission",affiliate_commission);
 
@@ -214,7 +215,7 @@ const { base_currency } = require('../../config');
      let credit_rake_balance = parseFloat((rake_amount + remainder).toFixed(8));
 
      // fetch rake user and update credit query
-     let credit_rake_user = transaction_model.build_insert_transaction(rake_account.account_id,credit_rake_balance*-1, 'admin', datetime, 'global update', 'rake', transaction_event_id, investment_id, fx_rate);
+     let credit_rake_user = transaction_model.build_insert_transaction(rake_account.account_id,rake_account.account_type, rake_account.username, credit_rake_balance*-1, 'admin', datetime, 'global update', 'rake', transaction_event_id, investment_id, fx_rate);
      transaction_queries.push(credit_rake_user);
 
 

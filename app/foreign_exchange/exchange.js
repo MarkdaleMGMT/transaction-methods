@@ -66,6 +66,7 @@ async function exchange_investment(username, source_investment_id, target_invest
   if (!target_user_account){
     //create a target user account
     target_user_account_id = await create_user_account(username, target_investment_id);
+    target_user_account = await get_account_by_investment(username, target_investment_id);
   }else{
     target_user_account_id = target_user_account.account_id;
   }
@@ -103,11 +104,11 @@ async function exchange_investment(username, source_investment_id, target_invest
   let transaction_queries = []
   let tx_description = util.format("fx from %s(%s) to  %s(%s)",source_investment.investment_name, source_currency, target_investment.investment_name, target_currency );
 
-  let credit_src_fx = build_insert_transaction(src_fx_account.account_id, -1*amount, username, time, 'fx', tx_description, transaction_event_id, source_investment_id, src_fx_rate, memo);
-  let debit_src_acnt = build_insert_transaction(src_user_account.account_id, amount, username, time, 'fx', tx_description, transaction_event_id, source_investment_id, src_fx_rate, memo);
+  let credit_src_fx = build_insert_transaction(src_fx_account.account_id, src_fx_account.account_type, src_fx_account.username, -1*amount, username, time, 'fx', tx_description, transaction_event_id, source_investment_id, src_fx_rate, memo);
+  let debit_src_acnt = build_insert_transaction(src_user_account.account_id,src_user_account.account_type, src_user_account.username, amount, username, time, 'fx', tx_description, transaction_event_id, source_investment_id, src_fx_rate, memo);
 
-  let credit_target_acnt = build_insert_transaction(target_user_account_id, -1*target_amount, username, time, 'fx', tx_description, transaction_event_id, target_investment_id, target_fx_rate, memo);
-  let debit_target_fx = build_insert_transaction(target_fx_account.account_id, target_amount, username, time, 'fx', tx_description, transaction_event_id, target_investment_id, target_fx_rate, memo);
+  let credit_target_acnt = build_insert_transaction(target_user_account.account_id, target_user_account.account_type, target_user_account.username, -1*target_amount, username, time, 'fx', tx_description, transaction_event_id, target_investment_id, target_fx_rate, memo);
+  let debit_target_fx = build_insert_transaction(target_fx_account.account_id, target_fx_account.account_type, target_fx_account.username, target_amount, username, time, 'fx', tx_description, transaction_event_id, target_investment_id, target_fx_rate, memo);
 
   //src investment
   transaction_queries.push(credit_src_fx);

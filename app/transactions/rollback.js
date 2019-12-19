@@ -7,6 +7,7 @@ const { get_quoted_bid } = require('../foreign_exchange/quote_fx_rate');
 const { base_currency } = require('../../config');
 const { get_investment_by_id } = require('../models').investment_model
 
+
 /**
  * API for the deposit transaction
  * @param  {string} username     Username of the user executing the rollback transaction
@@ -76,7 +77,7 @@ const { get_investment_by_id } = require('../models').investment_model
        let tx = event_transactions[i];
 
 
-       let adjustment_query = build_insert_transaction(tx.account_id, tx.amount*-1, user.username,datetime, 'rollback', 'rollback of transaction: ' + transaction_event_id, rollback_tx_event_id, tx.investment_id, fx_rate_map[tx.investment_id]);
+       let adjustment_query = build_insert_transaction(tx.account_id,tx.account_type, tx.username,  tx.amount*-1, user.username,datetime, 'rollback', 'rollback of transaction: ' + transaction_event_id, rollback_tx_event_id, tx.investment_id, fx_rate_map[tx.investment_id]);
        queries_with_val.push(adjustment_query);
      }
 

@@ -113,9 +113,45 @@ function get_valid_rate(timestamped_rates, timestamp){
 
 }
 
+async function get_currency_rates_history(from_currency, to_currency, time_interval=30){
+  let from_to =  `${from_currency}_${to_currency}`
+  let to_from =  `${to_currency}_${from_currency}`
+  let query = 
+  `
+  SELECT SQL_CACHE * FROM
+  ((SELECT DATE_FORMAT(timestamp, "%d %m %Y") as date, bid as rate
+    FROM fx_quoted_rates 
+    WHERE (from_to, timestamp) IN 
+        ( SELECT  from_to, MAX(timestamp)
+          FROM fx_quoted_rates
+          WHERE from_to = ? 
+            AND timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
+          GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
+        ) 
+    )
+    UNION
+    (SELECT DATE_FORMAT(timestamp, "%d %m %Y") as date, (1 / ask) as rate
+        FROM fx_quoted_rates 
+        WHERE (from_to, timestamp) IN 
+       ( SELECT  from_to, MAX(timestamp)
+          FROM fx_quoted_rates
+          WHERE from_to = ?
+            AND timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
+          GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
+        )
+    )) history
+  `
+  const [rows, fields] = await db.connection.query(query, 
+    [from_to, time_interval, to_from, time_interval])
+  return rows
+
+}
+
+
 module.exports = {
   log_quoted_rate,
   get_latest_quoted_rate,
   get_quoted_rates_with_validity,
-  get_valid_rate
+  get_valid_rate,
+  get_currency_rates_history
 }
