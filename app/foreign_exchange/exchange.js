@@ -99,6 +99,11 @@ async function exchange_investment(username, source_investment_id, target_invest
     throw new Error("Insufficient balance in fx");
   }
 
+  //Check if user has enough balance in their account
+  let useraccount_balance = await account_balance(src_user_account.account_id)
+  if (useraccount_balance < amount){
+    throw new Error(`Insufficient balance in account (${useraccount_balance})  when requesting to echange`);
+  }
 
   //list of queries executed within a single transaction
   let transaction_queries = []
