@@ -4,12 +4,13 @@ const { mysql_config , db_backup} = require('../../config')
 module.exports = async function create_account(req, res) {
 
     let user_email =  req.body.email
-    let user_subject  = req.body.subject
-    let user_body = req.body.body
+    let user_name =  req.body.name
+    let user_body = req.body.message
+    let user_subject = !req.body.subject ? "Concern" : req.body.subject
 
     try{
         //send an email to db_backup about the contact form
-        let text = create_text(user_email, user_subject, user_body)
+        let text = create_text(user_email, user_name, user_body)
         let to_admin = await send_email(db_backup.email, `[Contact] [${user_email}] ${user_subject}`, text, null);
         console.log("email_admin result: ", to_admin);
         
@@ -25,10 +26,10 @@ module.exports = async function create_account(req, res) {
     
   };
 
-function create_text(email, subject, body){
+function create_text(email, name, body){
     return (`
         Email: ${email}\n
-        Subject: ${subject}\n
+        Name: ${name}\n
         Body: ${body}`
         )
 
