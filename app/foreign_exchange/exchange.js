@@ -76,8 +76,6 @@ async function exchange_investment(username, source_investment_id, target_invest
   let src_fx_account = await get_fx_account(source_investment_id);
   let target_fx_account = await get_fx_account(target_investment_id);
 
-
-
   let quoted_rate = await get_quoted_rate(source_currency, target_currency);
   let rate = 1;
 
@@ -99,6 +97,19 @@ async function exchange_investment(username, source_investment_id, target_invest
     throw new Error("Insufficient balance in fx");
   }
 
+  //Check if user has enough balance in their account
+  let useraccount_balance = await account_balance(src_user_account.account_id)
+  if (useraccount_balance < amount){
+    throw new Error(`Insufficient balance in account (${useraccount_balance})  when requesting to echange`);
+  }
+
+  if (!amount){
+    throw new Error("Can't exchange a non-number amount")
+  }
+
+  if (amount <= 0){
+    throw new Error("Can't exchange a negative or zero amount")
+  }
 
   //list of queries executed within a single transaction
   let transaction_queries = []
