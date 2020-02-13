@@ -15,7 +15,11 @@ app.use('/contact', require('./contact'))
 
 const {backup_database} = require('./crontasks/backup_db');
 app.get('/backup_db', (req, res) => {
-  backup_database()
+    backup_database()
+    .then(
+      () => {res.send("Backup was sent to the database backup email!")}
+    )
+    .catch((err) => {res.status(400).send(err)}) 
 });
 
 // the catch all route
