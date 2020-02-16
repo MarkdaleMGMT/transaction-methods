@@ -82,7 +82,7 @@ async function get_transactions_with_balance(account_id){
 
   const [rows, fields] = await db.connection.query(
    "SET @runtot:=0, @id:=NULL; " +
-   "SELECT SQL_CACHE transaction.time, transaction.transaction_id,account_id, transaction.amount, transaction.exchange_rate, " +
+   "SELECT transaction.time, transaction.transaction_id,account_id, transaction.amount, transaction.exchange_rate, " +
    "(@runtot := if(account_id=@id,@runtot,0) + amount ) AS balance, account_id=(@id:=account_id) " +
    "from transaction " +
    "WHERE transaction.account_id = ? " +
