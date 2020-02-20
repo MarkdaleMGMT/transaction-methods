@@ -10,7 +10,7 @@ module.exports = async function secret(req, res){
                    .update("qoinify")
                    .digest('hex');
   
-      res.send(hash.slice(0,6))
+      res.send({"hash": hash.slice(0,6)})
     }
     catch(err){
       console.error(err);
