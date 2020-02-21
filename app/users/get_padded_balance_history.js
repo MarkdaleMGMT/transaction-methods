@@ -52,10 +52,10 @@ async function get_user_balance_history(username, time_period_days, chart=false)
 
     let account_balance_history
     let investment = investment_map[user_account.investment_id]
-    if (investment[user_account.investment_id] = base_currency){
+    if (investment.currency == base_currency){
       account_balance_history = await get_balance_history(user_account, time_period_days, chart, investment_map[user_account.investment_id])
     } else {
-      account_balance_history =  await get_account_transactions_padded(user_account.account_id)
+      account_balance_history =  await get_account_transactions_padded(user_account.account_id, time_period_days)
     }
 
     user_balance_history.push(
@@ -63,7 +63,7 @@ async function get_user_balance_history(username, time_period_days, chart=false)
       account_id:user_account.account_id,
       investment_id:user_account.investment_id,
       investment_name:investment_map[user_account.investment_id]['investment_name'],
-      account_history:account_balance_history
+      account_history: account_balance_history
     });
 
   }
