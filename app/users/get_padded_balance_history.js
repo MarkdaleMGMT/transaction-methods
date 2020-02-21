@@ -1,6 +1,6 @@
 const { get_accounts_per_user } = require('../models').account_model
 const { get_account_transactions_padded } = require('../models').transaction_model
-
+const { base_currency } = require('../../config')
 const { get_investment_by_id, get_all_investments } = require('../models').investment_model
 const { get_balance_history } = require('../accounts/get_balance_history')
 
@@ -50,9 +50,14 @@ async function get_user_balance_history(username, time_period_days, chart=false)
     // let account_id = user_account.account_id;
     // let investment = await get_investment_by_id(user_account.investment_id)
 
-    // console.log("fetching balance history for account ", account_id);
-    let account_balance_history = await get_balance_history(user_account, time_period_days, chart, investment_map[user_account.investment_id]);
-    //let account_balance_history =  await get_account_transactions_padded(user_account.account_id)
+    let account_balance_history
+    let investment = investment_map[user_account.investment_id]
+    if (investment[user_account.investment_id] = base_currency){
+      account_balance_history = await get_balance_history(user_account, time_period_days, chart, investment_map[user_account.investment_id])
+    } else {
+      account_balance_history =  await get_account_transactions_padded(user_account.account_id)
+    }
+
     user_balance_history.push(
     {
       account_id:user_account.account_id,
