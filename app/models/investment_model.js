@@ -11,6 +11,11 @@ async function get_investment_by_id(investment_id){
   return investments[0];
 }
 
+async function get_investment_by_account_id(account_id){
+  const [investments,fields] = await db.connection.query("SELECT * FROM investment WHERE investment_id = (SELECT investment_id FROM account WHERE account_id)", [account_id]);
+  return investments[0];
+}
+
 async function get_investment_by_name(investment_name){
   const [investments,fields] = await db.connection.query("SELECT * FROM investment WHERE investment_name = ?", [investment_name]);
   return investments[0];
@@ -31,5 +36,6 @@ module.exports ={
   get_investment_by_id,
   get_investment_by_name,
   create_investment,
-  get_all_currencies
+  get_all_currencies,
+  get_investment_by_account_id
 }
