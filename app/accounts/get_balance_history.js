@@ -26,8 +26,8 @@ async function balance_history_api(req, res) {
   try{
     console.log("inside balance history");
     let account = await get_account_by_id(account_id)
-    //let balance_history = await get_balance_history(account, time_period_days, chart);
-    let balance_history = get_account_transactions_padded(account_id)
+    let balance_history = await get_balance_history(account, time_period_days, chart);
+    //let balance_history = get_account_transactions_padded(account_id)
     res.send({ code: "Success", "balance_history": balance_history })
   }
   catch(err){
