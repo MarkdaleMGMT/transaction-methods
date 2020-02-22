@@ -118,7 +118,7 @@ async function get_currency_rates_history(from_currency, to_currency, time_inter
   let to_from =  `${to_currency}_${from_currency}`
   let query = 
   `
-  (SELECT DATE(fx.timestamp) as date, 
+  (SELECT DATE_FORMAT(timestamp, "%d %m %Y") as date, 
   CASE
     WHEN from_to = ? THEN bid
     ELSE (1/bid)
@@ -127,7 +127,7 @@ async function get_currency_rates_history(from_currency, to_currency, time_inter
   INNER JOIN 
       ( SELECT MAX(rate_id) as rate_id
         FROM fx_quoted_rates
-        WHERE from_to = ? or from_to = ?
+        WHERE (from_to = ? or from_to = ?)
            AND timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY)  AND NOW()
         GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
       ) as t on fx.rate_id = t.rate_id
