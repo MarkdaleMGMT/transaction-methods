@@ -5,7 +5,7 @@ module.exports = async function secret(req, res){
 
     try{
   
-      let user = req.params.user;
+      let user = req.body.username;
       const hash = crypto.createHmac('sha256', user)
                    .update("qoinify")
                    .digest('hex');
