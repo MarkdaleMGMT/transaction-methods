@@ -118,31 +118,23 @@ async function get_currency_rates_history(from_currency, to_currency, time_inter
   let to_from =  `${to_currency}_${from_currency}`
   let query = 
   `
-  SELECT * FROM
-  ((SELECT DATE_FORMAT(timestamp, "%d %m %Y") as date, bid as rate
-    FROM fx_quoted_rates 
-    WHERE (from_to, timestamp) IN 
-        ( SELECT  from_to, MAX(timestamp)
-          FROM fx_quoted_rates
-          WHERE from_to = ? 
-            AND timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
-          GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
-        ) 
-    )
-    UNION
-    (SELECT DATE_FORMAT(timestamp, "%d %m %Y") as date, (1 / ask) as rate
-        FROM fx_quoted_rates 
-        WHERE (from_to, timestamp) IN 
-       ( SELECT  from_to, MAX(timestamp)
-          FROM fx_quoted_rates
-          WHERE from_to = ?
-            AND timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
-          GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
-        )
-    )) history
+  (SELECT DATE_FORMAT(timestamp, "%d %m %Y") as date, 
+  CASE
+    WHEN from_to = ? THEN bid
+    ELSE (1/bid)
+  END as rate
+  FROM fx_quoted_rates as fx
+  INNER JOIN 
+      ( SELECT MAX(rate_id) as rate_id
+        FROM fx_quoted_rates
+        WHERE (from_to = ? or from_to = ?)
+           AND timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY)  AND NOW()
+        GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
+      ) as t on fx.rate_id = t.rate_id
+  )
   `
   const [rows, fields] = await db.connection.query(query, 
-    [from_to, time_interval, to_from, time_interval])
+    [from_to, from_to, to_from, time_interval])
   return rows
 
 }
