@@ -3,7 +3,7 @@ const { get_exchange_api } = require('../models').api_info_model;
 const { rates_by_source } = require('../models').fx_weight_model;
 
 const axios = require("axios");
-const { poloniex, bitfinex, scotiabank, cme, binance, kitco, freiexchange, tradesatoshi } = require('../exchanges');
+const { poloniex, bitfinex, scotiabank, cme, binance, kitco, freiexchange, tradesatoshi, freebitcoins } = require('../exchanges');
 
 /*
 Queries exernal data sources and updates order book accordingly
@@ -71,6 +71,10 @@ async function update_fx_raw_rates(source, rates){
       exchange_rate = await binance.get_exchange_rate(base_url, rate, binance_config['reference_rate_gap']);
     } else if(exchange_api.description == 'tradesatoshi'){
       exchange_rate = await tradesatoshi.get_exchange_rate(base_url, rate);
+
+    } else if(exchange_api.description == 'freebitcoins'){
+      exchange_rate = await freebitcoins.get_exchange_rate(base_url, rate);
+      
     }
     console.log("exchange_rate ", exchange_rate);
     if(exchange_rate){

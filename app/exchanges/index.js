@@ -6,5 +6,7 @@ module.exports = {
   binance: require('./binance'),
   kitco: require('./kitco'),
   freiexchange: require('./freiexchange'),
-  tradesatoshi: require('./tradesatoshi')
+  tradesatoshi: require('./tradesatoshi'),
+  freebitcoins: require('./tradesatoshi')
+
 }
