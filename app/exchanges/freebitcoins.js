@@ -32,4 +32,4 @@ module.exports = {
   get_exchange_rate
 }
 
-get_exchange_rate("https://freebitcoins.com/xchange/api/ticker", "BTC_CLAM").then((obj) => {console.log(obj)})
+//get_exchange_rate("https://freebitcoins.com/xchange/api/ticker", "BTC_CLAM").then((obj) => {console.log(obj)})
