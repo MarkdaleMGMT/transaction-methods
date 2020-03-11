@@ -6,10 +6,12 @@ const axios = require("axios");
  * @param {*} param (ex. BTC_CLAM)
  */
 async function get_exchange_rate(base_url, param){
+  let split = param.split("_")
+  let base = split[0]
+  let to  = split[1]
+  console.log(`get_exchange_rate: ${base_url}/${to}_${base}`);
 
-  console.log(`get_exchange_rate: ${base_url}/${param}`);
-
-  let response = await axios.get(base_url + "/" + param);
+  let response = await axios.get(`${base_url}/${to}_${base}`);
   let data = response.data["result"];
 
   highestBid = data["askPrice"]
