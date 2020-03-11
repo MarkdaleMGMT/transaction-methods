@@ -9,7 +9,7 @@ module.exports = async function get_rates_history_api(req, res){
   try{
     let time_period_days = req.body.time_period_days;
     let rates_history = await get_rates_history(time_period_days);
-    res.send({ code: "success", rates_history })
+    res.send({ code: "success", rates_history})
   }
   catch(err){
     console.error("got err",err);

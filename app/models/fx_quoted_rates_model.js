@@ -116,6 +116,24 @@ function get_valid_rate(timestamped_rates, timestamp){
 async function get_currency_rates_history(from_currency, to_currency, time_interval=30){
   let from_to =  `${from_currency}_${to_currency}`
   let to_from =  `${to_currency}_${from_currency}`
+
+  if (time_interval==1){
+    let query = 
+    `
+    SELECT timestamp as date, 
+    CASE
+      WHEN from_to = ? THEN bid
+      ELSE (1/bid)
+    END as rate
+    FROM fx_quoted_rates as fx
+    WHERE (from_to = ? or from_to = ?)
+            AND timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY)  AND NOW()
+    `
+    const [rows, fields] = await db.connection.query(query, 
+      [from_to, from_to, to_from, time_interval])
+    return rows
+  }
+
   let query = 
   `
   (SELECT DATE_FORMAT(timestamp, "%d %m %Y") as date, 
