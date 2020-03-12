@@ -18,13 +18,11 @@ const { getDates } = require('../util/common')
  */
 async function balance_history_api(req, res) {
 
-
   let account_id = req.body.account_id;
   let time_period_days = req.body.time_period_days;
   let chart = req.body.chart;
 
   try{
-    console.log("inside balance history");
     let account = await get_account_by_id(account_id)
     let balance_history = await get_balance_history(account, time_period_days, chart);
     //let balance_history = get_account_transactions_padded(account_id)
@@ -42,8 +40,6 @@ async function balance_history_api(req, res) {
 //TODO: update the above API to pass the user acount
 async function get_balance_history(account, time_period_days, chart=false, investment){
 
-
-  console.log("inside get_balance_history");
     //parse time period
     //find start date and end date
 
@@ -62,9 +58,6 @@ async function get_balance_history(account, time_period_days, chart=false, inves
     let start_date_moment = moment(start_date);
     //end_date = dateFormat(end_date,'yyyy-mm-dd');
 
-    console.log("start_date ",start_date);
-    console.log("end_date ",end_date);
-
    // let account = await get_account_by_id(account_id);
 
    //TODO: optimize it later to perform minimal db queries
@@ -73,7 +66,6 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    if(!account) throw new Error('Account does not exist');
 
    let transactions = await get_transactions_with_balance(account.account_id);
-   console.log("transactions len: ", transactions.length)
 
    //Filter the dates out
    //Use binary search since dates are sorted to get the index of the start date
@@ -90,7 +82,6 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    }
 
    let filtered_transactions = transactions.slice(left_idx);
-   console.log("filtered_transactions len: ", filtered_transactions.length)
    // console.log("filtered_transactions", filtered_transactions );
 
    let transaction_history = filtered_transactions.map(tx => {
@@ -110,7 +101,6 @@ async function get_balance_history(account, time_period_days, chart=false, inves
      }
    });
 
-   console.log("Balance history ", transaction_history.length);
    //We have the transaction history at this point
    // console.log("transaction_history\n",transaction_history);
 
@@ -121,7 +111,6 @@ async function get_balance_history(account, time_period_days, chart=false, inves
 
    let balance_history = [];
    let dates = getDates(start_date,end_date);
-   console.log("Dates: ", dates[0]);
 
    //starting balance is carried from last transaction
    // let last_tx = (await get_transaction_before_date(account.account_id, start_date, 1))[0]

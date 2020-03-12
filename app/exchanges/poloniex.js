@@ -2,12 +2,14 @@ const qs = require("querystring");
 const axios = require("axios");
 const util = require("util");
 const { encrypt_sha512 } = require("../util/common");
+const {log_status, log_error} = require("../util/log_string")
 
 function nonce(){
   return new Date().getTime();
 }
 
 async function get_exchange_rate(base_url, param){
+  log_status("polonex get_exchange_rate", "")
 
 
   let response = await axios.get(base_url);
@@ -15,7 +17,7 @@ async function get_exchange_rate(base_url, param){
   let mod_param = param_parts[1] + "_" + param_parts[0];
   let fx_rate = response.data[mod_param];
 
-  console.log("data ",fx_rate);
+  //console.log("data ",fx_rate);
 
   if (!fx_rate || fx_rate.length == 0){
     return null;
@@ -54,10 +56,10 @@ async function get_wallet_balance(url,api_key,secret, wallet_type, currency){
   const response = await axios(options)
 
   const data = response.data;
-  console.log("returned data ",data[currency]);
+  //console.log("returned data ",data[currency]);
   let balance = parseFloat(data[currency]['available'])+ parseFloat(data[currency]['onOrders']);
   // let balance = parseFloat(data[currency]);
-  console.log(util.format('balance - %s - %s: %d', wallet_type, currency, balance));
+  //console.log(util.format('balance - %s - %s: %d', wallet_type, currency, balance));
 
   return parseFloat(balance);
 

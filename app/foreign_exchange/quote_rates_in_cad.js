@@ -1,15 +1,19 @@
 const { get_all_currencies } = require('../models').investment_model;
 const { base_currency } = require('../../config');
 const { get_latest_quoted_rate } = require('../models').fx_quoted_rates;
+const {log_status, log_error} = require("../util/log_string")
+
 
 module.exports = async function get_rates_in_cad_api(req, res){
 
   try{
+    log_status("get_rates_in_cad_api", '')
     let rates = await get_rates_in_cad();
     res.send({ code: "success", rates })
   }
-  catch(err){
-    console.error("got err",err);
+  catch(err){    
+    log_error("get_rates_in_cad_api", '', err)
+
     res.status(400).send({code:"failure" , message:err.message});
   }
 
@@ -40,7 +44,7 @@ async function get_rates_in_cad(){
     rate['ask'] = parseFloat(rate['ask'])
     rate['mid'] = parseFloat(rate['mid'])
 
-    console.log("rate", rate);
+    //console.log("rate", rate);
     let exchange_rate = {
       bid:1,
       ask:1,
@@ -67,7 +71,7 @@ async function get_rates_in_cad(){
 
   }
 
-  console.log("currencies ", currency_rates);
+ // console.log("currencies ", currency_rates);
 
 
   //return the rates

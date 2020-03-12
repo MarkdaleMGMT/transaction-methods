@@ -1,10 +1,12 @@
 const { get_quoted_rate } = require('./quote_fx_rate');
 const { get_all_currencies } = require('../models').investment_model;
+const {log_status, log_error} = require("../util/log_string")
+
 
 async function get_quoted_rates_api(req,res){
 
   try{
-
+    log_status("get_quoted_rates_api", "")
     let rates = await get_all_quoted_rates();
     res.send({ code: "rate fetched successfully", rates });
   }
@@ -20,16 +22,16 @@ async function get_all_quoted_rates(){
   //Get all currency pairs on the system
   let currencies = await get_all_currencies();
   let currency_pairs = generate_pairs(currencies);
-  console.log(currency_pairs);
+  //console.log(currency_pairs);
 
   let exchange_rates = {};
   for(let i=0 ; i<currency_pairs.length; i++){
 
     let currency_pair = currency_pairs[i];
-    console.log(currency_pair);
+    //console.log(currency_pair);
 
     let quoted_rate = await get_quoted_rate(currency_pair.from_currency, currency_pair.to_currency);
-    console.log(quoted_rate);
+    //console.log(quoted_rate);
 
     let from_to = quoted_rate['from_to'];
     delete quoted_rate.from_to;

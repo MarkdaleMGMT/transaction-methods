@@ -3,13 +3,15 @@ const moment = require('moment');
 const { get_all_currencies } = require('../models').investment_model;
 const { base_currency } = require('../../config');
 const { get_currency_rates_history} = require('../models').fx_quoted_rates;
+const {log_status, log_error} = require("../util/log_string")
 
 module.exports = async function get_rates_history_api(req, res){
 
   try{
     let time_period_days = req.body.time_period_days;
     let rates_history = await get_rates_history(time_period_days);
-    res.send({ code: "success", rates_history })
+    log_status("get_rates_history", "")
+    res.send({ code: "success", rates_history})
   }
   catch(err){
     console.error("got err",err);

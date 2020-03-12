@@ -4,11 +4,13 @@ const { get_all_currencies } = require('../models').investment_model;
 const { base_currency } = require('../../config');
 const { get_latest_quoted_rate, get_quoted_rates_with_validity, get_valid_rate } = require('../models').fx_quoted_rates;
 const { getDates } = require('../util/common')
+const {log_status, log_error} = require("../util/log_string")
+
 
 module.exports = async function get_rates_history_api(req, res){
 
   try{
-
+    log_status("get_rates_history_api", "")
     let time_period_days = req.body.time_period_days;
     let rates_history = await get_rates_history(time_period_days);
     res.send({ code: "success", rates_history })
@@ -50,12 +52,12 @@ async function get_rates_history(time_period_days){
 
     if(!timestamped_rates || timestamped_rates.length == 0 ){
       rates_history.push({ currency: currencies[i], rates });
-      console.log("skipping to next iteration");
+      //console.log("skipping to next iteration");
       continue; //move on to next iteration
 
     }
 
-    console.log("timestamped_rates: ", timestamped_rates);
+    //console.log("timestamped_rates: ", timestamped_rates);
 
     rates = dates.map( date => {
 

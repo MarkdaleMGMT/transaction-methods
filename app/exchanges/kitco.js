@@ -1,8 +1,10 @@
 const qs = require("querystring");
 const axios = require("axios");
 const cheerio = require('cheerio');
+const {log_status, log_error} = require("../util/log_string")
 
 async function get_exchange_rate(base_url, param){
+  log_status("kitco get_exchange_rate", "")
 
 
   let request_url = base_url.replace("{}", param); //insert the rate instead of the placeholder
