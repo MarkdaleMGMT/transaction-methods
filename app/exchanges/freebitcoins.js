@@ -7,12 +7,13 @@ const {log_status, log_error} = require("../util/log_string")
  * @param {*} param (ex. BTC_CLAM)
  */
 async function get_exchange_rate(base_url, param){
-  log_status("freebitcoins get_exchange_rate", `${base_url}/${to}_${base}`)
+  
   
   try {
     let split = param.split("_")
     let base = split[0]
     let to  = split[1]
+    log_status("freebitcoins get_exchange_rate", `${base_url}/${to}_${base}`)
 
     let response = await axios.get(`${base_url}/${to}_${base}`);
     let data = response.data["result"];
