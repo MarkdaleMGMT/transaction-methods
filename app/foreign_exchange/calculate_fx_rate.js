@@ -1,12 +1,14 @@
 const { rates_source_currency, rates_target_currency, get_rates_currency_pair, get_currency_pair_info } = require('../models').fx_weight_model;
 const { log_quoted_rate } = require('../models').fx_quoted_rates;
 const { find_valid_rate } = require('../models').fx_raw_rates;
+const {log_status, log_error} = require("../util/log_string")
 
 async function calculate_fx_rate(req, res){
 
   try{
     let to_currency = req.body.to_currency;
     let from_currency = req.body.from_currency;
+    log_status("calculate_fx_rate", `${from_currency}_${to_currency}`)
 
 
 
@@ -56,7 +58,7 @@ async function calculate_rate(src_currency, target_currency){
     if(!currency_pair_info) throw new Error("Exchange rate is not configured on the system")
 
     let exchange_path = currency_pair_info.path.split(',');
-    console.log("exchange_path",exchange_path);
+    //console.log("exchange_path",exchange_path);
 
     for(let i=0; i< exchange_path.length - 1; i++){
 
@@ -64,7 +66,7 @@ async function calculate_rate(src_currency, target_currency){
         let to_currency = exchange_path[i+1];
         let final_pairwise_bid = 1, final_pairwise_ask = 1;
 
-        console.log("before normalization for", from_currency, "/", to_currency);
+        //console.log("before normalization for", from_currency, "/", to_currency);
 
         //get normalized weights (could be in either direction )
         let normalized_rates = await get_rates_currency_pair(from_currency, to_currency);
@@ -122,10 +124,10 @@ async function calculate_rate(src_currency, target_currency){
   let quoted_bid = final_rate_bid / (1 + percentage_change);
   let quoted_ask = final_rate_ask * (1 + percentage_change);
 
-  console.log("% change ", percentage_change);
-  console.log("% change + 1 ",(1 + percentage_change));
-  console.log("bid", final_rate_bid);
-  console.log("ask", final_rate_ask);
+  // console.log("% change ", percentage_change);
+  // console.log("% change + 1 ",(1 + percentage_change));
+  // console.log("bid", final_rate_bid);
+  // console.log("ask", final_rate_ask);
 
   //log the rate in the quoted_fx_rates table
   let timestamp = new Date().toMysqlFormat();
@@ -149,7 +151,7 @@ async function find_exchange_path(src_currency, target_currency, exchange_path =
 
   //search from currencies
 
-  console.log("src_currency ", src_currency, "target_currency ", target_currency);
+  //console.log("src_currency ", src_currency, "target_currency ", target_currency);
   if ( src_currency == target_currency)
   {
     exchange_path.push(src_currency);

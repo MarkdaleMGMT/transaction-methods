@@ -4,6 +4,7 @@ const { get_account_by_investment, get_fx_account , account_balance, create_user
 const { build_insert_transaction } = require('../models/transaction_model');
 const { base_currency } = require('../../config');
 var db = require('../util/mysql_connection');
+const {log_status, log_error} = require("../util/log_string")
 
 
 const util = require('util');
@@ -28,7 +29,7 @@ module.exports = async function exchange(req,res){
     let amount = req.body.amount;
     let memo = req.body.custom_memo;
     // let rate = req.body.rate;
-
+    log_status("exchange", `${username} ${source_investment_id}_${target_investment_id} ${amount}`)
 
     let isSuccesful = await exchange_investment(username, source_investment_id, target_investment_id, amount, memo);
     res.send({ code: "Exchange transaction successful", isSuccesful })
@@ -85,9 +86,9 @@ async function exchange_investment(username, source_investment_id, target_invest
     rate = 1/quoted_rate.ask
   }
 
-  console.log("src-target ",source_currency+'_'+target_currency);
-  console.log("quoted rate ",quoted_rate.from_to);
-  console.log("rate ", rate);
+  // console.log("src-target ",source_currency+'_'+target_currency);
+  // console.log("quoted rate ",quoted_rate.from_to);
+  // console.log("rate ", rate);
 
   let target_amount = parseFloat((rate * amount).toFixed(8));
 
@@ -133,11 +134,11 @@ async function exchange_investment(username, source_investment_id, target_invest
 
   let rows_affected = 0;
   for(let x=0; x < results.length; x++){
-    console.log("results[x]",results[x][0].affectedRows);
+    //console.log("results[x]",results[x][0].affectedRows);
     rows_affected+= results[x][0].affectedRows;
   }
 
-  console.log("rows affected",rows_affected);
+ // console.log("rows affected",rows_affected);
   // console.log("remainder",remainder);
 
   return rows_affected == transaction_queries.length;
