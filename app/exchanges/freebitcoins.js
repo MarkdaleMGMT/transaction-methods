@@ -14,8 +14,8 @@ async function get_exchange_rate(base_url, param){
   let response = await axios.get(`${base_url}/${to}_${base}`);
   let data = response.data["result"];
 
-  highestBid = data["askPrice"]
-  lowestBid = data["lowPrice"]
+  highestBid = data["bidPrice"]
+  lowestBid = data["askPrice"]
   
   return {
     timestamp: new Date().toMysqlFormat(),
