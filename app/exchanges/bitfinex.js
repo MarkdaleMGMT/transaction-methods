@@ -2,6 +2,7 @@ const qs = require("querystring");
 const axios = require("axios");
 const util = require("util");
 const { encrypt_sha384 } = require("../util/common");
+const {log_status, log_error} = require("../util/log_string")
 
 
 function nonce(){
@@ -9,16 +10,15 @@ function nonce(){
 }
 
 async function get_exchange_rate(base_url, param){
+  log_status("bitfinex get_exchange_rate", )
 
   let mod_param = param.toLowerCase().replace("_","");
-  console.log("mod_param", mod_param);
+  //console.log("mod_param", mod_param);
 
   let response = await axios.get(base_url + mod_param);
   let fx_rate = response.data;
 
-
-
-  console.log("data ",fx_rate);
+  //console.log("data ",fx_rate);
 
 
   if (!fx_rate || fx_rate.length == 0){
@@ -59,7 +59,7 @@ async function get_wallet_balance(base_url, api_key, secret, wallet_type, curren
 
   const response = await axios(options)
   const data = response.data;
-  console.log("\nreturned response ",data);
+  //console.log("\nreturned response ",data);
 
 
   // console.log("returned data ",data);
@@ -73,9 +73,7 @@ async function get_wallet_balance(base_url, api_key, secret, wallet_type, curren
     balance += parseFloat(filteredData[i]['amount']);
   }
 
-
-
-  console.log(util.format('balance - %s - %s: %d', wallet_type, currency, balance));
+  //console.log(util.format('balance - %s - %s: %d', wallet_type, currency, balance));
 
   return parseFloat(balance);
 

@@ -1,4 +1,6 @@
 const axios = require("axios");
+const {log_status, log_error} = require("../util/log_string")
+
 //https://tradesatoshi.com/api/public/getorderbook?market=LTC_BTC&type=both&depth=20
 /**
  * 
@@ -6,15 +8,16 @@ const axios = require("axios");
  * @param {*} param (ex. BTC_CLAM)
  */
 async function get_exchange_rate(base_url, param){
+  log_status("tradesatoshi get_exchange_rate", "")
 
   let param_parts = param.split("_");
   let des  = param_parts[0] //Alawys BTC
   let base  = param_parts[1]
-  console.log("test");
+  //console.log("test");
   //console.log(`get_exchange_rate: ${base_url}${des}`);
-  console.log(`${base_url}?market=${param}&type=both&depth=20`);
+  //console.log(`${base_url}?market=${param}&type=both&depth=20`);
   try{
-    console.log(`${base_url}?market=${param}&type=both&depth=20`);
+    //console.log(`${base_url}?market=${param}&type=both&depth=20`);
     let response = await axios.get(`${base_url}?market=${param}&type=both&depth=20`);
     let buy = response.data["result"]["buy"]
     let highestBid = buy[0]["rate"]

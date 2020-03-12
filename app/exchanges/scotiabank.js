@@ -1,15 +1,17 @@
 const axios = require("axios");
+const {log_status, log_error} = require("../util/log_string")
 
 async function get_exchange_rate(base_url, param){
+  log_status("scotiabank get_exchange_rate", "")
 
-  console.log("get_exchange_rate: ",base_url,param);
+  //console.log("get_exchange_rate: ",base_url,param);
 
   let response = await axios.get(base_url);
   let data = response.data.data;
   let search_str_parts = param.split("_");
 
-  console.log("search_str ",search_str_parts);
-  console.log("data ",data);
+  //console.log("search_str ",search_str_parts);
+  ///console.log("data ",data);
 
   let fx_rate = data.filter(el=> {
       return el.CURRENCY_CODE == search_str_parts[0]
