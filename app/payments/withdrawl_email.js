@@ -7,7 +7,7 @@ module.exports = async function withdrawal_email(req, res){
 
     try{
       let bank = req.body.bank
-      let amount = req.body.amount
+      let amount = req.body.withdraw_amount
       let branch_number = req.body.branch_number
       let account_number = req.body.account_number
       let account_holder_name = req.body.account_holder_name
