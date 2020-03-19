@@ -1,4 +1,6 @@
 const {db_backup} = require('../../config');
+const {get_user_by_username} = require('../models/user_model')
+const {send_email} = require('../util/mail')
 
 
 module.exports = async function withdrawal_email(req, res){
@@ -9,17 +11,15 @@ module.exports = async function withdrawal_email(req, res){
       let branch_number = req.body.branch_number
       let account_number = req.body.account_number
       let account_holder_name = req.body.account_holder_name
-      let user_email = req.body.user_email
+     
       let username = req.body.username
+      let user  =  await get_user_by_username(username)
+      console.log(user)
+      let user_email = user.email
 
       //send an email to db_backup about the contact form
-      let text = `Username:${username}\n
-        Email: ${user_email}\n
-        Bank: ${bank}\n
-        Amount: ${amount}\n
-        Branch Number: ${branch_number}\n
-        Account Number: ${account_number}\n
-        Account Holder Name: ${account_holder_name}\n`
+      let text = `Username:${username}\nEmail: ${user_email}\nBank: ${bank}\nAmount: ${amount}\nBranch Number: ${branch_number}\nAccount Number: ${account_number}\nAccount Holder Name: ${account_holder_name}\n`
+        console.log(text);
       let to_admin = await send_email(db_backup.email, `[Withdrawl] [${user_email}]`, text, null);
       console.log("email_admin result: ", to_admin);
       
@@ -28,7 +28,7 @@ module.exports = async function withdrawal_email(req, res){
       let to_user = await send_email(user_email, `[Do Not Reply] We have recieved your withdrawl request!`, text, null);
       console.log("email_user result: ", to_user);
 
-      res.send({ code: "Your withdrawl request has been sent"})
+      res.send({ code: "Your withdrawl request has been sent!"})
        
     }
     catch(err){
