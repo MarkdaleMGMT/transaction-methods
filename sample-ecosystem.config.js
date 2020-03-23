@@ -45,7 +45,8 @@ module.exports = {
       CLAM_PAY_HOST:'',
       CLAM_PAY_PORT:'',
       CLAM_PAY_RPC_USER:'',
-      CLAM_PAY_RPC_PASS:''
+      CLAM_PAY_RPC_PASS:'',
+      SERVER_LABEL:''
 
 
     },
@@ -72,7 +73,8 @@ module.exports = {
       CLAM_PAY_HOST:'',
       CLAM_PAY_PORT:'',
       CLAM_PAY_RPC_USER:'',
-      CLAM_PAY_RPC_PASS:''
+      CLAM_PAY_RPC_PASS:'',
+      SERVER_LABEL:''
     }
   }]
 };

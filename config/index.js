@@ -32,6 +32,7 @@ module.exports = {
     email:process.env.DB_BACKUP_EMAIL
   },
   base_currency:'CAD',
-  admin_user:process.env.ADMIN_USER
+  admin_user:process.env.ADMIN_USER,
+  server_label:process.env.SERVER_LABEL
 
 }
