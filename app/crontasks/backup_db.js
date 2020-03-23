@@ -2,7 +2,7 @@ const shell = require('shelljs');
 const dateFormat = require('dateformat')
 const moment = require('moment')
 const { send_email } = require('../util/mail')
-const { mysql_config , db_backup} = require('../../config')
+const { mysql_config , db_backup, server_label} = require('../../config')
 const fs = require("fs");
 
 const DB_BACKUP_PATH='/backup/db_backup'
@@ -52,7 +52,7 @@ async function backup_database(){
 
       //mail the file to the configured email address
       console.log("trying to send email....");
-      let text = "Attached is the database backup";
+      let text = `Attached is the database backup from server: ${server_label}`;
       let attachments = [{
         path: `${DB_BACKUP_PATH}/${today}/${mysql_config.database}-${today}.sql.gz`,
         encoding: 'utf-8'
