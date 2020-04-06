@@ -24,7 +24,7 @@ async function get_exchange_rate(base_url, param){
     return {
       timestamp: new Date().toMysqlFormat(),
       from_to: param,
-      source: 'Freebitcoins',
+      source: 'freebitcoins',
       bid: parseFloat(highestBid),
       ask: parseFloat(lowestBid)
     };
