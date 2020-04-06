@@ -1,5 +1,7 @@
 const axios = require("axios");
 const {log_status, log_error} = require("../util/log_string")
+const cheerio = require('cheerio');
+
 
 /**
  * 
@@ -9,18 +11,18 @@ const {log_status, log_error} = require("../util/log_string")
 async function get_exchange_rate(base_url, param){
 
   let param_parts = param.split("_");
-  let des  = param_parts[0] //Alawys BTC
-  let base  = param_parts[1]
+  let base  = param_parts[0] //Alawys BTC
+  let target  = param_parts[1]
 
-  let response = await axios.get(base_url);
+  let response = await axios.get(base_url+`&from=${base}&to=${target}`);
   let data = response.data
 
-  let mid = 1/data[0].price
+  let mid = data.amount
 
   return {
-    timestamp: new Date().toMysqlFormat(),
+    // timestamp: new Date().toMysqlFormat(),
     from_to: param,
-    source: 'bloomberg',
+    source: 'rbc',
     bid: parseFloat(mid),
     ask: parseFloat(mid)
   };

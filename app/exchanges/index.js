@@ -8,6 +8,7 @@ module.exports = {
   freiexchange: require('./freiexchange'),
   tradesatoshi: require('./tradesatoshi'),
   freebitcoins: require('./freebitcoins'),
-  bloomberg: require('./bloomberg')
+  rbc: require('./rbc'),
+  bmo: require('./bmo')
 
 }
