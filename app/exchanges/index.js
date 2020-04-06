@@ -9,6 +9,7 @@ module.exports = {
   tradesatoshi: require('./tradesatoshi'),
   freebitcoins: require('./freebitcoins'),
   rbc: require('./rbc'),
-  bmo: require('./bmo')
+  bmo: require('./bmo'),
+  hsbc: require('./hsbc')
 
 }
