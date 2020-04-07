@@ -14,19 +14,19 @@ async function get_exchange_rate(base_url, param){
   let base  = param_parts[0] //Alawys BTC
   let target  = param_parts[1]
 
-  let response = await axios.get(base_url);
+  let response = await axios.get("https://www.nbc.ca/en/rates-and-analysis/interest-rates-and-returns/exchange-rates.html");
   const html = response.data;
   const $ = cheerio.load(html);
 
-  let data = $('#content_main_basicTable_1 > table > tbody > tr:nth-child(18)').text().trim().split("\n")
+  let data = $('#main-wrapper > section > div > article > div.printablecontent > div > div.table.parbase.section > div > table > tbody > tr:nth-child(3)').text().trim().split("\n")
   let bid = data[2]
   let ask = data[3]
-
+  
   return {
     // timestamp: new Date().toMysqlFormat(),
     from_to: param,
-    source: 'hsbc',
-    bid: parseFloat(bid),
+    source: 'nbc',
+   bid: parseFloat(bid),
     ask: parseFloat(ask)
   };
 }
@@ -34,3 +34,5 @@ async function get_exchange_rate(base_url, param){
 module.exports = {
   get_exchange_rate
 }
+
+get_exchange_rate("asd", "das")
