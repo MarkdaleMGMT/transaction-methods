@@ -82,7 +82,9 @@ async function update_fx_raw_rates(source, rates){
       exchange_rate = await bmo.get_exchange_rate(base_url, rate);
       
     }else if(exchange_api.description == 'rbc'){
-      exchange_rate = await rbc.get_exchange_rate(base_url, rate);
+      let rbc_config = await rates_by_source(rate.split('_')[0], rate.split('_')[1],  source);
+
+      exchange_rate = await rbc.get_exchange_rate(base_url, rate, rbc_config['reference_rate_gap']);
       
     }else if(exchange_api.description == 'hsbc'){
       exchange_rate = await hsbc.get_exchange_rate(base_url, rate);

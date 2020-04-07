@@ -8,7 +8,7 @@ const cheerio = require('cheerio');
  * @param {*} base_url (ex. bloomber)
  * @param {*} param (ex. CAD_USD)
  */
-async function get_exchange_rate(base_url, param){
+async function get_exchange_rate(base_url, param, ref_rate_gap){
 
   let param_parts = param.split("_");
   let base  = param_parts[0] //Alawys BTC
@@ -17,14 +17,18 @@ async function get_exchange_rate(base_url, param){
   let response = await axios.get(base_url+`&from=${base}&to=${target}`);
   let data = response.data
 
-  let mid = data.amount
+  let referenceRate = parseFloat(data.amount)
+  ref_rate_gap = parseFloat(ref_rate_gap)
+  let bid_rate = referenceRate*(1 - ref_rate_gap);
+  let ask_rate = referenceRate*(1 + ref_rate_gap);
+
 
   return {
     // timestamp: new Date().toMysqlFormat(),
     from_to: param,
     source: 'rbc',
-    bid: parseFloat(mid),
-    ask: parseFloat(mid)
+    bid: bid_rate,
+    ask: ask_rate
   };
 }
 
