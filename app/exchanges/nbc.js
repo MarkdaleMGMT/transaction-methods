@@ -14,7 +14,7 @@ async function get_exchange_rate(base_url, param){
   let base  = param_parts[0] //Alawys BTC
   let target  = param_parts[1]
 
-  let response = await axios.get("https://www.nbc.ca/en/rates-and-analysis/interest-rates-and-returns/exchange-rates.html");
+  let response = await axios.get(base_url);
   const html = response.data;
   const $ = cheerio.load(html);
 
