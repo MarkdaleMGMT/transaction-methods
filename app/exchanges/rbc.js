@@ -17,7 +17,7 @@ async function get_exchange_rate(base_url, param, ref_rate_gap){
   let response = await axios.get(base_url+`&from=${base}&to=${target}`);
   let data = response.data
 
-  let referenceRate = parseFloat(data.amount)
+  let referenceRate = 1/parseFloat(data.amount)
   ref_rate_gap = parseFloat(ref_rate_gap)
   let bid_rate = referenceRate*(1 - ref_rate_gap);
   let ask_rate = referenceRate*(1 + ref_rate_gap);
