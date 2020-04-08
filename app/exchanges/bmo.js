@@ -20,8 +20,8 @@ async function get_exchange_rate(base_url, param){
   //console.log(JSON.parse(data))
   let USDline = data.match(/"USD" : .*,/)[0]
   let USDnumbers = USDline.match(/\d+\.?\d*/g)
-  let bid = USDnumbers[0]
-  let ask = USDnumbers[1]
+  let ask = USDnumbers[0]
+  let bid = USDnumbers[1]
   return {
     // timestamp: new Date().toMysqlFormat(),
     from_to: param,

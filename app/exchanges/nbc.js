@@ -19,8 +19,8 @@ async function get_exchange_rate(base_url, param){
   const $ = cheerio.load(html);
 
   let data = $('#main-wrapper > section > div > article > div.printablecontent > div > div.table.parbase.section > div > table > tbody > tr:nth-child(3)').text().trim().split("\n")
-  let bid = data[2]
-  let ask = data[3]
+  let ask = data[2]
+  let bid = data[3]
   
   return {
     // timestamp: new Date().toMysqlFormat(),
