@@ -26,8 +26,8 @@ async function get_exchange_rate(base_url, param){
     // timestamp: new Date().toMysqlFormat(),
     from_to: param,
     source: 'nbc',
-   bid: parseFloat(bid),
-    ask: parseFloat(ask)
+   bid: parseFloat(1/bid),
+    ask: parseFloat(1/ask)
   };
 }
 
