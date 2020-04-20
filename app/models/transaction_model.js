@@ -108,27 +108,55 @@ async function get_account_transactions_padded(account_id, interval){
   let from_to = `${currency}_${base_currency}`
   let to_from = `${base_currency}_${currency}`
 
-  let query = (
-    `set @runtot:=0, @id:=null;
-    SELECT * FROM (
-      SELECT  transaction_id, time as date, transaction_type, ifnull(amount, 0)  as amount,  exchange_rate ,
-        ABS(@runtot:= @runtot + amount)as account_balance, account_type, ABS((@runtot) * k.exchange_rate) as account_balance_cad, ? as currency
-      FROM ((SELECT -1 as  transaction_id,TIMESTAMP(DATE(fx.timestamp)) as time, "filler" as  transaction_type,  0 as amount ,
-            CASE WHEN from_to = ? THEN bid ELSE (1/bid) END as exchange_rate, "filler" as account_type
-            FROM fx_quoted_rates as fx
-            INNER JOIN 
-                ( SELECT MAX(rate_id) as rate_id
-                  FROM fx_quoted_rates
-                  WHERE from_to = ? or from_to = ?
-                     AND timestamp BETWEEN (SELECT MIN(time) FROM transaction WHERE account_id= ?) AND NOW()
-                  GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
-                ) as t on fx.rate_id = t.rate_id) UNION (SELECT transaction_id, time, transaction_type, amount + 0E0 , exchange_rate + 0E0, account_type FROM transaction where account_id = ?)) as k
-      ORDER BY time, transaction_id) as formatted
-    WHERE date BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();`
-  )
-  const [rows, fields] = await db.connection.query(query, [currency, from_to, from_to, to_from, account_id, account_id, interval])
+  if (interval != -1){
+    let query = (
+      `set @runtot:=0, @id:=null;
+      SELECT * FROM (
+        SELECT  transaction_id, time as date, transaction_type, ifnull(amount, 0)  as amount,  exchange_rate ,
+          ABS(@runtot:= @runtot + amount)as account_balance, account_type, ABS((@runtot) * k.exchange_rate) as account_balance_cad, ? as currency
+        FROM ((SELECT -1 as  transaction_id,TIMESTAMP(DATE(fx.timestamp)) as time, "filler" as  transaction_type,  0 as amount ,
+              CASE WHEN from_to = ? THEN bid ELSE (1/bid) END as exchange_rate, "filler" as account_type
+              FROM fx_quoted_rates as fx
+              INNER JOIN 
+                  ( SELECT MAX(rate_id) as rate_id
+                    FROM fx_quoted_rates
+                    WHERE from_to = ? or from_to = ?
+                       AND timestamp BETWEEN (SELECT MIN(time) FROM transaction WHERE account_id= ?) AND NOW()
+                    GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
+                  ) as t on fx.rate_id = t.rate_id) UNION (SELECT transaction_id, time, transaction_type, amount + 0E0 , exchange_rate + 0E0, account_type FROM transaction where account_id = ?)) as k
+        ORDER BY time, transaction_id) as formatted
+      WHERE date BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();`
+    )
+    const [rows, fields] = await db.connection.query(query, [currency, from_to, from_to, to_from, account_id, account_id, interval])
+  
+    return  rows[1];
 
-  return  rows[1];
+  } else {
+
+    let query = (
+      `set @runtot:=0, @id:=null;
+      SELECT * FROM (
+        SELECT  transaction_id, time as date, transaction_type, ifnull(amount, 0)  as amount,  exchange_rate ,
+          ABS(@runtot:= @runtot + amount)as account_balance, account_type, ABS((@runtot) * k.exchange_rate) as account_balance_cad, ? as currency
+        FROM ((SELECT -1 as  transaction_id,TIMESTAMP(DATE(fx.timestamp)) as time, "filler" as  transaction_type,  0 as amount ,
+              CASE WHEN from_to = ? THEN bid ELSE (1/bid) END as exchange_rate, "filler" as account_type
+              FROM fx_quoted_rates as fx
+              INNER JOIN 
+                  ( SELECT MAX(rate_id) as rate_id
+                    FROM fx_quoted_rates
+                    WHERE from_to = ? or from_to = ?
+                       AND timestamp BETWEEN (SELECT MIN(time) FROM transaction WHERE account_id= ?) AND NOW()
+                    GROUP BY from_to, YEAR(timestamp), MONTH(timestamp), DAY(timestamp)
+                  ) as t on fx.rate_id = t.rate_id) UNION (SELECT transaction_id, time, transaction_type, amount + 0E0 , exchange_rate + 0E0, account_type FROM transaction where account_id = ?)) as k
+        ORDER BY time, transaction_id) as formatted;`
+    )
+    const [rows, fields] = await db.connection.query(query, [currency, from_to, from_to, to_from, account_id, account_id])
+  
+    return  rows[1];
+
+  }
+
+  
 }
 
 async function new_get_account_transactions(account_id){
