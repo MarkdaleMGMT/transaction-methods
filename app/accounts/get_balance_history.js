@@ -1,8 +1,8 @@
 const dateFormat = require('dateformat');
 const moment = require('moment');
 
-const { get_transactions_with_balance, get_account_transactions_padded  } = require('../models').transaction_model
-const { get_account_by_id, account_balance, account_balance_by_date } = require('../models').account_model
+const { get_transactions_with_balance,   } = require('../models').transaction_model
+const { get_account_by_id, get_account_min_date_by_id} = require('../models').account_model
 const { get_investment_by_id } = require('../models').investment_model
 
 // const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
@@ -26,7 +26,9 @@ async function balance_history_api(req, res) {
     let account = await get_account_by_id(account_id)
     let balance_history = await get_balance_history(account, time_period_days, chart);
     //let balance_history = get_account_transactions_padded(account_id)
-    res.send({ code: "Success", "balance_history": balance_history })
+    let min_time =  await get_account_min_date_by_id(account.account_id)
+    start_date_moment = moment(min_time.time);
+    res.send({ code: "Success", "balance_history": balance_history})
   }
   catch(err){
     console.error(err);
@@ -38,28 +40,27 @@ async function balance_history_api(req, res) {
 };
 
 //TODO: update the above API to pass the user acount
-async function get_balance_history(account, time_period_days, chart=false, investment){
+async function get_balance_history(account, time_period_days = -1, chart=false, investment){
 
-    //parse time period
-    //find start date and end date
 
     let dateOffset = (24*60*60*1000) * (time_period_days -1);
 
-    // let end_date = new Date(new Date().setHours(0,0,0,0));
-    // let start_date = new Date(new Date().setHours(0,0,0,0));
+
     let end_date = new Date();
     let start_date = new Date();
-    start_date.setTime(start_date.getTime() - dateOffset);
+    let start_date_moment = moment();
 
-    //convert the date to mysql format
-    // start_date = start_date.toMysqlFormat();
-    // end_date = end_date.toMysqlFormat();
-    // start_date = dateFormat(start_date,'yyyy-mm-dd');
-    let start_date_moment = moment(start_date);
-    //end_date = dateFormat(end_date,'yyyy-mm-dd');
+    if (time_period_days != -1){
+      start_date.setTime(start_date.getTime() - dateOffset);
+  
+    } else {
+      let min_time =  await get_account_min_date_by_id(account.account_id)
+      start_date = moment(min_time.time);
+    }
 
-   // let account = await get_account_by_id(account_id);
+    start_date_moment = moment(start_date);
 
+   
    //TODO: optimize it later to perform minimal db queries
    if(!investment) investment = await get_investment_by_id(account.investment_id);
    let currency = investment.currency;
@@ -110,7 +111,7 @@ async function get_balance_history(account, time_period_days, chart=false, inves
    //let timestamped_quoted_rates = await get_quoted_rates_with_validity(currency, 'CAD');
 
    let balance_history = [];
-   let dates = getDates(start_date,end_date);
+   let dates = getDates(start_date, end_date);
 
    //starting balance is carried from last transaction
    // let last_tx = (await get_transaction_before_date(account.account_id, start_date, 1))[0]

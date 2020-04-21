@@ -12,6 +12,14 @@ async function get_account_by_id(account_id){
   return rows[0];
 }
 
+async function get_account_min_date_by_id(account_id){
+
+  const [rows, fields] = await db.connection.query("SELECT min(time) as time from transaction where account_id = 15;",[account_id]);
+  return rows[0];
+}
+
+
+
 async function get_account_by_investment(username,investment_id){
   const [rows, fields] = await db.connection.query("SELECT * FROM account WHERE username = ? AND investment_id = ?",[username,investment_id]);
   return rows[0];
@@ -320,5 +328,6 @@ module.exports = {
   create_fx_account,
   create_withdrawal_fees_account,
   update_deposit_address,
-  account_balance_by_date
+  account_balance_by_date,
+  get_account_min_date_by_id
 };

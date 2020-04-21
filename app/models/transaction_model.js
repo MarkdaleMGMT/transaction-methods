@@ -159,28 +159,54 @@ async function get_account_transactions_padded(account_id, interval){
   
 }
 
-async function new_get_account_transactions(account_id){
-  let query = (
-    `set @runtot:=0, @id:= ?;
+async function new_get_account_transactions(account_id, interval = -1, time_label = "time"){
+
+  if (interval == -1) {
+    let query = (
+      `set @runtot:=0, @id:= ?;
+      set @investment:=(SELECT investment_name FROM investment WHERE investment_id = (SELECT investment_id FROM account WHERE account_id = @id));
+      set @currency:=(SELECT currency FROM investment WHERE investment_id = (SELECT investment_id FROM account WHERE account_id = @id));
+      
+      SELECT formatted.transaction_id, formatted.time as ?, formatted.account_type, formatted.transaction_type, formatted.exchange_rate,
+              if ( formatted.account_type = "credit", -1 * formatted.amount, formatted.amount) as amount, 
+              formatted.amount_cad, formatted.account_balance, formatted.account_balance_cad,
+              memo as description, formatted.custom_memo, formatted.username, @currency as currency, @investment as investment_name
+        FROM (
+          SELECT transaction_id, time, transaction_type, amount + 0E0 as amount,  exchange_rate + 0E0 as exchange_rate, ABS(amount * exchange_rate +  0E0) as amount_cad,
+                  ABS(@runtot:= @runtot + amount) as account_balance, account_type, ABS((@runtot) * exchange_rate) as account_balance_cad,
+                  account_type as type, custom_memo, memo, created_by, username
+          FROM transaction
+          WHERE account_id = @id
+          ORDER BY time, transaction_id) as formatted`)
+  
+      const [rows, fields] = await db.connection.query(query, [account_id, time_label])
+  
+      return rows[3];
+  
+  } else {
+
+    let query = (` set @runtot:=0, @id:= ?;
     set @investment:=(SELECT investment_name FROM investment WHERE investment_id = (SELECT investment_id FROM account WHERE account_id = @id));
     set @currency:=(SELECT currency FROM investment WHERE investment_id = (SELECT investment_id FROM account WHERE account_id = @id));
     
-    SELECT formatted.transaction_id, formatted.time, formatted.account_type, formatted.transaction_type, formatted.exchange_rate,
+        SELECT formatted.transaction_id, formatted.time as ?, formatted.account_type, formatted.transaction_type, formatted.exchange_rate,
             if ( formatted.account_type = "credit", -1 * formatted.amount, formatted.amount) as amount, 
             formatted.amount_cad, formatted.account_balance, formatted.account_balance_cad,
             memo as description, formatted.custom_memo, formatted.username, @currency as currency, @investment as investment_name
-      FROM (
-        SELECT transaction_id, time, transaction_type, amount + 0E0 as amount,  exchange_rate + 0E0 as exchange_rate, ABS(amount * exchange_rate +  0E0) as amount_cad,
-                ABS(@runtot:= @runtot + amount) as account_balance, account_type, ABS((@runtot) * exchange_rate) as account_balance_cad,
-                account_type as type, custom_memo, memo, created_by, username
-        FROM transaction
-        WHERE account_id = @id
-        ORDER BY time, transaction_id) as formatted`)
+            FROM (
+            SELECT transaction_id, time, transaction_type, amount + 0E0 as amount,  exchange_rate + 0E0 as exchange_rate, ABS(amount * exchange_rate +  0E0) as amount_cad,
+                    ABS(@runtot:= @runtot + amount) as account_balance, account_type, ABS((@runtot) * exchange_rate) as account_balance_cad,
+                    account_type as type, custom_memo, memo, created_by, username
+            FROM transaction
+            WHERE account_id = @id
+            ORDER BY time, transaction_id) as formatted
+      WHERE time BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();`)
 
-    const [rows, fields] = await db.connection.query(query, [account_id])
-
-    return rows[3];
-
+      const [rows, fields] = await db.connection.query(query, [account_id, time_label, interval])
+  
+      return rows[3];
+  }
+  
 }
 
 

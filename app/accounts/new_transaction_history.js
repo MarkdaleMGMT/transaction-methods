@@ -60,12 +60,6 @@ const { get_quoted_rates_with_validity, get_valid_rate } = require('../models').
 
  };
 
-
- function SortByDateDesc(a, b){
-     var aD = new Date(a.time).getTime(), bD = new Date(b.time).getTime();
-     return ((aD < bD) ? 1 : ((aD > bD) ? -1 : 0));
- }
-
   async function get_transaction_for_all_accounts(investment_id=null){
 
     let accounts = [];
