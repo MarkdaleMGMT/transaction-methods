@@ -14,7 +14,7 @@ async function get_account_by_id(account_id){
 
 async function get_account_min_date_by_id(account_id){
 
-  const [rows, fields] = await db.connection.query("SELECT min(time) as time from transaction where account_id = 15;",[account_id]);
+  const [rows, fields] = await db.connection.query("SELECT min(time) as time from transaction where account_id = ?;",[account_id]);
   return rows[0];
 }
 
