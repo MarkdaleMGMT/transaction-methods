@@ -1,97 +1,74 @@
-var db = require('../util/mysql_connection')
-// const { get_user_by_username } = require('../models').user_model
-const { account_balance, get_accounts_per_user } = require('../models').account_model
-const {  get_investment_by_id } = require('../models').investment_model
-const { get_quoted_rate } = require('../foreign_exchange/quote_fx_rate')
+const { get_accounts_per_user } = require('../models').account_model
+const { get_account_transactions_padded } = require('../models').transaction_model
 const { base_currency } = require('../../config')
-
+const { get_investment_by_id, get_all_investments } = require('../models').investment_model
+const { get_balance_history } = require('../accounts/get_balance_history')
 
 /**
- * API to fetch the balance for a specific user or a specific account , depending on which parameter is provided
- * @param  {string} key     "username" or "account_id"
- * @param  {string} value value corresponding to the key
+ * API to fetch the balance history for a specific user for all accounts over a period of time
+ * @param  {string} username     username of the user whose balance you want to fetch
+ * @param  {integer} time_period time period in days
  * @return {JSON}         Balance and Status
  */
- module.exports = async function get_user_balance_api(req, res) {
+module.exports = async function balance_history_api(req, res) {
 
-   let key  = req.body.key
-   let value = req.body.value
 
-   try{
+  let username = req.body.username;
+  let time_period_days = req.body.time_period_days;
+  let chart = req.body.chart;
 
-     if (key=='username'){
-        let user_balance = await get_user_balance(value);
-        res.send({ code: "Success", user_balance })
-      }else{
-        let account_balance = await get_account_balance(parseInt(value));
-        res.send({ code: "Success", account_balance })
-      }
-   }
-   catch(err){
-     res.status(400).send({msg: 'Unable to fetch balance', err});
-   }
+  try{
+    console.log("inside balance history");
+    let balance_history = await get_user_balance_history(username, time_period_days, chart);
+    res.send({ code: "Success", balance_history })
+  }
+  catch(err){
+    res.status(400).send({msg: err.message});
+  }
 
 
 
- };
+};
 
- async function get_account_balance(account_id){
-
-
-   try{
-     return await account_balance(account_id);
-
-   }
-   catch(err){
-     console.error(err);
-     throw err;
-   }
+async function get_user_balance_history(username, time_period_days, chart=false){
 
 
-
- }
-
-
- async function get_user_balance(username){
-
-
-   try{
-
-     let user_balance = []
-
-     let user_accounts = await get_accounts_per_user(username)
-     for(let i=0; i < user_accounts.length; i++){
-       var account = user_accounts[i];
-
-       //TODO: optimize it later to perform minimal db queries
-       var investment = await get_investment_by_id(account.investment_id);
-       var currency = investment.currency;
-
-       //get the latest exchange rate from the db src:investment currency, target: CAD
-       let quoted_rate = await get_quoted_rate(currency, base_currency);
-       let exchange_rate = quoted_rate.from_to == currency+'_'+base_currency ? parseFloat(quoted_rate.bid) : parseFloat(1/quoted_rate.ask);
-
-       var balance = await account_balance(account.account_id);
-       let balance_cad = parseFloat((exchange_rate * balance).toFixed(8));
-
-       user_balance.push({
-         'account_id':account.account_id,
-         'investment_id':account.investment_id,
-         'investment_name':investment.investment_name,
-         'balance':balance,
-         'balance_cad':balance_cad,
-         'currency':currency
-
-       })
-     }
-
-     return user_balance
-   }
-   catch(err){
-     console.error(err);
-     throw err;
-   }
+  let user_accounts = await get_accounts_per_user(username);
+  let investments = await get_all_investments();
+  let investment_map = {}
+  for(let j=0; j<investments.length; j++){
+    investment_map[investments[j]['investment_id']] = investments[j];
+  }
 
 
+  console.log("user_accounts: ", user_accounts.length);
+  let user_balance_history = [];
 
- }
+  for(let i=0; i < user_accounts.length; i++){
+
+    let user_account = user_accounts[i];
+    // let account_id = user_account.account_id;
+    // let investment = await get_investment_by_id(user_account.investment_id)
+
+    let account_balance_history
+    let investment = investment_map[user_account.investment_id]
+    if (investment.currency == base_currency ){
+      account_balance_history = await get_balance_history(user_account, time_period_days, chart, investment_map[user_account.investment_id])
+    }else {
+      account_balance_history =  await get_account_transactions_padded(user_account.account_id, time_period_days)
+    }
+
+    user_balance_history.push(
+    {
+      account_id:user_account.account_id,
+      investment_id:user_account.investment_id,
+      investment_name:investment_map[user_account.investment_id]['investment_name'],
+      account_history: account_balance_history
+    });
+
+  }
+
+  return user_balance_history;
+
+
+}
