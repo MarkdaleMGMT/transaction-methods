@@ -66,6 +66,7 @@ const { base_currency } = require('../../config')
        //TODO: optimize it later to perform minimal db queries
        var investment = await get_investment_by_id(account.investment_id);
        var currency = investment.currency;
+       var description = investment.description
 
        //get the latest exchange rate from the db src:investment currency, target: CAD
        let quoted_rate = await get_quoted_rate(currency, base_currency);
@@ -80,7 +81,8 @@ const { base_currency } = require('../../config')
          'investment_name':investment.investment_name,
          'balance':balance,
          'balance_cad':balance_cad,
-         'currency':currency
+         'currency':currency,
+         'description': description,
 
        })
      }
