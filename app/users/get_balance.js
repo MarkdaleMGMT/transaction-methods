@@ -82,7 +82,7 @@ const { base_currency } = require('../../config')
          'balance':balance,
          'balance_cad':balance_cad,
          'currency':currency,
-         'description': description,
+         
 
        })
      }
