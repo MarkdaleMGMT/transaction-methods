@@ -8,6 +8,7 @@ module.exports = {
   freiexchange: require('./freiexchange'),
   tradesatoshi: require('./tradesatoshi'),
   freebitcoins: require('./freebitcoins'),
+  prohashing: require('./prohashing'),
   rbc: require('./rbc'),
   bmo: require('./bmo'),
   hsbc: require('./hsbc'),
