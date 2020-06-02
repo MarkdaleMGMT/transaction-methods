@@ -43,12 +43,13 @@ async function get_balance(investment_id){
 
     if(api['type'] == 'miner'){
       balance += await get_miner_balance(api['base_url'],api['address']);
+      b += await Get(api['base_url']);
     }
     else if (api['type'] == 'lending bot'){
       balance += await get_lending_bot_balance(api['description'],api['base_url'],api['api_key'],api['secret'],investment['currency']);
     }
 
-
+    console.log("total balance ", balance);
   }
   console.log("total balance ", balance);
   return parseFloat(balance);
@@ -61,8 +62,12 @@ async function get_miner_balance(explorer_url, miner_address){
   // console.log("trying: "+explorer_url+miner_address );
   try {
     const response = await axios.get(explorer_url+miner_address);
+    console.log("waaaaaa", response);
+    console.log("url", explorer_url);
+    
+    
     const data = response.data;
-    // console.log(data);
+    console.log(data);
 
     return parseFloat(data);
 
@@ -72,6 +77,37 @@ async function get_miner_balance(explorer_url, miner_address){
   }
 
 }
+
+
+
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
+async function Get(base_url){
+  let Httpreq = new XMLHttpRequest(); // a new request
+  Httpreq.open("GET",base_url,false);
+  Httpreq.send(null);
+  return Httpreq.responseText;          
+}
+
+let json_obj = JSON.parse(Get(base_url));
+console.log("this is the balance: "+json_obj.balance);
+
+
+// const Http = new XMLHttpRequest();
+// const url='https://prohashing.com/explorerJson/getAddress?address=xLKv8vGuey7sRjxCu8w23bh9GGdYrRc1QU&coin_id=255';
+// Http.open("GET", url);
+// Http.send();
+
+// Http.onreadystatechange = (e) => {
+//   console.log('yupppp', Http.responseText)
+// }
+
+
+
+
+
+
+
 
 async function get_lending_bot_balance(exchange_name,url, api_key, secret, currency){
   //make an API call
